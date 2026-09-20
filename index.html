@@ -1,176 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EBIMOBILIÁRIA - Emissor de Contratos</title>=1.0">
-    
-
-<style>
-body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background-color: #f0f3f6;
-    margin: 0;
-    padding: 20px;
-}
-
-.container {
-    max-width: 950px;
-    margin: 0 auto;
-    background: #ffffff;
-    padding: 35px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-}
-
-header {
-    text-align: center;
-    border-bottom: 2px solid #eef2f5;
-    padding-bottom: 15px;
-    margin-bottom: 30px;
-}
-
-header h1 {
-    margin: 0;
-    color: #1a252f;
-    letter-spacing: 1px;
-}
-
-header p {
-    color: #7f8c8d;
-    margin: 5px 0 0 0;
-}
-
-fieldset {
-    border: 1px solid #dcdde1;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 25px;
-}
-
-legend {
-    font-weight: bold;
-    color: #2c3e50;
-    padding: 0 10px;
-}
-
-.row {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-}
-
-.col { flex: 1; min-width: 200px; }
-.col-30 { width: 30%; min-width: 150px; }
-.col-70 { width: 70%; min-width: 250px; }
-.col-full { width: 100%; }
-
-label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-input, select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #bdc3c7;
-    border-radius: 5px;
-    box-sizing: border-box;
-    font-size: 14px;
-}
-
-input:focus, select:focus {
-    border-color: #3498db;
-    outline: none;
-}
-
-.erro-msg {
-    color: #e74c3c;
-    font-size: 12px;
-    display: block;
-    margin-top: 4px;
-}
-
-.resumo-financeiro {
-    background: #e8f4f8;
-    padding: 15px;
-    border-radius: 6px;
-    font-size: 16px;
-    margin-top: 10px;
-}
-
-.border-box {
-    border: 1px solid #bdc3c7;
-    padding: 20px;
-    border-radius: 6px;
-    background: #fbfcfc;
-}
-
-.header-parcelas {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.header-parcelas h4 { margin: 0; }
-
-.btn-add {
-    background: #3498db;
-    color: #fff;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.btn-add:hover { background: #2980b9; }
-
-.parcela-item {
-    background: #fff;
-    padding: 15px;
-    border: 1px solid #dcdde1;
-    border-radius: 5px;
-    margin-bottom: 12px;
-    position: relative;
-}
-
-.assinatura-box {
-    background: #fdfefe;
-    border-left: 4px solid #27ae60;
-}
-
-.btn-remove {
-    background: #e74c3c;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    float: right;
-    margin-top: -5px;
-}
-
-.btn-submit {
-    width: 100%;
-    padding: 15px;
-    background: #27ae60;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-.btn-submit:hover { background: #219653; }
-</style>
+    <title>EBIMOBILIÁRIA - Emissor de Contratos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: #f0f3f6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        header {
+            text-align: center;
+            border-bottom: 2px solid #eef2f5;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            margin: 0;
+            color: #1a252f;
+            letter-spacing: 1px;
+        }
+        header p {
+            color: #7f8c8d;
+            margin: 5px 0 0 0;
+        }
+        fieldset {
+            border: 1px solid #dcdde1;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        legend {
+            font-weight: bold;
+            color: #2c3e50;
+            padding: 0 10px;
+        }
+        .row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .col { flex: 1; min-width: 200px; }
+        .col-30 { width: 30%; min-width: 150px; }
+        .col-70 { width: 70%; min-width: 250px; }
+        .col-full { width: 100%; }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        .erro-msg {
+            color: #e74c3c;
+            font-size: 12px;
+            display: block;
+            margin-top: 4px;
+        }
+        .border-box {
+            border: 1px solid #bdc3c7;
+            padding: 20px;
+            border-radius: 6px;
+            background: #fbfcfc;
+        }
+        .header-parcelas {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .header-parcelas h4 { margin: 0; }
+        .btn-add {
+            background: #3498db;
+            color: #fff;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-add:hover { background: #2980b9; }
+        .parcela-item {
+            background: #fff;
+            padding: 15px;
+            border: 1px solid #dcdde1;
+            border-radius: 5px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .btn-remove {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+            margin-top: -5px;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: #27ae60;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn-submit:hover { background: #219653; }
+    </style>
 </head>
 <body>
 
@@ -231,15 +195,15 @@ input:focus, select:focus {
                 <div class="row">
                     <div class="col">
                         <label for="locatarioProfissao">Profissão:</label>
-                        <input type="text" id="locatarioProfissao" placeholder="profissão do locatário"  required>
+                        <input type="text" id="locatarioProfissao" placeholder="profissão do locatário" required>
                     </div>
                     <div class="col">
                         <label for="locatarioRg">RG:</label>
-                        <input type="text" id="locatarioRg"  placeholder="12.345.678-9" required>
+                        <input type="text" id="locatarioRg" placeholder="12.345.678-9" required>
                     </div>
                     <div class="col">
                         <label for="locatarioCpf">CPF (Apenas números):</label>
-                        <input type="text" id="locatarioCpf" maxlength="11" onblur="verificarCpf(this)" placeholder="123.456.789-00" required>
+                        <input type="text" id="locatarioCpf" maxlength="11" onblur="verificarCpf(this)" placeholder="12345678900" required>
                         <span id="cpfErro" class="erro-msg"></span>
                     </div>
                 </div>
@@ -250,7 +214,7 @@ input:focus, select:focus {
                     </div>
                     <div class="col-70">
                         <label for="locatarioEndereco">Endereço Residencial (Rua, Nº, Ap):</label>
-                        <input type="text" id="locatarioEndereco"placeholder="endereço locatário"" required>
+                        <input type="text" id="locatarioEndereco" placeholder="endereço locatário" required>
                     </div>
                 </div>
                 <div class="row">
@@ -271,326 +235,246 @@ input:focus, select:focus {
                 <div class="row">
                     <div class="col-full">
                         <label for="imovelEndereco">Endereço do Imóvel da Locação:</label>
-                        <input type="text" id="imovelEndereco" placeholder="Av Mae Bernarda, n° 000 casa 2 condomínio X Juquehy São Sebastiao SP CEP 11600000" required>
+                        <input type="text" id="imovelEndereco" placeholder="Endereço completo do imóvel de temporada" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <label for="dataCheckin">Data do Check-in:</label>
-                        <input type="date" id="dataCheckin" onchange="validarPeriodoDatas()" required>
+                        <label for="dataCheckin">Data de Entrada (Check-in):</label>
+                        <input type="date" id="dataCheckin" onchange="calcularDiarias()" required>
                     </div>
                     <div class="col">
-                        <label for="dataCheckout">Data do Check-out:</label>
-                        <input type="date" id="dataCheckout" onchange="validarPeriodoDatas()" required>
+                        <label for="dataCheckout">Data de Saída (Check-out):</label>
+                        <input type="date" id="dataCheckout" onchange="calcularDiarias()" required>
                     </div>
                     <div class="col">
                         <label for="qtdDiarias">Quantidade de Diárias:</label>
-                        <input type="number" id="qtdDiarias" min="1" readonly required>
+                        <input type="number" id="qtdDiarias" readonly required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="valorLocacao">Valor da Locação (R$):</label>
+                        <input type="number" step="0.01" id="valorLocacao" required>
+                    </div>
+                    <div class="col">
+                        <label for="taxaFaxina">Taxa de Faxina (R$):</label>
+                        <input type="number" step="0.01" id="taxaFaxina" required>
+                    </div>
+                    <div class="col">
+                        <label for="valorCaucao">Valor do Caução (R$):</label>
+                        <input type="number" step="0.01" id="valorCaucao" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="contaLocador">Dados Bancários do Locador:</label>
+                        <input type="text" id="contaLocador" placeholder="Banco, Agência, Conta ou PIX" required>
+                    </div>
+                    <div class="col">
+                        <label for="contaCorretor">Dados Bancários do Corretor:</label>
+                        <input type="text" id="contaCorretor" placeholder="Conta de titularidade de EBIMOBILIÁRIA" required>
                     </div>
                 </div>
             </fieldset>
 
-            <!-- FINANCEIRO -->
-            <fieldset>
-                <legend>Configuração Financeira</legend>
-                <div class="row">
-                    <div class="col">
-                        <label for="valorLocacao">Valor Base da Locação (R$):</label>
-                        <input type="number" step="0.01" id="valorLocacao" oninput="calcularValoresContrato()" required>
-                    </div>
-                    <div class="col">
-                        <label for="taxaFaxina">Taxa de Faxina/Limpeza (R$):</label>
-                        <input type="number" step="0.01" id="taxaFaxina" value="350.00" oninput="calcularValoresContrato()" required>
-                    </div>
-                    <div class="col">
-                        <label for="valorCaucao">Cheque Caução (R$):</label>
-                        <input type="number" step="0.01" id="valorCaucao" value="2500.00" required>
-                    </div>
+            <!-- PARCELAS DINÂMICAS -->
+            <fieldset class="border-box">
+                <div class="header-parcelas">
+                    <h4>Cronograma de Parcelas adicionais (Se houver)</h4>
+                    <button type="button" class="btn-add" onclick="adicionarParcelaField()">+ Adicionar Parcela</button>
                 </div>
-
-                <div class="row resumo-financeiro">
-                    <div class="col">
-                        <p>Honorários Imobiliária (10%): <strong id="resumoHonorario">R$ 0,00</strong></p>
-                    </div>
-                    <div class="col">
-                        <p>Valor Total Geral: <strong id="resumoTotal">R$ 0,00</strong></p>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col">
-                        <label for="contaLocador">Conta do Locador:</label>
-                        <input type="text" id="contaLocador" placeholder="Banco xxxx AG XXXX C/C XXXXX-X pix XXXXXXXXXXXXX" required>
-                    </div>
-                    <div class="col">
-                        <label for="contaCorretor">Conta da Imobiliária:</label>
-                        <input type="text" id="contaCorretor" value="Banco C6 S.A. (336), Agência 0001, Conta Corrente 41243219-6" required>
-                    </div>
-                </div>
-
-                <div class="border-box">
-                    <div class="header-parcelas">
-                        <h4>Cronograma de Pagamento (Entrada + Parcelas)</h4>
-                        <button type="button" class="btn-add" onclick="adicionarParcela()">+ Adicionar Parcela</button>
-                    </div>
-                    
-                    <div id="blocoAssinaturaFixo" class="parcela-item assinatura-box">
-                        <h5>Ato da Assinatura (Entrada)</h5>
-                        <p id="textoSplitAssinatura">Preencha o valor da locação para calcular o desdobramento.</p>
-                    </div>
-
-                    <div id="containerParcelas"></div>
-                </div>
+                <div id="containerParcelas"></div>
             </fieldset>
 
-            <button type="button" class="btn-submit" onclick="gerarContratoPDF()">Gerar Contrato Oficial em PDF</button>
+            <button type="button" class="btn-submit" onclick="window.gerarContratoPDF()">Gerar Contrato Oficial em PDF</button>
         </form>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script>
-  function valorPorExtenso(valor) {
-    if (!valor || valor == 0) return "zero reais";
-    let ext = "";
-    const inteiros = Math.floor(valor);
-    const centavos = Math.round((valor - inteiros) * 100);
-    const unidades = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
-    const dezenas1 = ["dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
-    const dezenas2 = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
-    const centenas = ["", "cem", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
-    function converteGrupo(n) {
-        let cent = Math.floor(n / 100);
-        let dez = Math.floor((n % 100) / 10);
-        let uni = n % 10;
-        let t = "";
-        if (cent > 0) { if (cent === 1 && (dez > 0 || uni > 0)) t += "cento"; else t += centenas[cent]; }
-        if (dez > 0) { if (t !== "") t += " e "; if (dez === 1) { t += dezenas1[uni]; return t; } else { t += dezenas2[dez]; } }
-        if (uni > 0) { if (t !== "") t += " e "; t += unidades[uni]; }
-        return t;
-    }
-    const milhar = Math.floor(inteiros / 1000);
-    const restoMilhar = inteiros % 1000;
-    if (milhar > 0) { if (milhar === 1) ext += "um mil"; else ext += converteGrupo(milhar) + " mil"; if (restoMilhar > 0) ext += " e "; }
-    if (restoMilhar > 0 || milhar === 0) { ext += converteGrupo(restoMilhar); }
-    ext += (inteiros === 1) ? " real" : " reais";
-    if (centavos > 0) { ext += " e " + converteGrupo(centavos) + ((centavos === 1) ? " centavo" : " centavos"); }
-    return ext.replace(/\s+/g, ' ');
-}
+        function formatarDataBR(dataUs) {
+            if(!dataUs) return "";
+            const partes = dataUs.split("-");
+            if(partes.length !== 3) return dataUs;
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
 
-function validarCPF(cpf) {
-    cpf = cpf.replace(/[^\d]+/g, '');
-    if (cpf == '' || cpf.length != 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-    let add = 0;
-    for (let i = 0; i < 9; i++) add += parseInt(cpf.charAt(i)) * (10 - i);
-    let rev = 11 - (add % 11);
-    if (rev == 10 || rev == 11) rev = 0;
-    if (rev != parseInt(cpf.charAt(9))) return false;
-    add = 0;
-    for (let i = 0; i < 10; i++) add += parseInt(cpf.charAt(i)) * (11 - i);
-    let rev2 = 11 - (add % 11);
-    if (rev2 == 10 || rev2 == 11) rev2 = 0;
-    if (rev2 != parseInt(cpf.charAt(10))) return false;
-    return true;
-}
-
-function verificarCpf(input) {
-    const erroSpan = document.getElementById('cpfErro');
-    if (!validarCPF(input.value)) {
-        erroSpan.textContent = "CPF Inválido!";
-        input.setCustomValidity("CPF Inválido");
-    } else { erroSpan.textContent = ""; input.setCustomValidity(""); }
-}
-function buscarEnderecoPorCep() {
-    let cep = document.getElementById('locatarioCep').value.replace(/[^\d]+/g, '');
-    if (cep.length !== 8) return;
-    fetch("https://viacep.com.br" + cep + "/json/")
-        .then(response => response.json())
-        .then(dados => {
-            if (!dados.erro) {
-                document.getElementById('locatarioEndereco').value = dados.logradouro + ", ";
-                document.getElementById('locatarioBairro').value = dados.bairro;
+        function calcularDiarias() {
+            const checkinVal = document.getElementById('dataCheckin').value;
+            const checkoutVal = document.getElementById('dataCheckout').value;
+            if(checkinVal && checkoutVal) {
+                const checkin = new Date(checkinVal);
+                const checkout = new Date(checkoutVal);
+                if(checkout > checkin) {
+                    const diferenca = checkout.getTime() - checkin.getTime();
+                    const dias = Math.ceil(diferenca / (1000 * 60 * 60 * 24));
+                    document.getElementById('qtdDiarias').value = dias;
+                }
             }
-        }).catch(() => {});
-}
-
-function validarPeriodoDatas() {
-    const checkinInput = document.getElementById('dataCheckin');
-    const checkoutInput = document.getElementById('dataCheckout');
-    const diariasInput = document.getElementById('qtdDiarias');
-    if (checkinInput.value && checkoutInput.value) {
-        const d1 = new Date(checkinInput.value);
-        const d2 = new Date(checkoutInput.value);
-        if (d1 >= d2) {
-            alert("A data de check-in não pode ser igual ou posterior à data de check-out!");
-            checkoutInput.value = ""; diariasInput.value = "";
-        } else {
-            const diferencaTempo = Math.abs(d2 - d1);
-            const diferencaDias = Math.ceil(diferencaTempo / (1000 * 60 * 60 * 24));
-            diariasInput.value = diferencaDias;
         }
-    }
-}
-let contadorParcelas = 0;
 
-function calcularValoresContrato() {
-    const valorLocacao = parseFloat(document.getElementById('valorLocacao').value) || 0;
-    const taxaFaxina = parseFloat(document.getElementById('taxaFaxina').value) || 0;
-    const honorarios = valorLocacao * 0.10;
-    const valorTotalGeral = valorLocacao + taxaFaxina;
-    document.getElementById('resumoHonorario').textContent = valorIdBR(honorarios);
-    document.getElementById('resumoTotal').textContent = valorIdBR(valorTotalGeral);
-    const locadorAssinatura = valorLocacao - honorarios;
-    const corretorAssinatura = honorarios;
-    const blocoTexto = document.getElementById('textoSplitAssinatura');
-    blocoTexto.innerHTML = "<strong>Conta do Locador:</strong> " + valorIdBR(locadorAssinatura) + " (" + valorPorExtenso(locadorAssinatura) + ")<br><strong>Conta da EBIMOBILIÁRIA (Comissão):</strong> " + valorIdBR(corretorAssinatura) + " (" + valorPorExtenso(corretorAssinatura) + ")";
-    distribuirSaldosParcelas();
-}
-
-function adicionarParcela() {
-    contadorParcelas++;
-    const container = document.getElementById('containerParcelas');
-    const div = document.createElement('div');
-    div.className = 'parcela-item';
-    div.id = "item_parcela_" + contadorParcelas;
-    div.innerHTML = "<button type='button' class='btn-remove' onclick='removerParcela(" + contadorParcelas + ")'>Remover</button><h5>Parcela Adicional</h5><div class='row'><div class='col'><label>Vencimento:</label><input type='date' class='p-data' required></div><div class='col'><label>Valor Calculado (R$):</label><input type='number' step='0.01' class='p-valor' readonly required></div></div>";
-    container.appendChild(div);
-    distribuirSaldosParcelas();
-}
-
-function removerParcela(id) {
-    const elemento = document.getElementById("item_parcela_" + id);
-    if (elemento) elemento.remove();
-    distribuirSaldosParcelas();
-}
-
-function distribuirSaldosParcelas() {
-    const taxaFaxina = parseFloat(document.getElementById('taxaFaxina').value) || 0;
-    const inputsValores = document.querySelectorAll('.p-valor');
-    if (inputsValores.length > 0) {
-        const valorPorParcela = taxaFaxina / inputsValores.length;
-        inputsValores.forEach(input => { input.value = valorPorParcela.toFixed(2); });
-    }
-}
-
-function valorIdBR(valor) { return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
-function formatarDataBR(dataIso) { if (!dataIso) return ""; const p = dataIso.split('-'); return p[2] + "/" + p[1] + "/" + p[0]; }
-</script>
-
-<!-- Biblioteca oficial jsPDF pela rede jsDelivr -->
-<script src="https://jsdelivr.net"></script>
-
-<script>
-// Garante o escopo global absoluto para o onclick do botão HTML
-window.gerarContratoPDF = function() {
-    const form = document.getElementById('contratoForm');
-    if (!form.checkValidity()) { form.reportValidity(); return; }
-
-    // Captura o construtor correto na memória da nuvem
-    const InstanciaPDF = window.jspdf?.jsPDF || window.jsPDF;
-    if (!InstanciaPDF) {
-        alert("A biblioteca de PDF ainda está carregando da internet. Tente novamente em 2 segundos.");
-        return;
-    }
-
-    const doc = new InstanciaPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    
-    // --- O restante do seu código (variáveis e printBloco) continua aqui para baixo ---
-    const locadorNome = document.getElementById('locadorNome').value;
-    const locadorProfissao = document.getElementById('locadorProfissao').value;
-    const locadorCpf = document.getElementById('locadorCpf').value;
-    const locadorEndereco = document.getElementById('locadorEndereco').value;
-
-    const lNome = document.getElementById('locatarioNome').value;
-    const lEstado = document.getElementById('locatarioEstadoCivil').value;
-    const lProf = document.getElementById('locatarioProfissao').value;
-    const lRg = document.getElementById('locatarioRg').value;
-    const lCpf = document.getElementById('locatarioCpf').value;
-    const lEnd = document.getElementById('locatarioEndereco').value;
-    const lBairro = document.getElementById('locatarioBairro').value;
-    const lCep = document.getElementById('locatarioCep').value;
-    const lEmail = document.getElementById('locatarioEmail').value;
-    
-    const imovel = document.getElementById('imovelEndereco').value;
-    const checkin = formatarDataBR(document.getElementById('dataCheckin').value);
-    const checkout = formatarDataBR(document.getElementById('dataCheckout').value);
-    const numDiarias = document.getElementById('qtdDiarias').value;
-    const vLocacao = parseFloat(document.getElementById('valorLocacao').value) || 0;
-    const vFaxina = parseFloat(document.getElementById('taxaFaxina').value) || 0;
-    const vTotal = vLocacao + vFaxina;
-    const vHonorario = vLocacao * 0.10;
-    const vCaucao = parseFloat(document.getElementById('valorCaucao').value) || 0;
-    const cLocador = document.getElementById('contaLocador').value;
-    const cCorretor = document.getElementById('contaCorretor').value;
-
-    let y = 25; const mX = 20; const largura = 170;
-    
-    doc.setFont("helvetica", "bold"); doc.setFontSize(14);
-    doc.text("CONTRATO DE ALUGUEL DE TEMPORADA", 105, y, { align: "center" });
-    y += 15; doc.setFontSize(10);
-
-    function printBloco(titulo, texto) {
-        const textoCompleto = titulo + texto;
-        const linhas = doc.splitTextToSize(textoCompleto, largura);
-        if (y + (linhas.length * 5) > 265) {
-            adicionarRodape();
-            doc.addPage();
-            y = 25;
+        function adicionarParcelaField() {
+            const container = document.getElementById('containerParcelas');
+            if(!container) return;
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'parcela-item';
+            div.innerHTML = `
+                <button type="button" class="btn-remove" onclick="this.parentElement.remove()">Remover</button>
+                <div class="row">
+                    <div class="col">
+                        <label>Vencimento da Parcela ${index + 1}:</label>
+                        <input type="date" class="p-data" required>
+                    </div>
+                    <div class="col">
+                        <label>Valor da Parcela ${index + 1} (R$):</label>
+                        <input type="number" step="0.01" class="p-valor" required>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
         }
-        linhas.forEach((linha) => {
-            if (titulo && inlineCheck(linha, titulo)) {
-                doc.setFont("helvetica", "bold");
-                doc.text(titulo, mX, y);
-                doc.setFont("helvetica", "normal");
-                doc.text(linha.substring(titulo.length), mX + doc.getTextWidth(titulo), y);
+
+        function valorPorExtenso(valor) {
+            return valor > 0 ? valor + " reais" : "zero reais";
+        }
+
+        function verificarCpf(campo) {
+            const erro = document.getElementById('cpfErro');
+            if(!erro) return;
+            if(campo.value.length < 11) {
+                erro.innerText = "CPF inválido";
             } else {
-                doc.setFont("helvetica", "normal");
-                doc.text(linha, mX, y);
+                erro.innerText = "";
             }
-            y += 6;
-        });
-        y += 4;
-    }
+        }
 
-    function inlineCheck(str, prefix) {
-        return str.startsWith(prefix);
-    }
+        function buscarEnderecoPorCep() {
+            const cepInput = document.getElementById('locatarioCep');
+            if(!cepInput) return;
+            const cep = cepInput.value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                fetch("https://viacep.com.br/ws/" + cep + "/json/")
+                    .then(res => res.json())
+                    .then(dados => {
+                        if(!dados.erro) {
+                            if(document.getElementById('locatarioEndereco')) document.getElementById('locatarioEndereco').value = dados.logradouro || '';
+                            if(document.getElementById('locatarioBairro')) document.getElementById('locatarioBairro').value = dados.bairro || '';
+                        }
+                    })
+                    .catch(err => console.log(err));
+            }
+        }
 
-    function adicionarRodape() {
-        const yRodape = 282;
-        doc.setFontSize(8); doc.setFont("helvetica", "bold");
-        doc.text("EBIMOBILIÁRIA - Erica Bronca Corretora de Imóveis", 105, yRodape, { align: "center" });
-        doc.setFont("helvetica", "normal"); 
-        doc.text("CRECI: 199.167-F | Contato: (12) 98123-5534", 105, yRodape + 4, { align: "center" });
-        doc.setFontSize(10);
-    }
+        window.gerarContratoPDF = function() {
+            const form = document.getElementById('contratoForm');
+            if (!form.checkValidity()) { form.reportValidity(); return; }
 
-    printBloco("LOCADOR: ", locadorNome + ", " + locadorProfissao + ", inscrita no CPF: " + locadorCpf + ", residente e domiciliada na " + locadorEndereco);
-    printBloco("LOCATÁRIO: ", lNome + ", " + lEstado + ", brasileiro(a), " + lProf + ", portador do RG " + lRg + " e inscrito no CPF " + lCpf + ", residente e domiciliado na " + lEnd + ", Bairro: " + lBairro + ", CEP: " + lCep + ", E-mail: " + lEmail);
-    printBloco("IMÓVEL: ", imovel);
-    printBloco("PRAZO: ", numDiarias + " diárias, iniciando a partir das 11:00 horas do dia " + checkin + " sendo a saída no dia " + checkout + " até as 14:00 horas, oportunidade em que o LOCATÁRIO devolverá as chaves na PORTARIA, obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de R$ " + vFaxina.toFixed(2).replace('.',',') + " (" + valorPorExtenso(vFaxina) + ") que serão depositados juntos com o valor de reserva do imóvel.");
-    printBloco("VALOR: ", "R$ " + vTotal.toFixed(2).replace('.',',') + " (" + valorPorExtenso(vTotal) + ") (Sendo R$ " + vLocacao.toFixed(2).replace('.',',') + " da locação e R$ " + vFaxina.toFixed(2).replace('.',',') + " da taxa de faxina).");
+            const InstanciaPDF = window.jspdf?.jsPDF || window.jsPDF;
+            if (!InstanciaPDF) {
+                alert("A biblioteca de PDF ainda está carregando da internet. Tente novamente em 2 segundos.");
+                return;
+            }
 
-    const pLocador = vLocacao - vHonorario;
-    const textoReserva = "a) R$ " + pLocador.toFixed(2).replace('.',',') + " (" + valorPorExtenso(pLocador) + ") pagos na data de assinatura deste contrato na conta do locador " + cLocador + ".\n\nb) R$ " + vHonorario.toFixed(2).replace('.',',') + " (" + valorPorExtenso(vHonorario) + ") pagos na data de assinatura deste contrato na conta do corretor, mediante depósito, transferência bancária ou PIX para a conta do " + cCorretor + ", de titularidade de EBIMOBILIÁRIA.";
-    printBloco("RESERVA: ", textoReserva);
+            const doc = new InstanciaPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+            
+            const locadorNome = document.getElementById('locadorNome').value;
+            const locadorProfissao = document.getElementById('locadorProfissao').value;
+            const locadorCpf = document.getElementById('locadorCpf').value;
+            const locadorEndereco = document.getElementById('locadorEndereco').value;
 
-    const datasP = document.querySelectorAll('.p-data');
-    const valoresP = document.querySelectorAll('.p-valor');
-    datasP.forEach((dt, index) => {
-        const val = parseFloat(valoresP[index].value) || 0;
-        printBloco("PARCELA " + (index + 1) + ": ", "R$ " + val.toFixed(2).replace('.',',') + " (" + valorPorExtenso(val) + ") pagos até a data " + formatarDataBR(dt.value) + " na conta do locador " + cLocador + ".");
-    });
+            const lNome = document.getElementById('locatarioNome').value;
+            const lEstado = document.getElementById('locatarioEstadoCivil').value;
+            const lProf = document.getElementById('locatarioProfissao').value;
+            const lRg = document.getElementById('locatarioRg').value;
+            const lCpf = document.getElementById('locatarioCpf').value;
+            const lEnd = document.getElementById('locatarioEndereco').value;
+            const lBairro = document.getElementById('locatarioBairro').value;
+            const lCep = document.getElementById('locatarioCep').value;
+            const lEmail = document.getElementById('locatarioEmail').value;
+            
+            const imovel = document.getElementById('imovelEndereco').value;
+            const checkin = formatarDataBR(document.getElementById('dataCheckin').value);
+            const checkout = formatarDataBR(document.getElementById('dataCheckout').value);
+            const numDiarias = document.getElementById('qtdDiarias').value;
+            const vLocacao = parseFloat(document.getElementById('valorLocacao').value) || 0;
+            const vFaxina = parseFloat(document.getElementById('taxaFaxina').value) || 0;
+            const vTotal = vLocacao + vFaxina;
+            const vHonorario = vLocacao * 0.10;
+            const vCaucao = parseFloat(document.getElementById('valorCaucao').value) || 0;
+            const cLocador = document.getElementById('contaLocador').value;
+            const cCorretor = document.getElementById('contaCorretor').value;
 
-    printBloco("", "Os comprovantes dos depósitos servirão como recibo do pagamento.");
-    printBloco("Parágrafo 1: ", "Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de 5% do valor da parcela inadimplida.");
-    printBloco("CAUÇÃO: ", "Desde já, fica estabelecido que ao efetuar o check-in a locatária deixará em responsabilidade do corretor um cheque caução de R$ " + vCaucao.toFixed(2).replace('.',',') + " (" + (vCaucao ? valorPorExtenso(vCaucao) : 'zero') + ") que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.");
-    printBloco("Parágrafo 1: ", "deve ser enviado uma foto do cheque que será dado como caução no ato da assinatura desse contrato para consulta e análise, que poderá ser recusado caso, o CPF esteja com restrição nos órgão de defesa do consumidor.");
-    printBloco("RESCISÃO: ", "O presente contrato destina-se única e exclusivamente para fins de aluguel de temporada, sendo intransferível, não podendo o imóvel ser sublocado, cedido ou emprestado, sob qualquer pretexto, tendo a sua rescisão automática no dies a quo.");
+            let y = 25; const mX = 20; const largura = 170;
+            
+            doc.setFont("helvetica", "bold"); doc.setFontSize(14);
+            doc.text("CONTRATO DE ALUGUEL DE TEMPORADA", 105, y, { align: "center" });
+            y += 15; doc.setFontSize(10);
 
-    adicionarRodape();
+            function printBloco(titulo, texto) {
+                const textoCompleto = titulo + texto;
+                const linhas = doc.splitTextToSize(textoCompleto, largura);
+                if (y + (linhas.length * 5) > 265) {
+                    adicionarRodape();
+                    doc.addPage();
+                    y = 25;
+                }
+                linhas.forEach((linha) => {
+                    if (titulo && linha.startsWith(titulo)) {
+                        doc.setFont("helvetica", "bold");
+                        doc.text(titulo, mX, y);
+                        doc.setFont("helvetica", "normal");
+                        doc.text(linha.substring(titulo.length), mX + doc.getTextWidth(titulo), y);
+                    } else {
+                        doc.setFont("helvetica", "normal");
+                        doc.text(linha, mX, y);
+                    }
+                    y += 6;
+                });
+                y += 4;
+            }
 
-    const nomeArquivo = "Contrato_Temporada_" + lNome.replace(/\s+/g, '_') + ".pdf";
-    doc.save(nomeArquivo);
-};
-</script>
+            function adicionarRodape() {
+                const yRodape = 282;
+                doc.setFontSize(8); doc.setFont("helvetica", "bold");
+                doc.text("EBIMOBILIÁRIA - Erica Bronca Corretora de Imóveis", 105, yRodape, { align: "center" });
+                doc.setFont("helvetica", "normal"); 
+                doc.text("CRECI: 199.167-F | Contato: (12) 98123-5534", 105, yRodape + 4, { align: "center" });
+                doc.setFontSize(10);
+            }
+
+            printBloco("LOCADOR: ", locadorNome + ", " + locadorProfissao + ", inscrita no CPF: " + locadorCpf + ", residente e domiciliada na " + locadorEndereco);
+            printBloco("LOCATÁRIO: ", lNome + ", " + lEstado + ", brasileiro(a), " + lProf + ", portador do RG " + lRg + " e inscrito no CPF " + lCpf + ", residente e domiciliado na " + lEnd + ", Bairro: " + lBairro + ", CEP: " + lCep + ", E-mail: " + lEmail);
+            printBloco("IMÓVEL: ", imovel);
+            printBloco("PRAZO: ", numDiarias + " diárias, iniciando a partir das 11:00 horas do dia " + checkin + " sendo a saída no dia " + checkout + " até as 14:00 horas, oportunidade em que o LOCATÁRIO devolverá as chaves na PORTARIA, obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de R$ " + vFaxina.toFixed(2).replace('.',',') + " (" + valorPorExtenso(vFaxina) + ") que serão depositados juntos com o valor de reserva do imóvel.");
+            printBloco("VALOR: ", "R$ " + vTotal.toFixed(2).replace('.',',') + " (" + valorPorExtenso(vTotal) + ") (Sendo R$ " + vLocacao.toFixed(2).replace('.',',') + " da locação e R$ " + vFaxina.toFixed(2).replace('.',',') + " da taxa de faxina).");
+
+            const pLocador = vLocacao - vHonorario;
+            const textoReserva = "a) R$ " + pLocador.toFixed(2).replace('.',',') + " (" + valorPorExtenso(pLocador) + ") pagos na data de assinatura deste contrato na conta do locador " + cLocador + ".
+
+b) R$ " + vHonorario.toFixed(2).replace('.',',') + " (" + valorPorExtenso(vHonorario) + ") pagos na data de assinatura deste contrato na conta do corretor, mediante depósito, transferência bancária ou PIX para a conta do " + cCorretor + ", de titularidade de EBIMOBILIÁRIA.";
+            printBloco("RESERVA: ", textoReserva);
+
+            const datasP = document.querySelectorAll('.p-data');
+            const valoresP = document.querySelectorAll('.p-valor');
+            datasP.forEach((dt, index) => {
+                const val = parseFloat(valoresP[index].value) || 0;
+                printBloco("PARCELA " + (index + 1) + ": ", "R$ " + val.toFixed(2).replace('.',',') + " (" + valorPorExtenso(val) + ") pagos até a data " + formatarDataBR(dt.value) + " na conta do locador " + cLocador + ".");
+            });
+
+            printBloco("", "Os comprovantes dos depósitos servirão como recibo do pagamento.");
+            printBloco("Parágrafo 1: ", "Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de 5% do valor da parcela inadimplida.");
+            printBloco("CAUÇÃO: ", "Desde já, fica estabelecido que ao efetuar o check-in a locatária deixará em responsabilidade do corretor um cheque caução de R$ " + vCaucao.toFixed(2).replace('.',',') + " (" + (vCaucao ? valorPorExtenso(vCaucao) : 'zero') + ") que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.");
+            printBloco("Parágrafo 1: ", "deve ser enviado uma foto do cheque que será dado como caução no ato da assinatura desse contrato para consulta e análise, que poderá ser recusado caso, o CPF esteja com restrição nos órgão de defesa do consumidor.");
+            printBloco("RESCISÃO: ", "O presente contrato destina-se única e exclusivamente para fins de aluguel de temporada, sendo intransferível, não podendo o imóvel ser sublocado, cedido ou emprestado, sob qualquer pretexto, tendo a sua rescisão automática no dies a quo.");
+
+            adicionarRodape();
+
+            const nomeArquivo = "Contrato_Temporada_" + lNome.replace(/\s+/g, '_') + ".pdf";
+            doc.save(nomeArquivo);
+        };
+    </script>
 </body>
 </html>
