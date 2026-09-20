@@ -154,12 +154,12 @@ function pdf(){
   const nights=+$("nights").value||0,clean=+$("cleanValue").value||0,rent=+$("rentValue").value||0,total=rent+clean;
   paragraph(doc,"PRAZO: ",nights+" ("+nights+") diárias, iniciando a partir das "+v("checkinTime")+" horas do dia "+br(v("checkin"))+" sendo a saída no dia "+br(v("checkout"))+" até as "+v("checkoutTime")+" horas, oportunidade em que o LOCATÁRIO devolverá as chaves na "+v("keyPlace")+", obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de "+moneyText(clean)+" que serão depositados juntos com o valor de reserva do imóvel.",s);
 
-  paragraph(doc,"VALOR: ","R$ "+numText(total)+" ("+valorPorExtenso(total)+").",s,{boldAll:true});
-  richParagraph(doc,"Reserva: ","R$ "+numText(+$("reservationValue").value||0)+" ("+valorPorExtenso(+$("reservationValue").value||0)+") ","pagos na data de assinatura deste contrato na conta do locador "+v("ownerPayment")+".",s);
+  paragraph(doc,"VALOR: ","R$ "+numText(total)+".",s,{boldAll:true});
+  richParagraph(doc,"Reserva: ","R$ "+numText(+$("reservationValue").value||0)+" ","pagos na data de assinatura deste contrato na conta do locador "+v("ownerPayment")+".",s);
 
   document.querySelectorAll(".installment").forEach((x,i)=>{
     const pv=+x.querySelector(".pvalue").value||0,pd=x.querySelector(".pdate").value;
-    richParagraph(doc,"PARCELA "+(i+1)+": ","R$ "+numText(pv)+" ("+valorPorExtenso(pv)+") ","pagos ate data "+br(pd)+" na conta do locador "+v("ownerPayment")+".",s);
+    richParagraph(doc,"PARCELA "+(i+1)+": ","R$ "+numText(pv)+" ","pagos ate data "+br(pd)+" na conta do locador "+v("ownerPayment")+".",s);
   });
 
   paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s,{boldAll:true});
@@ -191,10 +191,7 @@ function pdf(){
   doc.save("Contrato_Temporada_"+(v("tenantName").replace(/\s+/g,"_")||"EBIMOB")+".pdf");
 }
 
-function valorPorExtenso(n){
-  if(!n)return"zero reais";
-  return "valor preenchido";
-}
+function valorPorExtenso(n){return""}
 function preview(){alert("Pré-visualização rápida: revise os campos e clique em Gerar PDF.")}
 ["btnGerarTop","btnGerarBottom"].forEach(id=>$(id).onclick=pdf);
 $("btnPreview").onclick=preview;
