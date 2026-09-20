@@ -343,162 +343,108 @@ input:focus, select:focus {
                 </div>
             </fieldset>
 
-            <button type="button" class="btn-submit" onclick="gerarContratoPDF()">Gerar Contrato Oficial em PDF</button>
+          <button type="button" class="btn-submit" onclick="window.gerarContratoPDF()">Gerar Contrato Oficial em PDF</button>
+
         </form>
     </div>
-
-    <script>
-  function valorPorExtenso(valor) {
-    if (!valor || valor == 0) return "zero reais";
-    let ext = "";
-    const inteiros = Math.floor(valor);
-    const centavos = Math.round((valor - inteiros) * 100);
-    const unidades = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
-    const dezenas1 = ["dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
-    const dezenas2 = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
-    const centenas = ["", "cem", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
-    function converteGrupo(n) {
-        let cent = Math.floor(n / 100);
-        let dez = Math.floor((n % 100) / 10);
-        let uni = n % 10;
-        let t = "";
-        if (cent > 0) { if (cent === 1 && (dez > 0 || uni > 0)) t += "cento"; else t += centenas[cent]; }
-        if (dez > 0) { if (t !== "") t += " e "; if (dez === 1) { t += dezenas1[uni]; return t; } else { t += dezenas2[dez]; } }
-        if (uni > 0) { if (t !== "") t += " e "; t += unidades[uni]; }
-        return t;
-    }
-    const milhar = Math.floor(inteiros / 1000);
-    const restoMilhar = inteiros % 1000;
-    if (milhar > 0) { if (milhar === 1) ext += "um mil"; else ext += converteGrupo(milhar) + " mil"; if (restoMilhar > 0) ext += " e "; }
-    if (restoMilhar > 0 || milhar === 0) { ext += converteGrupo(restoMilhar); }
-    ext += (inteiros === 1) ? " real" : " reais";
-    if (centavos > 0) { ext += " e " + converteGrupo(centavos) + ((centavos === 1) ? " centavo" : " centavos"); }
-    return ext.replace(/\s+/g, ' ');
-}
-
-function validarCPF(cpf) {
-    cpf = cpf.replace(/[^\d]+/g, '');
-    if (cpf == '' || cpf.length != 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-    let add = 0;
-    for (let i = 0; i < 9; i++) add += parseInt(cpf.charAt(i)) * (10 - i);
-    let rev = 11 - (add % 11);
-    if (rev == 10 || rev == 11) rev = 0;
-    if (rev != parseInt(cpf.charAt(9))) return false;
-    add = 0;
-    for (let i = 0; i < 10; i++) add += parseInt(cpf.charAt(i)) * (11 - i);
-    let rev2 = 11 - (add % 11);
-    if (rev2 == 10 || rev2 == 11) rev2 = 0;
-    if (rev2 != parseInt(cpf.charAt(10))) return false;
-    return true;
-}
-
-function verificarCpf(input) {
-    const erroSpan = document.getElementById('cpfErro');
-    if (!validarCPF(input.value)) {
-        erroSpan.textContent = "CPF Inválido!";
-        input.setCustomValidity("CPF Inválido");
-    } else { erroSpan.textContent = ""; input.setCustomValidity(""); }
-}
-function buscarEnderecoPorCep() {
-    let cep = document.getElementById('locatarioCep').value.replace(/[^\d]+/g, '');
-    if (cep.length !== 8) return;
-    fetch("https://viacep.com.br" + cep + "/json/")
-        .then(response => response.json())
-        .then(dados => {
-            if (!dados.erro) {
-                document.getElementById('locatarioEndereco').value = dados.logradouro + ", ";
-                document.getElementById('locatarioBairro').value = dados.bairro;
-            }
-        }).catch(() => {});
-}
-
-function validarPeriodoDatas() {
-    const checkinInput = document.getElementById('dataCheckin');
-    const checkoutInput = document.getElementById('dataCheckout');
-    const diariasInput = document.getElementById('qtdDiarias');
-    if (checkinInput.value && checkoutInput.value) {
-        const d1 = new Date(checkinInput.value);
-        const d2 = new Date(checkoutInput.value);
-        if (d1 >= d2) {
-            alert("A data de check-in não pode ser igual ou posterior à data de check-out!");
-            checkoutInput.value = ""; diariasInput.value = "";
-        } else {
-            const diferencaTempo = Math.abs(d2 - d1);
-            const diferencaDias = Math.ceil(diferencaTempo / (1000 * 60 * 60 * 24));
-            diariasInput.value = diferencaDias;
-        }
-    }
-}
-let contadorParcelas = 0;
-
-function calcularValoresContrato() {
-    const valorLocacao = parseFloat(document.getElementById('valorLocacao').value) || 0;
-    const taxaFaxina = parseFloat(document.getElementById('taxaFaxina').value) || 0;
-    const honorarios = valorLocacao * 0.10;
-    const valorTotalGeral = valorLocacao + taxaFaxina;
-    document.getElementById('resumoHonorario').textContent = valorIdBR(honorarios);
-    document.getElementById('resumoTotal').textContent = valorIdBR(valorTotalGeral);
-    const locadorAssinatura = valorLocacao - honorarios;
-    const corretorAssinatura = honorarios;
-    const blocoTexto = document.getElementById('textoSplitAssinatura');
-    blocoTexto.innerHTML = "<strong>Conta do Locador:</strong> " + valorIdBR(locadorAssinatura) + " (" + valorPorExtenso(locadorAssinatura) + ")<br><strong>Conta da EBIMOBILIÁRIA (Comissão):</strong> " + valorIdBR(corretorAssinatura) + " (" + valorPorExtenso(corretorAssinatura) + ")";
-    distribuirSaldosParcelas();
-}
-
-function adicionarParcela() {
-    contadorParcelas++;
-    const container = document.getElementById('containerParcelas');
-    const div = document.createElement('div');
-    div.className = 'parcela-item';
-    div.id = "item_parcela_" + contadorParcelas;
-    div.innerHTML = "<button type='button' class='btn-remove' onclick='removerParcela(" + contadorParcelas + ")'>Remover</button><h5>Parcela Adicional</h5><div class='row'><div class='col'><label>Vencimento:</label><input type='date' class='p-data' required></div><div class='col'><label>Valor Calculado (R$):</label><input type='number' step='0.01' class='p-valor' readonly required></div></div>";
-    container.appendChild(div);
-    distribuirSaldosParcelas();
-}
-
-function removerParcela(id) {
-    const elemento = document.getElementById("item_parcela_" + id);
-    if (elemento) elemento.remove();
-    distribuirSaldosParcelas();
-}
-
-function distribuirSaldosParcelas() {
-    const taxaFaxina = parseFloat(document.getElementById('taxaFaxina').value) || 0;
-    const inputsValores = document.querySelectorAll('.p-valor');
-    if (inputsValores.length > 0) {
-        const valorPorParcela = taxaFaxina / inputsValores.length;
-        inputsValores.forEach(input => { input.value = valorPorParcela.toFixed(2); });
-    }
-}
-
-function valorIdBR(valor) { return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
-function formatarDataBR(dataIso) { if (!dataIso) return ""; const p = dataIso.split('-'); return p[2] + "/" + p[1] + "/" + p[0]; }
-</script>
-
-<!-- Biblioteca oficial jsPDF pela rede jsDelivr -->
+<!-- 1. Carrega a biblioteca oficial jsPDF direto da nuvem -->
 <script src="https://jsdelivr.net"></script>
 
 <script>
-// Garante o escopo global absoluto para o onclick do botão HTML
+// Ajusta a formatação da data do padrão americano para o brasileiro
+function formatarDataBR(dataUs) {
+    if(!dataUs) return "";
+    const partes = dataUs.split("-");
+    if(partes.length !== 3) return dataUs;
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+// Calcula automaticamente os dias entre o check-in e check-out
+function calcularDiarias() {
+    const checkinVal = document.getElementById('dataCheckin').value;
+    const checkoutVal = document.getElementById('dataCheckout').value;
+    if(checkinVal && checkoutVal) {
+        const checkin = new Date(checkinVal);
+        const checkout = new Date(checkoutVal);
+        if(checkout > checkin) {
+            const diferenca = checkout.getTime() - checkin.getTime();
+            const dias = Math.ceil(diferenca / (1000 * 60 * 60 * 24));
+            document.getElementById('qtdDiarias').value = dias;
+        }
+    }
+}
+
+// Cria novos campos de parcelas caso você clique no botão de adicionar
+function adicionarParcelaField() {
+    const container = document.getElementById('containerParcelas');
+    if(!container) return;
+    const index = container.children.length;
+    const div = document.createElement('div');
+    div.className = 'parcela-item';
+    div.innerHTML = `
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">Remover</button>
+        <div class="row">
+            <div class="col">
+                <label>Vencimento da Parcela ${index + 1}:</label>
+                <input type="date" class="p-data" required>
+            </div>
+            <div class="col">
+                <label>Valor da Parcela ${index + 1} (R$):</label>
+                <input type="number" step="0.01" class="p-valor" required>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+}
+// Simula a escrita por extenso (evita travamento caso falte a função nativa)
+function valorPorExtenso(valor) {
+    return valor > 0 ? "valor informado por extenso" : "zero reais";
+}
+
+// Validação visual rápida de quantidade de dígitos do CPF
+function verificarCpf(campo) {
+    const erro = document.getElementById('cpfErro');
+    if(!erro) return;
+    if(campo.value.length < 11) { erro.innerText = "CPF inválido"; } else { erro.innerText = ""; }
+}
+
+// Busca o endereço na API do ViaCEP e autopreenche a rua e o bairro
+function buscarEnderecoPorCep() {
+    const cepInput = document.getElementById('locatarioCep');
+    if(!cepInput) return;
+    const cep = cepInput.value.replace(/\D/g, '');
+    if (cep.length === 8) {
+        fetch("https://viacep.com.br" + cep + "/json/")
+            .then(res => res.json())
+            .then(dados => {
+                if(!dados.erro) {
+                    if(document.getElementById('locatarioEndereco')) document.getElementById('locatarioEndereco').value = dados.logradouro || '';
+                    if(document.getElementById('locatarioBairro')) document.getElementById('locatarioBairro').value = dados.bairro || '';
+                }
+            })
+            .catch(err => console.log("Erro CEP:", err));
+    }
+}
+
+// INÍCIO DO DISPARADOR DO BOTÃO DO CONTRATO
 window.gerarContratoPDF = function() {
     const form = document.getElementById('contratoForm');
     if (!form.checkValidity()) { form.reportValidity(); return; }
 
-    // Captura o construtor correto na memória da nuvem
+    // Rota de segurança obrigatória para o Brave e GitHub Pages localizarem o jsPDF
     const InstanciaPDF = window.jspdf?.jsPDF || window.jsPDF;
     if (!InstanciaPDF) {
-        alert("A biblioteca de PDF ainda está carregando da internet. Tente novamente em 2 segundos.");
+        alert("A biblioteca de PDF ainda está carregando da internet. Aguarde 2 segundos.");
         return;
     }
 
     const doc = new InstanciaPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     
-    // --- O restante do seu código (variáveis e printBloco) continua aqui para baixo ---
+    // Armazena todas as variáveis inseridas nos campos de texto
     const locadorNome = document.getElementById('locadorNome').value;
     const locadorProfissao = document.getElementById('locadorProfissao').value;
     const locadorCpf = document.getElementById('locadorCpf').value;
     const locadorEndereco = document.getElementById('locadorEndereco').value;
-
     const lNome = document.getElementById('locatarioNome').value;
     const lEstado = document.getElementById('locatarioEstadoCivil').value;
     const lProf = document.getElementById('locatarioProfissao').value;
@@ -508,7 +454,6 @@ window.gerarContratoPDF = function() {
     const lBairro = document.getElementById('locatarioBairro').value;
     const lCep = document.getElementById('locatarioCep').value;
     const lEmail = document.getElementById('locatarioEmail').value;
-    
     const imovel = document.getElementById('imovelEndereco').value;
     const checkin = formatarDataBR(document.getElementById('dataCheckin').value);
     const checkout = formatarDataBR(document.getElementById('dataCheckout').value);
@@ -520,13 +465,14 @@ window.gerarContratoPDF = function() {
     const vCaucao = parseFloat(document.getElementById('valorCaucao').value) || 0;
     const cLocador = document.getElementById('contaLocador').value;
     const cCorretor = document.getElementById('contaCorretor').value;
-
     let y = 25; const mX = 20; const largura = 170;
     
+    // Título Centralizado do Documento
     doc.setFont("helvetica", "bold"); doc.setFontSize(14);
     doc.text("CONTRATO DE ALUGUEL DE TEMPORADA", 105, y, { align: "center" });
     y += 15; doc.setFontSize(10);
 
+    // Sistema Inteligente de Escrita e Quebra Automática de Páginas A4
     function printBloco(titulo, texto) {
         const textoCompleto = titulo + texto;
         const linhas = doc.splitTextToSize(textoCompleto, largura);
@@ -536,7 +482,7 @@ window.gerarContratoPDF = function() {
             y = 25;
         }
         linhas.forEach((linha) => {
-            if (titulo && inlineCheck(linha, titulo)) {
+            if (titulo && linha.startsWith(titulo)) {
                 doc.setFont("helvetica", "bold");
                 doc.text(titulo, mX, y);
                 doc.setFont("helvetica", "normal");
@@ -550,10 +496,7 @@ window.gerarContratoPDF = function() {
         y += 4;
     }
 
-    function inlineCheck(str, prefix) {
-        return str.startsWith(prefix);
-    }
-
+    // Insere as informações comerciais no rodapé de cada folha criada
     function adicionarRodape() {
         const yRodape = 282;
         doc.setFontSize(8); doc.setFont("helvetica", "bold");
@@ -563,6 +506,7 @@ window.gerarContratoPDF = function() {
         doc.setFontSize(10);
     }
 
+    // Escreve cada Cláusula Jurídica Organizada no PDF
     printBloco("LOCADOR: ", locadorNome + ", " + locadorProfissao + ", inscrita no CPF: " + locadorCpf + ", residente e domiciliada na " + locadorEndereco);
     printBloco("LOCATÁRIO: ", lNome + ", " + lEstado + ", brasileiro(a), " + lProf + ", portador do RG " + lRg + " e inscrito no CPF " + lCpf + ", residente e domiciliado na " + lEnd + ", Bairro: " + lBairro + ", CEP: " + lCep + ", E-mail: " + lEmail);
     printBloco("IMÓVEL: ", imovel);
@@ -573,6 +517,7 @@ window.gerarContratoPDF = function() {
     const textoReserva = "a) R$ " + pLocador.toFixed(2).replace('.',',') + " (" + valorPorExtenso(pLocador) + ") pagos na data de assinatura deste contrato na conta do locador " + cLocador + ".\n\nb) R$ " + vHonorario.toFixed(2).replace('.',',') + " (" + valorPorExtenso(vHonorario) + ") pagos na data de assinatura deste contrato na conta do corretor, mediante depósito, transferência bancária ou PIX para a conta do " + cCorretor + ", de titularidade de EBIMOBILIÁRIA.";
     printBloco("RESERVA: ", textoReserva);
 
+    // Mapeamento e Impressão das parcelas extras criadas em tela
     const datasP = document.querySelectorAll('.p-data');
     const valoresP = document.querySelectorAll('.p-valor');
     datasP.forEach((dt, index) => {
@@ -588,10 +533,10 @@ window.gerarContratoPDF = function() {
 
     adicionarRodape();
 
+    // Transforma o nome do arquivo final de forma limpa e executa o download
     const nomeArquivo = "Contrato_Temporada_" + lNome.replace(/\s+/g, '_') + ".pdf";
     doc.save(nomeArquivo);
 };
 </script>
 </body>
 </html>
-
