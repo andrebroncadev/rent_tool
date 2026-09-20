@@ -1,480 +1,168 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EBIMOBILIÁRIA - Emissor de Contratos</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: #f0f3f6;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 950px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 35px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        header {
-            text-align: center;
-            border-bottom: 2px solid #eef2f5;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-        header h1 {
-            margin: 0;
-            color: #1a252f;
-            letter-spacing: 1px;
-        }
-        header p {
-            color: #7f8c8d;
-            margin: 5px 0 0 0;
-        }
-        fieldset {
-            border: 1px solid #dcdde1;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-        legend {
-            font-weight: bold;
-            color: #2c3e50;
-            padding: 0 10px;
-        }
-        .row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        .col { flex: 1; min-width: 200px; }
-        .col-30 { width: 30%; min-width: 150px; }
-        .col-70 { width: 70%; min-width: 250px; }
-        .col-full { width: 100%; }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #bdc3c7;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        input:focus, select:focus {
-            border-color: #3498db;
-            outline: none;
-        }
-        .erro-msg {
-            color: #e74c3c;
-            font-size: 12px;
-            display: block;
-            margin-top: 4px;
-        }
-        .border-box {
-            border: 1px solid #bdc3c7;
-            padding: 20px;
-            border-radius: 6px;
-            background: #fbfcfc;
-        }
-        .header-parcelas {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .header-parcelas h4 { margin: 0; }
-        .btn-add {
-            background: #3498db;
-            color: #fff;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .btn-add:hover { background: #2980b9; }
-        .parcela-item {
-            background: #fff;
-            padding: 15px;
-            border: 1px solid #dcdde1;
-            border-radius: 5px;
-            margin-bottom: 12px;
-            position: relative;
-        }
-        .btn-remove {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            float: right;
-            margin-top: -5px;
-        }
-        .btn-submit {
-            width: 100%;
-            padding: 15px;
-            background: #27ae60;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        .btn-submit:hover { background: #219653; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contrato Generator EBIMOB">
+  <title>Contrato Generator EBIMOB</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>Contrato Generator EBIMOB</h1>
+        <p>Emissor de contrato de aluguel de temporada em PDF</p>
+      </div>
+      <div class="actions no-print">
+        <button class="btn secondary" type="button" id="btnLimpar">Limpar</button>
+        <button class="btn primary" type="button" id="btnGerarTop">Gerar PDF</button>
+      </div>
+    </header>
 
-    <div class="container">
-        <header>
-            <h1>EBIMOBILIÁRIA</h1>
-            <p>Emissor de Contrato de Locação por Temporada</p>
-        </header>
+    <form id="contratoForm" novalidate>
+      <section class="card">
+        <div class="card-title"><h2>1. Locador / proprietário</h2><span>Bloco LOCADOR</span></div>
+        <div class="card-body">
+          <div class="toggle-row no-print">
+            <button class="pill active" type="button" data-owner-type="pj">Pessoa jurídica</button>
+            <button class="pill" type="button" data-owner-type="pf">Pessoa física</button>
+          </div>
 
-        <form id="contratoForm">
-            <!-- DADOS DO LOCADOR -->
-            <fieldset>
-                <legend>Dados do Locador</legend>
-                <div class="row">
-                    <div class="col">
-                        <label for="locadorNome">Nome Completo:</label>
-                        <input type="text" id="locadorNome" placeholder="nome do proprietário" required>
-                    </div>
-                    <div class="col">
-                        <label for="locadorProfissao">Profissão:</label>
-                        <input type="text" id="locadorProfissao" placeholder="profissão do prop." required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <label for="locadorCpf">CPF:</label>
-                        <input type="text" id="locadorCpf" placeholder="123.456.789-00" required>
-                    </div>
-                    <div class="col">
-                        <label for="locadorEndereco">Endereço Completo:</label>
-                        <input type="text" id="locadorEndereco" placeholder="Estrada Mário de Moraes, 1033 casa 1 Juquehy SP CEP: 11622-600" required>
-                    </div>
-                </div>
-            </fieldset>
+          <div id="ownerPJ">
+            <div class="grid">
+              <div class="field c6"><label for="ownerName">Razão social / nome</label><input id="ownerName"></div>
+              <div class="field c3"><label for="ownerCnpj">CNPJ</label><input id="ownerCnpj"></div>
+              <div class="field c3"><label for="ownerRep">Representante legal</label><input id="ownerRep"></div>
+              <div class="field c3"><label for="ownerRg">RG do representante</label><input id="ownerRg"></div>
+              <div class="field c5"><label for="ownerCpf">CPF do representante</label><input id="ownerCpf" class="cpf" maxlength="14"><div id="ownerCpfStatus" class="status"></div></div>
+            </div>
+          </div>
 
-            <!-- DADOS DO LOCATÁRIO -->
-            <fieldset>
-                <legend>Dados do Locatário</legend>
-                <div class="row">
-                    <div class="col">
-                        <label for="locatarioNome">Nome Completo:</label>
-                        <input type="text" id="locatarioNome" required>
-                    </div>
-                    <div class="col">
-                        <label for="locatarioEstadoCivil">Estado Civil:</label>
-                        <select id="locatarioEstadoCivil" required>
-                            <option value="solteiro">Solteiro</option>
-                            <option value="solteira">Solteira</option>
-                            <option value="casado">Casado</option>
-                            <option value="casada">Casada</option>
-                            <option value="divorciado">Divorciado</option>
-                            <option value="divorciada">Divorciada</option>
-                            <option value="viúvo">Viúvo</option>
-                            <option value="viúva">Viúva</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <label for="locatarioProfissao">Profissão:</label>
-                        <input type="text" id="locatarioProfissao" placeholder="profissão do locatário" required>
-                    </div>
-                    <div class="col">
-                        <label for="locatarioRg">RG:</label>
-                        <input type="text" id="locatarioRg" placeholder="12.345.678-9" required>
-                    </div>
-                    <div class="col">
-                        <label for="locatarioCpf">CPF (Apenas números):</label>
-                        <input type="text" id="locatarioCpf" maxlength="11" onblur="verificarCpf(this)" placeholder="12345678900" required>
-                        <span id="cpfErro" class="erro-msg"></span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-30">
-                        <label for="locatarioCep">CEP:</label>
-                        <input type="text" id="locatarioCep" maxlength="9" placeholder="11622-600" onblur="buscarEnderecoPorCep()" required>
-                    </div>
-                    <div class="col-70">
-                        <label for="locatarioEndereco">Endereço Residencial (Rua, Nº, Ap):</label>
-                        <input type="text" id="locatarioEndereco" placeholder="endereço locatário" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <label for="locatarioBairro">Bairro:</label>
-                        <input type="text" id="locatarioBairro" required>
-                    </div>
-                    <div class="col">
-                        <label for="locatarioEmail">E-mail:</label>
-                        <input type="email" id="locatarioEmail" required>
-                    </div>
-                </div>
-            </fieldset>
+          <div id="ownerPF" class="hidden">
+            <div class="grid">
+              <div class="field c5"><label for="ownerPfName">Nome completo</label><input id="ownerPfName"></div>
+              <div class="field c4"><label for="ownerPfJob">Profissão</label><input id="ownerPfJob"></div>
+              <div class="field c3"><label for="ownerPfCivil">Estado civil</label><select id="ownerPfCivil"><option>solteiro(a)</option><option>casado(a)</option><option>divorciado(a)</option><option>viúvo(a)</option><option>união estável</option></select></div>
+              <div class="field c3"><label for="ownerPfRg">RG</label><input id="ownerPfRg"></div>
+              <div class="field c5"><label for="ownerPfCpf">CPF</label><input id="ownerPfCpf" class="cpf" maxlength="14"><div id="ownerPfCpfStatus" class="status"></div></div>
+            </div>
+          </div>
 
-            <!-- PRAZOS -->
-            <fieldset>
-                <legend>Prazos e Imóvel</legend>
-                <div class="row">
-                    <div class="col-full">
-                        <label for="imovelEndereco">Endereço do Imóvel da Locação:</label>
-                        <input type="text" id="imovelEndereco" placeholder="Endereço completo do imóvel de temporada" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <label for="dataCheckin">Data de Entrada (Check-in):</label>
-                        <input type="date" id="dataCheckin" onchange="calcularDiarias()" required>
-                    </div>
-                    <div class="col">
-                        <label for="dataCheckout">Data de Saída (Check-out):</label>
-                        <input type="date" id="dataCheckout" onchange="calcularDiarias()" required>
-                    </div>
-                    <div class="col">
-                        <label for="qtdDiarias">Quantidade de Diárias:</label>
-                        <input type="number" id="qtdDiarias" readonly required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <label for="valorLocacao">Valor da Locação (R$):</label>
-                        <input type="number" step="0.01" id="valorLocacao" required>
-                    </div>
-                    <div class="col">
-                        <label for="taxaFaxina">Taxa de Faxina (R$):</label>
-                        <input type="number" step="0.01" id="taxaFaxina" required>
-                    </div>
-                    <div class="col">
-                        <label for="valorCaucao">Valor do Caução (R$):</label>
-                        <input type="number" step="0.01" id="valorCaucao" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <label for="contaLocador">Dados Bancários do Locador:</label>
-                        <input type="text" id="contaLocador" placeholder="Banco, Agência, Conta ou PIX" required>
-                    </div>
-                    <div class="col">
-                        <label for="contaCorretor">Dados Bancários do Corretor:</label>
-                        <input type="text" id="contaCorretor" placeholder="Conta de titularidade de EBIMOBILIÁRIA" required>
-                    </div>
-                </div>
-            </fieldset>
+          <div class="grid address-grid">
+            <div class="field c3"><label for="ownerCep">CEP</label><input id="ownerCep" class="cep" maxlength="9"></div>
+            <div class="field c6"><label for="ownerStreet">Rua / logradouro</label><input id="ownerStreet"></div>
+            <div class="field c3"><label for="ownerNumber">Número</label><input id="ownerNumber"></div>
+            <div class="field c4"><label for="ownerComp">Complemento</label><input id="ownerComp"></div>
+            <div class="field c4"><label for="ownerBairro">Bairro</label><input id="ownerBairro"></div>
+            <div class="field c3"><label for="ownerCity">Cidade</label><input id="ownerCity"></div>
+            <div class="field c1"><label for="ownerUf">UF</label><input id="ownerUf" maxlength="2"></div>
+          </div>
+          <small class="hint">Ao sair do CEP, rua, bairro, cidade e UF são preenchidos automaticamente.</small>
+        </div>
+      </section>
 
-            <!-- PARCELAS DINÂMICAS -->
-            <fieldset class="border-box">
-                <div class="header-parcelas">
-                    <h4>Cronograma de Parcelas adicionais (Se houver)</h4>
-                    <button type="button" class="btn-add" onclick="adicionarParcelaField()">+ Adicionar Parcela</button>
-                </div>
-                <div id="containerParcelas"></div>
-            </fieldset>
+      <section class="card">
+        <div class="card-title"><h2>2. Locatário</h2><span>Dados pessoais e residência</span></div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="field c6"><label for="tenantName">Nome completo</label><input id="tenantName"></div>
+            <div class="field c3"><label for="tenantCivil">Estado civil</label><select id="tenantCivil"><option>solteiro(a)</option><option>casado(a)</option><option>divorciado(a)</option><option>viúvo(a)</option><option>união estável</option></select></div>
+            <div class="field c3"><label for="tenantJob">Profissão</label><input id="tenantJob"></div>
+            <div class="field c3"><label for="tenantRg">RG</label><input id="tenantRg"></div>
+            <div class="field c4"><label for="tenantCpf">CPF</label><input id="tenantCpf" class="cpf" maxlength="14"><div id="tenantCpfStatus" class="status"></div></div>
+            <div class="field c3"><label for="tenantEmail">E-mail</label><input id="tenantEmail" type="email"></div>
+            <div class="field c2"><label for="tenantPhone">Telefone</label><input id="tenantPhone"></div>
+            <div class="field c3"><label for="tenantCep">CEP</label><input id="tenantCep" class="cep" maxlength="9"></div>
+            <div class="field c6"><label for="tenantStreet">Rua / logradouro</label><input id="tenantStreet"></div>
+            <div class="field c3"><label for="tenantNumber">Número</label><input id="tenantNumber"></div>
+            <div class="field c4"><label for="tenantComp">Complemento</label><input id="tenantComp"></div>
+            <div class="field c4"><label for="tenantBairro">Bairro</label><input id="tenantBairro"></div>
+            <div class="field c3"><label for="tenantCity">Cidade</label><input id="tenantCity"></div>
+            <div class="field c1"><label for="tenantUf">UF</label><input id="tenantUf" maxlength="2"></div>
+          </div>
+        </div>
+      </section>
 
-            <button type="button" class="btn-submit" onclick="window.gerarContratoPDF()">Gerar Contrato Oficial em PDF</button>
-        </form>
-    </div>
+      <section class="card">
+        <div class="card-title"><h2>3. Imóvel</h2><span>Endereço e capacidade</span></div>
+        <div class="card-body"><div class="grid">
+          <div class="field c3"><label for="propertyCep">CEP</label><input id="propertyCep" class="cep" maxlength="9"></div>
+          <div class="field c6"><label for="propertyStreet">Rua / logradouro</label><input id="propertyStreet"></div>
+          <div class="field c3"><label for="propertyNumber">Número</label><input id="propertyNumber"></div>
+          <div class="field c4"><label for="propertyComp">Complemento</label><input id="propertyComp"></div>
+          <div class="field c4"><label for="propertyCondo">Condomínio / empreendimento</label><input id="propertyCondo"></div>
+          <div class="field c4"><label for="propertyBairro">Bairro</label><input id="propertyBairro"></div>
+          <div class="field c5"><label for="propertyCity">Cidade</label><input id="propertyCity"></div>
+          <div class="field c2"><label for="propertyUf">UF</label><input id="propertyUf" maxlength="2"></div>
+          <div class="field c5"><label for="capacity">Capacidade máxima de pessoas</label><input id="capacity" type="number" min="1" value="10"></div>
+        </div></div>
+      </section>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-    <script>
-        function formatarDataBR(dataUs) {
-            if(!dataUs) return "";
-            const partes = dataUs.split("-");
-            if(partes.length !== 3) return dataUs;
-            return `${partes[2]}/${partes[1]}/${partes[0]}`;
-        }
+      <section class="card">
+        <div class="card-title"><h2>4. Datas e horários</h2><span>Validação automática</span></div>
+        <div class="card-body"><div class="grid">
+          <div class="field c3"><label for="contractDate">Data do contrato</label><input id="contractDate" type="date"></div>
+          <div class="field c3"><label for="checkin">Check-in</label><input id="checkin" type="date"></div>
+          <div class="field c3"><label for="checkinTime">Hora do check-in</label><input id="checkinTime" type="time" value="07:00"></div>
+          <div class="field c3"><label for="checkout">Check-out</label><input id="checkout" type="date"></div>
+          <div class="field c3"><label for="checkoutTime">Hora do check-out</label><input id="checkoutTime" type="time" value="11:00"></div>
+          <div class="field c3"><label for="keyPlace">Devolução das chaves</label><input id="keyPlace" value="PORTARIA"></div>
+          <div class="field c3"><label for="nights">Diárias</label><input id="nights" readonly></div>
+        </div><div id="dateStatus" class="status"></div></div>
+      </section>
 
-        function calcularDiarias() {
-            const checkinVal = document.getElementById('dataCheckin').value;
-            const checkoutVal = document.getElementById('dataCheckout').value;
-            if(checkinVal && checkoutVal) {
-                const checkin = new Date(checkinVal);
-                const checkout = new Date(checkoutVal);
-                if(checkout > checkin) {
-                    const diferenca = checkout.getTime() - checkin.getTime();
-                    const dias = Math.ceil(diferenca / (1000 * 60 * 60 * 24));
-                    document.getElementById('qtdDiarias').value = dias;
-                }
-            }
-        }
+      <section class="card">
+        <div class="card-title"><h2>5. Valores e pagamento</h2><span>Cálculo automático</span></div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="field c3"><label for="rentValue">Valor da locação (R$)</label><input id="rentValue" type="number" step="0.01" min="0"></div>
+            <div class="field c3"><label for="cleanValue">Taxa de limpeza (R$)</label><input id="cleanValue" type="number" step="0.01" min="0" value="200"></div>
+            <div class="field c3"><label for="cautionValue">Caução (R$)</label><input id="cautionValue" type="number" step="0.01" min="0" value="2000"></div>
+            <div class="field c3"><label for="commissionPct">Comissão (%)</label><input id="commissionPct" type="number" step="0.1" min="0" value="10"></div>
+            <div class="summary c4"><span>VALOR TOTAL</span><strong id="totalValue">R$ 0,00</strong></div>
+            <div class="summary c4"><span>COMISSÃO</span><strong id="commissionValue">R$ 0,00</strong></div>
+            <div class="summary c4"><span>SALDO APÓS RESERVA</span><strong id="balanceValue">R$ 0,00</strong></div>
+          </div>
+          <div class="grid gap-top">
+            <div class="field c6"><label for="ownerPayment">Conta / PIX do locador</label><textarea id="ownerPayment"></textarea></div>
+            <div class="field c6"><label for="brokerPayment">Conta / PIX do corretor</label><textarea id="brokerPayment"></textarea></div>
+            <div class="field c4"><label for="reservationValue">Reserva / sinal (R$)</label><input id="reservationValue" type="number" step="0.01" min="0"></div>
+          </div>
+          <div class="notice">A reserva entra como paga na data de assinatura. As parcelas abaixo aparecem no PDF como PARCELA 1, PARCELA 2 etc.</div>
+          <div class="installment-header"><strong>Parcelas adicionais</strong><button type="button" class="btn secondary no-print" id="btnAddInstallment">+ Adicionar parcela</button></div>
+          <div id="installments"></div>
+        </div>
+      </section>
 
-        function adicionarParcelaField() {
-            const container = document.getElementById('containerParcelas');
-            if(!container) return;
-            const index = container.children.length;
-            const div = document.createElement('div');
-            div.className = 'parcela-item';
-            div.innerHTML = `
-                <button type="button" class="btn-remove" onclick="this.parentElement.remove()">Remover</button>
-                <div class="row">
-                    <div class="col">
-                        <label>Vencimento da Parcela ${index + 1}:</label>
-                        <input type="date" class="p-data" required>
-                    </div>
-                    <div class="col">
-                        <label>Valor da Parcela ${index + 1} (R$):</label>
-                        <input type="number" step="0.01" class="p-valor" required>
-                    </div>
-                </div>
-            `;
-            container.appendChild(div);
-        }
+      <section class="card">
+        <div class="card-title"><h2>6. Parâmetros das cláusulas</h2><span>Defaults do documento anexado</span></div>
+        <div class="card-body"><div class="grid">
+          <div class="field c3"><label for="lateFinePct">Multa por atraso (%)</label><input id="lateFinePct" type="number" step="0.1" value="5"></div>
+          <div class="field c3"><label for="excessPersonFine">Multa diária por pessoa excedente (R$)</label><input id="excessPersonFine" type="number" step="0.01" value="1000"></div>
+          <div class="field c3"><label for="furnitureFine">Multa móveis/armários (R$)</label><input id="furnitureFine" type="number" step="0.01" value="2000"></div>
+          <div class="field c3"><label for="lawyerPct">Honorários advocatícios (%)</label><input id="lawyerPct" type="number" step="0.1" value="20"></div>
+          <div class="field c8"><label for="forum">Foro</label><input id="forum" value="Comarca de São Sebastião/SP"></div>
+        </div>
+        <div class="notice warning">As cláusulas fixas são reproduzidas a partir do contrato anexado. Revise o conteúdo antes de uma operação real.</div>
+        </div>
+      </section>
 
-        function valorPorExtenso(valor) {
-            return valor > 0 ? valor + " reais" : "zero reais";
-        }
+      <section class="card">
+        <div class="card-title"><h2>7. Testemunhas</h2><span>Saem no final do PDF</span></div>
+        <div class="card-body"><div class="grid">
+          <div class="field c4"><label for="w1Name">1ª testemunha - nome</label><input id="w1Name"></div><div class="field c4"><label for="w1Rg">RG</label><input id="w1Rg"></div><div class="field c4"><label for="w1Cpf">CPF</label><input id="w1Cpf" class="cpf" maxlength="14"></div>
+          <div class="field c4"><label for="w2Name">2ª testemunha - nome</label><input id="w2Name"></div><div class="field c4"><label for="w2Rg">RG</label><input id="w2Rg"></div><div class="field c4"><label for="w2Cpf">CPF</label><input id="w2Cpf" class="cpf" maxlength="14"></div>
+        </div></div>
+      </section>
 
-        function verificarCpf(campo) {
-            const erro = document.getElementById('cpfErro');
-            if(!erro) return;
-            if(campo.value.length < 11) {
-                erro.innerText = "CPF inválido";
-            } else {
-                erro.innerText = "";
-            }
-        }
-
-        function buscarEnderecoPorCep() {
-            const cepInput = document.getElementById('locatarioCep');
-            if(!cepInput) return;
-            const cep = cepInput.value.replace(/\D/g, '');
-            if (cep.length === 8) {
-                fetch("https://viacep.com.br/ws/" + cep + "/json/")
-                    .then(res => res.json())
-                    .then(dados => {
-                        if(!dados.erro) {
-                            if(document.getElementById('locatarioEndereco')) document.getElementById('locatarioEndereco').value = dados.logradouro || '';
-                            if(document.getElementById('locatarioBairro')) document.getElementById('locatarioBairro').value = dados.bairro || '';
-                        }
-                    })
-                    .catch(err => console.log(err));
-            }
-        }
-
-        window.gerarContratoPDF = function() {
-            const form = document.getElementById('contratoForm');
-            if (!form.checkValidity()) { form.reportValidity(); return; }
-
-            const InstanciaPDF = window.jspdf?.jsPDF || window.jsPDF;
-            if (!InstanciaPDF) {
-                alert("A biblioteca de PDF ainda está carregando da internet. Tente novamente em 2 segundos.");
-                return;
-            }
-
-            const doc = new InstanciaPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-            
-            const locadorNome = document.getElementById('locadorNome').value;
-            const locadorProfissao = document.getElementById('locadorProfissao').value;
-            const locadorCpf = document.getElementById('locadorCpf').value;
-            const locadorEndereco = document.getElementById('locadorEndereco').value;
-
-            const lNome = document.getElementById('locatarioNome').value;
-            const lEstado = document.getElementById('locatarioEstadoCivil').value;
-            const lProf = document.getElementById('locatarioProfissao').value;
-            const lRg = document.getElementById('locatarioRg').value;
-            const lCpf = document.getElementById('locatarioCpf').value;
-            const lEnd = document.getElementById('locatarioEndereco').value;
-            const lBairro = document.getElementById('locatarioBairro').value;
-            const lCep = document.getElementById('locatarioCep').value;
-            const lEmail = document.getElementById('locatarioEmail').value;
-            
-            const imovel = document.getElementById('imovelEndereco').value;
-            const checkin = formatarDataBR(document.getElementById('dataCheckin').value);
-            const checkout = formatarDataBR(document.getElementById('dataCheckout').value);
-            const numDiarias = document.getElementById('qtdDiarias').value;
-            const vLocacao = parseFloat(document.getElementById('valorLocacao').value) || 0;
-            const vFaxina = parseFloat(document.getElementById('taxaFaxina').value) || 0;
-            const vTotal = vLocacao + vFaxina;
-            const vHonorario = vLocacao * 0.10;
-            const vCaucao = parseFloat(document.getElementById('valorCaucao').value) || 0;
-            const cLocador = document.getElementById('contaLocador').value;
-            const cCorretor = document.getElementById('contaCorretor').value;
-
-            let y = 25; const mX = 20; const largura = 170;
-            
-            doc.setFont("helvetica", "bold"); doc.setFontSize(14);
-            doc.text("CONTRATO DE ALUGUEL DE TEMPORADA", 105, y, { align: "center" });
-            y += 15; doc.setFontSize(10);
-
-            function printBloco(titulo, texto) {
-                const textoCompleto = titulo + texto;
-                const linhas = doc.splitTextToSize(textoCompleto, largura);
-                if (y + (linhas.length * 5) > 265) {
-                    adicionarRodape();
-                    doc.addPage();
-                    y = 25;
-                }
-                linhas.forEach((linha) => {
-                    if (titulo && linha.startsWith(titulo)) {
-                        doc.setFont("helvetica", "bold");
-                        doc.text(titulo, mX, y);
-                        doc.setFont("helvetica", "normal");
-                        doc.text(linha.substring(titulo.length), mX + doc.getTextWidth(titulo), y);
-                    } else {
-                        doc.setFont("helvetica", "normal");
-                        doc.text(linha, mX, y);
-                    }
-                    y += 6;
-                });
-                y += 4;
-            }
-
-            function adicionarRodape() {
-                const yRodape = 282;
-                doc.setFontSize(8); doc.setFont("helvetica", "bold");
-                doc.text("EBIMOBILIÁRIA - Erica Bronca Corretora de Imóveis", 105, yRodape, { align: "center" });
-                doc.setFont("helvetica", "normal"); 
-                doc.text("CRECI: 199.167-F | Contato: (12) 98123-5534", 105, yRodape + 4, { align: "center" });
-                doc.setFontSize(10);
-            }
-
-            printBloco("LOCADOR: ", locadorNome + ", " + locadorProfissao + ", inscrita no CPF: " + locadorCpf + ", residente e domiciliada na " + locadorEndereco);
-            printBloco("LOCATÁRIO: ", lNome + ", " + lEstado + ", brasileiro(a), " + lProf + ", portador do RG " + lRg + " e inscrito no CPF " + lCpf + ", residente e domiciliado na " + lEnd + ", Bairro: " + lBairro + ", CEP: " + lCep + ", E-mail: " + lEmail);
-            printBloco("IMÓVEL: ", imovel);
-            printBloco("PRAZO: ", numDiarias + " diárias, iniciando a partir das 11:00 horas do dia " + checkin + " sendo a saída no dia " + checkout + " até as 14:00 horas, oportunidade em que o LOCATÁRIO devolverá as chaves na PORTARIA, obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de R$ " + vFaxina.toFixed(2).replace('.',',') + " (" + valorPorExtenso(vFaxina) + ") que serão depositados juntos com o valor de reserva do imóvel.");
-            printBloco("VALOR: ", "R$ " + vTotal.toFixed(2).replace('.',',') + " (" + valorPorExtenso(vTotal) + ") (Sendo R$ " + vLocacao.toFixed(2).replace('.',',') + " da locação e R$ " + vFaxina.toFixed(2).replace('.',',') + " da taxa de faxina).");
-
-            const pLocador = vLocacao - vHonorario;
-            const textoReserva = "a) R$ " + pLocador.toFixed(2).replace('.',',') + " (" + valorPorExtenso(pLocador) + ") pagos na data de assinatura deste contrato na conta do locador " + cLocador + ".
-
-b) R$ " + vHonorario.toFixed(2).replace('.',',') + " (" + valorPorExtenso(vHonorario) + ") pagos na data de assinatura deste contrato na conta do corretor, mediante depósito, transferência bancária ou PIX para a conta do " + cCorretor + ", de titularidade de EBIMOBILIÁRIA.";
-            printBloco("RESERVA: ", textoReserva);
-
-            const datasP = document.querySelectorAll('.p-data');
-            const valoresP = document.querySelectorAll('.p-valor');
-            datasP.forEach((dt, index) => {
-                const val = parseFloat(valoresP[index].value) || 0;
-                printBloco("PARCELA " + (index + 1) + ": ", "R$ " + val.toFixed(2).replace('.',',') + " (" + valorPorExtenso(val) + ") pagos até a data " + formatarDataBR(dt.value) + " na conta do locador " + cLocador + ".");
-            });
-
-            printBloco("", "Os comprovantes dos depósitos servirão como recibo do pagamento.");
-            printBloco("Parágrafo 1: ", "Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de 5% do valor da parcela inadimplida.");
-            printBloco("CAUÇÃO: ", "Desde já, fica estabelecido que ao efetuar o check-in a locatária deixará em responsabilidade do corretor um cheque caução de R$ " + vCaucao.toFixed(2).replace('.',',') + " (" + (vCaucao ? valorPorExtenso(vCaucao) : 'zero') + ") que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.");
-            printBloco("Parágrafo 1: ", "deve ser enviado uma foto do cheque que será dado como caução no ato da assinatura desse contrato para consulta e análise, que poderá ser recusado caso, o CPF esteja com restrição nos órgão de defesa do consumidor.");
-            printBloco("RESCISÃO: ", "O presente contrato destina-se única e exclusivamente para fins de aluguel de temporada, sendo intransferível, não podendo o imóvel ser sublocado, cedido ou emprestado, sob qualquer pretexto, tendo a sua rescisão automática no dies a quo.");
-
-            adicionarRodape();
-
-            const nomeArquivo = "Contrato_Temporada_" + lNome.replace(/\s+/g, '_') + ".pdf";
-            doc.save(nomeArquivo);
-        };
-    </script>
+      <footer class="bottom no-print">
+        <small>Atalhos: CPF validado, CEP automático, check-out posterior ao check-in e PDF A4 baseado no contrato enviado.</small>
+        <div class="actions"><button class="btn secondary" type="button" id="btnPreview">Pré-visualizar</button><button class="btn primary" type="button" id="btnGerarBottom">Gerar PDF</button></div>
+      </footer>
+    </form>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
