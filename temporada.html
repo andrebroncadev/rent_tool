@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EBIMOBILIÁRIA - Emissor de Contratos</title>
+    <title>EBIMOBILIÁRIA - Emissor de Contratos</title>=1.0">
+    
 
 <style>
 body {
@@ -472,31 +473,27 @@ function distribuirSaldosParcelas() {
 
 function valorIdBR(valor) { return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
 function formatarDataBR(dataIso) { if (!dataIso) return ""; const p = dataIso.split('-'); return p[2] + "/" + p[1] + "/" + p[0]; }
-
 </script>
 
-<!-- Força o carregamento de uma versão compacta inline e abre o script com segurança máxima -->
-<script src="data:application/javascript,window.jsPDF=window.jspdf?window.jspdf.jsPDF:null;"></script>
+<!-- Biblioteca oficial jsPDF pela rede jsDelivr -->
+<script src="https://jsdelivr.net"></script>
 
 <script>
-// Vincula diretamente no escopo global mais alto possível para o botão 'onclick' achar de qualquer jeito
+// Garante o escopo global absoluto para o onclick do botão HTML
 window.gerarContratoPDF = function() {
     const form = document.getElementById('contratoForm');
     if (!form.checkValidity()) { form.reportValidity(); return; }
 
-    // ROTA DE FUGA INTERNA: Se o Brave isolou o window.jspdf, nós criamos o fallback
-    let InstanciaPDF = window.jspdf?.jsPDF || window.jsPDF;
-
-    
-    // Se o Brave bloqueou tudo mesmo, usamos o gerador interno de contingência do navegador para não quebrar o botão
+    // Captura o construtor correto na memória da nuvem
+    const InstanciaPDF = window.jspdf?.jsPDF || window.jsPDF;
     if (!InstanciaPDF) {
-        alert("O sistema de segurança do Brave bloqueou a biblioteca.\n\nPara liberar agora: Clique no LEÃO do Brave (ao lado da barra de endereço) e DESATIVE os escudos da página.");
+        alert("A biblioteca de PDF ainda está carregando da internet. Tente novamente em 2 segundos.");
         return;
     }
 
     const doc = new InstanciaPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     
-    // --- Daqui para baixo mantém o seu código das variáveis do formulário rigorosamente igual ---
+    // --- O restante do seu código (variáveis e printBloco) continua aqui para baixo ---
     const locadorNome = document.getElementById('locadorNome').value;
     const locadorProfissao = document.getElementById('locadorProfissao').value;
     const locadorCpf = document.getElementById('locadorCpf').value;
@@ -539,7 +536,7 @@ window.gerarContratoPDF = function() {
             y = 25;
         }
         linhas.forEach((linha) => {
-            if (titulo && linha.startsWith(titulo)) {
+            if (titulo && inlineCheck(linha, titulo)) {
                 doc.setFont("helvetica", "bold");
                 doc.text(titulo, mX, y);
                 doc.setFont("helvetica", "normal");
@@ -553,9 +550,13 @@ window.gerarContratoPDF = function() {
         y += 4;
     }
 
+    function inlineCheck(str, prefix) {
+        return str.startsWith(prefix);
+    }
+
     function adicionarRodape() {
         const yRodape = 282;
-        doc.setFontSize(8); doc.setFont("helvedeic", "bold");
+        doc.setFontSize(8); doc.setFont("helvetica", "bold");
         doc.text("EBIMOBILIÁRIA - Erica Bronca Corretora de Imóveis", 105, yRodape, { align: "center" });
         doc.setFont("helvetica", "normal"); 
         doc.text("CRECI: 199.167-F | Contato: (12) 98123-5534", 105, yRodape + 4, { align: "center" });
@@ -590,7 +591,7 @@ window.gerarContratoPDF = function() {
     const nomeArquivo = "Contrato_Temporada_" + lNome.replace(/\s+/g, '_') + ".pdf";
     doc.save(nomeArquivo);
 };
-
 </script>
 </body>
 </html>
+
