@@ -119,22 +119,24 @@ function richParagraph(doc,label,boldPrefix,text,state){
   for(let i=1;i<first.length;i++)doc.text(first[i],x,state.y+i*lineH);
   state.y+=need;
 }
+function pageHeader(doc){
+  doc.setFont("helvetica","bold");doc.setFontSize(8);
+  doc.text("Erica",15,18);
+  doc.text("Bronca Creci : 199.167-F",15,22);
+}
 function headerFooter(doc){
   const pages=doc.getNumberOfPages();
   for(let i=1;i<=pages;i++){
-    doc.setPage(i);
-    doc.setFont("times","normal");doc.setFontSize(9);
-    doc.text("Página "+i+" de "+pages,190,12,{align:"right"});
-    doc.setFont("helvetica","bold");doc.setFontSize(8);
-    doc.text("E. Bronca Corretora de Imóveis",105,274,{align:"center"});
-    doc.setFont("helvetica","normal");
-    doc.text("CRECI: 199.167-F",105,278,{align:"center"});
-    doc.text("Estrada Mario de Moraes 1033 casa 1, Juquehy, São Sebastião/SP",105,282,{align:"center"});
-    doc.text("(12) 98123-5534",105,286,{align:"center"});
+    doc.setPage(i); pageHeader(doc);
+    doc.setFont("helvetica","normal");doc.setFontSize(8.5);
+    doc.text("página "+i+" de "+pages,190,268,{align:"right"});
+    doc.setFont("helvetica","normal");doc.setFontSize(7.5);
+    doc.text("Erica Bronca CRECI: 199.167",105,278,{align:"center"});
+    doc.text("Estrada Mario de Moraes, 1033 – Casa 1, Juquehy, São Sebastião/SP",105,282,{align:"center"});
+    doc.text("(12) 98123 5534",105,286,{align:"center"});
   }
   doc.setFont("helvetica","normal");doc.setFontSize(10);
 }
-
 function pdf(){
   if(!dates())return alert("Corrija as datas antes de gerar.");
   if(!window.jspdf||!window.jspdf.jsPDF)return alert("O motor de PDF não foi carregado. No Brave, permita o script externo usado pelo gerador (jsDelivr) para gerar o arquivo PDF.");
@@ -142,52 +144,45 @@ function pdf(){
   if(!v("tenantName")||!v("propertyStreet")||!v("checkin")||!v("checkout"))return alert("Preencha nome do locatário, imóvel e datas.");
 
   const J=window.jspdf.jsPDF,doc=new J({unit:"mm",format:"a4"});
-  const s={y:35};
+  const s={y:49}; pageHeader(doc);
   doc.setFont("helvetica","bold");doc.setFontSize(16);
   doc.text("CONTRATO DE ALUGUEL DE TEMPORADA",105,s.y,{align:"center"});
-  s.y+=12;doc.setFontSize(11);
+  s.y+=12;doc.setFontSize(10.5);
 
   paragraph(doc,"LOCADOR: ",owner()+" domiciliado em "+addr("owner")+".",s);
-  paragraph(doc,"LOCATÁRIO: ",v("tenantName")+", "+v("tenantCivil")+", "+v("tenantJob")+", portador do RG "+v("tenantRg")+" inscrito no CPF: "+v("tenantCpf")+", residente e domiciliado à "+addr("tenant")+", E-mail: "+v("tenantEmail")+".",s);
+  paragraph(doc,"LOCATÁRIO: ",v("tenantName")+", "+v("tenantCivil")+", "+v("tenantJob")+", portador do RG "+v("tenantRg")+" inscrito no CPF: "+v("tenantCpf")+", residente e domiciliado à "+addr("tenant")+".",s);
   paragraph(doc,"IMÓVEL: ",addr("property")+(v("propertyCondo")?" "+v("propertyCondo"):"")+".",s);
-
   const nights=+$("nights").value||0,clean=+$("cleanValue").value||0,rent=+$("rentValue").value||0,total=rent+clean;
   paragraph(doc,"PRAZO: ",nights+" ("+nights+") diárias, iniciando a partir das "+v("checkinTime")+" horas do dia "+br(v("checkin"))+" sendo a saída no dia "+br(v("checkout"))+" até as "+v("checkoutTime")+" horas, oportunidade em que o LOCATÁRIO devolverá as chaves na "+v("keyPlace")+", obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de "+moneyText(clean)+" que serão depositados juntos com o valor de reserva do imóvel.",s);
-
   paragraph(doc,"VALOR: ","R$ "+numText(total)+".",s,{boldAll:true});
   richParagraph(doc,"Reserva: ","R$ "+numText(+$("reservationValue").value||0)+" ","pagos na data de assinatura deste contrato na conta do locador "+v("ownerPayment")+".",s);
-
-  document.querySelectorAll(".installment").forEach((x,i)=>{
-    const pv=+x.querySelector(".pvalue").value||0,pd=x.querySelector(".pdate").value;
-    richParagraph(doc,"PARCELA "+(i+1)+": ","R$ "+numText(pv)+" ","pagos ate data "+br(pd)+" na conta do locador "+v("ownerPayment")+".",s);
-  });
-
+  document.querySelectorAll(".installment").forEach((x,i)=>{const pv=+x.querySelector(".pvalue").value||0,pd=x.querySelector(".pdate").value;richParagraph(doc,"PARCELA "+(i+1)+": ","R$ "+numText(pv)+" ","pagos ate data "+br(pd)+" na conta do locador "+v("ownerPayment")+".",s)});
   paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s,{boldAll:true});
   paragraph(doc,"Parágrafo 1: ","Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de "+v("lateFinePct")+"% do valor da parcela inadimplida.",s);
   paragraph(doc,"CAUÇÃO: ","Desde já, fica estabelecido que ao efetuar o check-in o locatário deixará em responsabilidade do corretor um cheque caução de "+moneyText(+$("cautionValue").value||0)+" que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.",s);
   paragraph(doc,"Parágrafo 1: ","deve ser enviado uma foto do cheque que será dado como caução no ato da assinatura desse contrato para consulta e análise, que poderá ser recusado caso, o CPF esteja com restrição nos órgão de defesa do consumidor.",s);
   paragraph(doc,"RESCISÃO: ","O presente contrato destina-se única e exclusivamente para fins de aluguel de temporada, sendo intransferível, não podendo o imóvel ser sublocado, cedido ou emprestado, sob qualquer pretexto, tendo a sua rescisão automática no dies a quo.",s);
   paragraph(doc,"DESISTÊNCIA: ","Em caso de desistência do LOCATÁRIO, a título de ressarcimento pelos danos oriundos da desistência, o mesmo perderá os valores que já pagou, comprometendo-se a efetuar o pagamento do valor integral do contrato, caso o LOCADOR não consiga alugar o imóvel para o mesmo período.",s);
-  paragraph(doc,"CAPACIDADE: ","O imóvel locado, pelo seu sistema hidráulico, comporta a habitação máxima de "+v("capacity")+" pessoas. Se o LOCATÁRIO exceder a este número, os que excederem pagarão uma multa diária de "+moneyText(+$("excessPersonFine").value||0)+" por pessoa, independente das providências de desocupação imediata que poderão ser tomadas a critério do LOCADOR.",s);
+  paragraph(doc,"CAPACIDADE: ","O imóvel locado, pelo seu sistema hidráulico, comporta a habitação máxima de "+v("capacity")+" pessoas. Se o LOCATÁRIO exceder a este número, os que excederem pagará uma multa diária de "+moneyText(+$("excessPersonFine").value||0)+" por pessoa, independente das providências de desocupação imediata que poderão ser tomadas a critério do LOCADOR.",s);
   paragraph(doc,"CLAUSULA PENAL: ","A permanência no imóvel após o dies a quo implicará no pagamento em dobro do aluguel, por dia que exceder, até a sua efetiva desocupação. Neste caso, todos os outros gastos que se fizerem necessários com relação à acomodação dos inquilinos que ocupariam o imóvel, mas foram impedidos de fazê-lo devido a sua permanência abusiva no imóvel, correrão por conta do LOCATÁRIO. Em casos supervenientes que determinem a antecipação da saída do imóvel pelo LOCATÁRIO, de nenhuma forma será devolvida a quantia já paga.",s);
-  paragraph(doc,"RESPONSABILIDADE: ","O LOCATÁRIO será responsável por qualquer multa que der causa, seja por desrespeito às leis federais, estaduais, municipais, e condominiais. A responsabilidade do LOCATÁRIO também se estende aos danos que causar ao imóvel, que deverão ser imediatamente reparados pelo mesmo. Em não cumprindo esta determinação, o LOCADOR fica autorizado a executar os reparos, independentemente de orçamento, à custa do LOCATÁRIO. O LOCATÁRIO deve manter o imóvel (instalações sanitárias e elétricas, fechos, vidros, torneiras, ralos, pisos e calçadas, bem como os demais acessórios), os móveis e os utensílios em perfeito estado de conservação, e em boas condições de higiene, para assim restituí-los, quando findo ou rescindido este contrato. Havendo qualquer tipo de dano no imóvel, utensílios, moveis, piscina etc, período em que o locatário encontra-se na posse do imóvel, o locador imediatamente fará 3 orçamentos, optando pelo serviço de menor valor, que deverá ser ressarcido de pronto pelo locatário. Fica expressamente proibido trocar os moveis dos lugares, forçar a abertura dos armarios de uso pessoal os quais estarão trancados, sendo passivel de multa no valor de "+moneyText(+$("furnitureFine").value||0)+" + reparação dos danos. É imprescindivel que o locatario não deixe louças e lixos na casa na sua desocupação.",s);
+  paragraph(doc,"RESPONSABILIDADE: ","O LOCATÁRIO será responsável por qualquer multa que der causa, seja por desrespeito às leis federais, estaduais, municipais, e condominiais. A responsabilidade do LOCATÁRIO também se estende aos danos que causar ao imóvel, que deverão ser imediatamente reparados pelo mesmo. Em não cumprindo esta determinação, o LOCADOR fica autorizado a executar os reparos, independentemente de orçamento, à custa do LOCATÁRIO.",s);
+  paragraph(doc,"","O LOCATÁRIO deve manter o imóvel (instalações sanitárias e elétricas, fechos, vidros, torneiras, ralos, pisos e calçadas, bem como os demais acessórios), os móveis e os utensílios em perfeito estado de conservação, e em boas condições de higiene, para assim restituí-los, quando findo ou rescindido este contrato. Havendo qualquer tipo de dano no imóvel, utensílios, moveis, piscina etc, período em que o locatário encontra-se na posse do imóvel, o locador imediatamente fará 3 orçamentos, optando pelo serviço de menor valor, que deverá ser ressarcido de pronto pelo locatário.",s,{boldAll:true});
+  paragraph(doc,"","Fica expressamente proibido trocar os moveis dos lugares, forçar a abertura dos armarios de uso pessoal os quais estarão trancados, sendo passivel de multa no valor de R$ 2.000,00 + reparação dos danos. É imprescindivel que o locatario não deixe louças e lixos na casa na sua desocupação.",s,{boldAll:true});
   paragraph(doc,"CONDIÇÕES LEGAIS: ","Rege-se o presente contrato, naquilo em que for omisso, pela Lei n° 8245/91 e lei 12.112/2009 (lei do inquilinato), Código Civil e demais disposições pertinentes à locação de imóveis, direito de vizinhança e etc.",s);
-  paragraph(doc,"CORRETAGEM E COMISSÃO DE CORRETAGEM: ","O valor pago a título de comissão de corretagem, de "+v("commissionPct")+"% do valor de locação, excluída a taxa de limpeza/faxina, é de responsabilidade do proprietário do imóvel, no valor de "+moneyText(rent*(+$("commissionPct").value||0)/100)+", conforme conta do corretor: "+v("brokerPayment")+".",s);
-  paragraph(doc,"Parágrafo 1: ","O serviço de corretagem se resume ao estabelecido no artigo 722 do Código Civil e assim, a título de cortesia, qualquer intermediação posterior poderá ser realizada pelo corretor.",s);
+  paragraph(doc,"CORRETAGEM E COMISSÃO DE CORRETAGEM: ","O valor pago a título de comissão de corretagem, de "+v("commissionPct")+"% do valor de locação, é de responsabilidade do proprietário do imóvel, que será descontado da primeira parcela que será depositado na conta indicada do corretor na data da assinatura do contrato. A taxa de limpeza/faxina não integra a base de cálculo da comissão.",s);
+  paragraph(doc,"Parágrafo 1: ","O serviço de corretagem se resume ao estabelecido no artigo 722 do Código Civil e assim, a titulo de cortesia, qualquer intermediação posterior poderá ser realizada pelo corretor.",s);
   paragraph(doc,"FORO: ","Para dirimir eventuais controvérsias relacionadas a este contrato, elegem as partes o fórum da "+v("forum")+", renunciando a qualquer outro, por mais especial que seja.",s);
   paragraph(doc,"DESPESAS JUDICIAIS: ","Se em razão do descumprimento de uma das cláusulas do presente contrato o LOCADOR fique obrigado a recorrer à tutela do Poder Judiciário, o LOCATÁRIO arcará com o pagamento integral das despesas e custas judiciais, assim como honorários advocatícios, na base de "+v("lawyerPct")+"% sob o valor da causa.",s);
 
-  ensureSpace(doc,s,34);
-  paragraph(doc,"",longDate(v("contractDate"))+".",s);
-  s.y+=5;
-  doc.text("______________________________    ______________________________",20,s.y);s.y+=5;
-  doc.text("LOCADOR                                  LOCATÁRIO",20,s.y);s.y+=11;
-  doc.text("TESTEMUNHAS:",20,s.y);s.y+=8;
-  doc.text("1ª "+(v("w1Name")||"________________________")+"          2ª "+(v("w2Name")||"________________________"),20,s.y);s.y+=5;
-  doc.text("RG "+(v("w1Rg")||"________________")+"                         RG "+(v("w2Rg")||"________________"),20,s.y);s.y+=5;
-  doc.text("CPF "+(v("w1Cpf")||"________________")+"                    CPF "+(v("w2Cpf")||"________________"),20,s.y);
+  doc.addPage();s.y=51;pageHeader(doc);
+  paragraph(doc,"","Assim, justos e contratados, assinam este instrumento em 03 (três) vias, de igual teor e forma, sendo que o envio do sinal correspondeu à aceitação tácita dos termos do contrato de aluguel de temporada.",s);
+  s.y+=10;paragraph(doc,"","São Sebastião /SP, "+longDate(v("contractDate"))+".",s);
+  s.y+=14;doc.setFont("helvetica","normal");doc.setFontSize(10);
+  doc.text("LOCADOR:",76,s.y,{align:"center"});doc.text("LOCATÁRIO:",137,s.y,{align:"center"});s.y+=15;
+  doc.text("________________________",52,s.y);doc.text("________________________",126,s.y);s.y+=12;
+  doc.setFont("helvetica","bold");doc.text("TESTEMUNHAS:",31,s.y);s.y+=12;doc.setFont("helvetica","normal");
+  doc.text("1ª____________________",31,s.y);doc.text("2ª____________________",128,s.y);
 
-  headerFooter(doc);
   doc.save("Contrato_Temporada_"+(v("tenantName").replace(/\s+/g,"_")||"EBIMOB")+".pdf");
 }
 
