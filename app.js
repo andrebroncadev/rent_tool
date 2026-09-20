@@ -1,44 +1,201 @@
-const $=id=>document.getElementById(id),fmt=new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});let ownerType="pj",seq=0;
-function d(s){return(s||"").replace(/\D/g,"")}function cpfMask(s){let x=d(s).slice(0,11);return x.length>9?x.slice(0,3)+"."+x.slice(3,6)+"."+x.slice(6,9)+"-"+x.slice(9):x.length>6?x.slice(0,3)+"."+x.slice(3,6)+"."+x.slice(6):x.length>3?x.slice(0,3)+"."+x.slice(3):x}
-function cpfOk(s){let x=d(s);if(x.length!=11||/^([0-9])\1{10}$/.test(x))return false;let z=0;for(let i=0;i<9;i++)z+=+x[i]*(10-i);let a=z*10%11;a=a==10?0:a;if(a!=+x[9])return false;z=0;for(let i=0;i<10;i++)z+=+x[i]*(11-i);a=z*10%11;a=a==10?0:a;return a==+x[10]}
-[["ownerCpf","ownerCpfStatus"],["ownerPfCpf","ownerPfCpfStatus"],["tenantCpf","tenantCpfStatus"]].forEach(([i,s])=>{$(i).oninput=()=>$(i).value=cpfMask($(i).value);$(i).onblur=()=>{let ok=cpfOk($(i).value),e=$(s);e.textContent=$(i).value?(ok?"✓ CPF válido":"✕ CPF inválido"):"";e.className="status "+(ok?"ok":"bad")}});
+const $=id=>document.getElementById(id);
+const fmt=new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+let ownerType="pj",seq=0;
+
+function d(s){return(s||"").replace(/\D/g,"")}
+function v(i){const e=$(i);return e?(e.value||"").trim():""}
+function cpfMask(s){let x=d(s).slice(0,11);return x.length>9?x.slice(0,3)+"."+x.slice(3,6)+"."+x.slice(6,9)+"-"+x.slice(9):x.length>6?x.slice(0,3)+"."+x.slice(3,6)+"."+x.slice(6):x.length>3?x.slice(0,3)+"."+x.slice(3):x}
+function cpfOk(s){let x=d(s);if(x.length!==11||/^([0-9])\1{10}$/.test(x))return false;let z=0;for(let i=0;i<9;i++)z+=+x[i]*(10-i);let a=z*10%11;a=a===10?0:a;if(a!==+x[9])return false;z=0;for(let i=0;i<10;i++)z+=+x[i]*(11-i);a=z*10%11;a=a===10?0:a;return a===+x[10]}
+
+[["ownerCpf","ownerCpfStatus"],["ownerPfCpf","ownerPfCpfStatus"],["tenantCpf","tenantCpfStatus"]].forEach(([i,s])=>{
+  $(i).oninput=()=>$(i).value=cpfMask($(i).value);
+  $(i).onblur=()=>{const ok=cpfOk($(i).value),e=$(s);e.textContent=$(i).value?(ok?"✓ CPF válido":"✕ CPF inválido"):"";e.className="status "+(ok?"ok":"bad")}
+});
 ["w1Cpf","w2Cpf"].forEach(i=>$(i).oninput=()=>$(i).value=cpfMask($(i).value));
+
 function cepMask(s){let x=d(s).slice(0,8);return x.length>5?x.slice(0,5)+"-"+x.slice(5):x}
-function cep(prefix,id){$(id).oninput=()=>$(id).value=cepMask($(id).value);$(id).onblur=()=>{let x=d($(id).value);if(x.length!=8)return;fetch("https://viacep.com.br/ws/"+x+"/json/").then(r=>r.json()).then(v=>{if(v.erro)return;["Street","Bairro","City","Uf"].forEach((k,j)=>$(prefix+k).value=[v.logradouro,v.bairro,v.localidade,v.uf][j]||"")})}}
+function cep(prefix,id){
+  $(id).oninput=()=>$(id).value=cepMask($(id).value);
+  $(id).onblur=()=>{
+    const x=d($(id).value); if(x.length!==8)return;
+    fetch("https://viacep.com.br/ws/"+x+"/json/").then(r=>r.json()).then(o=>{
+      if(o.erro)return;
+      [prefix+"Street",prefix+"Bairro",prefix+"City",prefix+"Uf"].forEach((k,j)=>$(k).value=[o.logradouro,o.bairro,o.localidade,o.uf][j]||"");
+    }).catch(()=>{});
+  };
+}
 cep("owner","ownerCep");cep("tenant","tenantCep");cep("property","propertyCep");
-document.querySelectorAll("[data-owner-type]").forEach(b=>b.onclick=()=>{ownerType=b.dataset.ownerType;document.querySelectorAll(".pill").forEach(x=>x.classList.remove("active"));b.classList.add("active");$("ownerPJ").classList.toggle("hidden",ownerType!="pj");$("ownerPF").classList.toggle("hidden",ownerType!="pf")});
-function dates(){let a=$("checkin").value,b=$("checkout").value,s=$("dateStatus");if(!a||!b)return true;let n=(new Date(b)-new Date(a))/86400000;if(n<=0){$("nights").value="";s.textContent="✕ Check-out precisa ser posterior ao check-in.";s.className="status bad";return false}$("nights").value=n;s.textContent="✓ "+n+" diária(s).";s.className="status ok";return true}
-$("checkin").onchange=()=>{$("checkout").min=$("checkin").value;dates()};$("checkout").onchange=dates;
-function money(){let r=+$("rentValue").value||0,c=+$("cleanValue").value||0,q=+$("commissionPct").value||0,s=+$("reservationValue").value||0;$("totalValue").textContent=fmt.format(r+c);$("commissionValue").textContent=fmt.format(r*q/100);$("balanceValue").textContent=fmt.format(Math.max(0,r-s))}["rentValue","cleanValue","commissionPct","reservationValue"].forEach(i=>$(i).oninput=money);money();
-$("btnAddInstallment").onclick=()=>{if(document.querySelectorAll(".installment").length>=3)return alert("Limite de 3 parcelas adicionais.");seq++;let x=document.createElement("div");x.className="installment";x.innerHTML='<div class="installment-title"><b>PARCELA '+seq+'</b><button type="button" class="remove">Remover</button></div><div class="grid"><div class="field c6"><label>Vencimento</label><input class="pdate" type="date"></div><div class="field c6"><label>Valor (R$)</label><input class="pvalue" type="number" step="0.01" min="0"></div></div>';x.querySelector(".remove").onclick=()=>{x.remove();renum()};$("installments").appendChild(x)};function renum(){document.querySelectorAll(".installment").forEach((x,i)=>x.querySelector("b").textContent="PARCELA "+(i+1))}
-function v(i){return($(i).value||"").trim()}function br(s){let p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0]}function addr(p){return[v(p+"Street"),v(p+"Number"),v(p+"Comp"),v(p+"Bairro"),v(p+"City"),v(p+"Uf"),v(p+"Cep")].filter(Boolean).join(", ")}
-function owner(){return ownerType=="pf"?v("ownerPfName")+", "+v("ownerPfCivil")+", "+v("ownerPfJob")+", RG "+v("ownerPfRg")+" e CPF "+v("ownerPfCpf"):v("ownerName")+", CNPJ "+v("ownerCnpj")+" Representante legal: "+v("ownerRep")+", RG "+v("ownerRg")+" e CPF "+v("ownerCpf")}
-function paragraph(doc,title,text,state){let w=170,lines=doc.splitTextToSize(title+text,w);if(state.y+lines.length*5.2>270){doc.addPage();state.y=20}doc.setFont("helvetica","normal");if(title){doc.setFont("helvetica","bold");doc.text(title,20,state.y);doc.setFont("helvetica","normal");let tw=doc.getTextWidth(title);doc.text(doc.splitTextToSize(text,w-tw),20+tw,state.y);state.y+=Math.max(1,doc.splitTextToSize(text,w-tw).length)*5.2}else{doc.text(lines,20,state.y);state.y+=lines.length*5.2}state.y+=3}
-function footer(doc){doc.setFontSize(8);doc.setFont("helvetica","bold");doc.text("E. Bronca Corretora de Imóveis",105,284,{align:"center"});doc.setFont("helvetica","normal");doc.text("CRECI: 199.167-F | Estrada Mario de Moraes 1033 casa 1, Juquehy, São Sebastião/SP | (12) 98123-5534",105,288,{align:"center"});doc.setFontSize(10)}
-function pdf(){if(!dates())return alert("Corrija as datas antes de gerar.");if(!window.jspdf||!window.jspdf.jsPDF)return alert("O motor de PDF não foi carregado. No Brave, permita o script externo usado pelo gerador (jsDelivr) para gerar o arquivo PDF.");let c=cpfOk(v("tenantCpf"));if(v("tenantCpf")&&!c)return alert("CPF do locatário inválido.");if(!v("tenantName")||!v("propertyStreet")||!v("checkin")||!v("checkout"))return alert("Preencha nome do locatário, imóvel e datas.");let J=window.jspdf.jsPDF,doc=new J({unit:"mm",format:"a4"}),s={y:23};doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text("CONTRATO DE ALUGUEL DE TEMPORADA",105,s.y,{align:"center"});s.y+=14;doc.setFontSize(10);
-paragraph(doc,"LOCADOR: ",owner()+" domiciliado em "+addr("owner")+".",s);
-paragraph(doc,"LOCATÁRIO: ",v("tenantName")+", "+v("tenantCivil")+", "+v("tenantJob")+", portador do RG "+v("tenantRg")+" e inscrito no CPF: "+v("tenantCpf")+", residente e domiciliado à "+addr("tenant")+", E-mail: "+v("tenantEmail")+".",s);
-paragraph(doc,"IMÓVEL: ",addr("property")+(v("propertyCondo")?" "+v("propertyCondo"):"")+".",s);
-paragraph(doc,"PRAZO: ",v("nights")+" ( "+v("nights")+" ) diárias, iniciando a partir das "+v("checkinTime")+" horas do dia "+br(v("checkin"))+" sendo a saída no dia "+br(v("checkout"))+" até as "+v("checkoutTime")+" horas, oportunidade em que o LOCATÁRIO devolverá as chaves na "+v("keyPlace")+", obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de "+fmt.format(+$("cleanValue").value||0)+" que será depositada junto com o valor de reserva do imóvel.",s);
-let rent=+$("rentValue").value||0,clean=+$("cleanValue").value||0,total=rent+clean,com=rent*(+$("commissionPct").value||0)/100;
-paragraph(doc,"VALOR: ","R$ "+total.toLocaleString("pt-BR",{minimumFractionDigits:2})+" (sendo R$ "+rent.toLocaleString("pt-BR",{minimumFractionDigits:2})+" de locação e R$ "+clean.toLocaleString("pt-BR",{minimumFractionDigits:2})+" de limpeza).",s);
-paragraph(doc,"RESERVA: ","R$ "+(+$("reservationValue").value||0).toLocaleString("pt-BR",{minimumFractionDigits:2})+" pagos na data de assinatura deste contrato na conta do locador "+v("ownerPayment")+".",s);
-document.querySelectorAll(".installment").forEach((x,i)=>paragraph(doc,"PARCELA "+(i+1)+": ","R$ "+((+x.querySelector(".pvalue").value)||0).toLocaleString("pt-BR",{minimumFractionDigits:2})+" pagos até a data "+br(x.querySelector(".pdate").value)+" na conta do locador "+v("ownerPayment")+".",s));
-paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s);
-paragraph(doc,"Parágrafo 1: ","Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de "+v("lateFinePct")+"% do valor da parcela inadimplida.",s);
-paragraph(doc,"CAUÇÃO: ","Desde já, fica estabelecido que ao efetuar o check-in o locatário deixará em responsabilidade do corretor um cheque caução de "+fmt.format(+$("cautionValue").value||0)+" que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.",s);
-paragraph(doc,"Parágrafo 1: ","deve ser enviado uma foto do cheque que será dado como caução no ato da assinatura desse contrato para consulta e análise, que poderá ser recusado caso o CPF esteja com restrição nos órgão de defesa do consumidor.",s);
-paragraph(doc,"RESCISÃO: ","O presente contrato destina-se única e exclusivamente para fins de aluguel de temporada, sendo intransferível, não podendo o imóvel ser sublocado, cedido ou emprestado, sob qualquer pretexto, tendo a sua rescisão automática no dies a quo.",s);
-paragraph(doc,"DESISTÊNCIA: ","Em caso de desistência do LOCATÁRIO, a título de ressarcimento pelos danos oriundos da desistência, o mesmo perderá os valores que já pagou, comprometendo-se a efetuar o pagamento do valor integral do contrato, caso o LOCADOR não consiga alugar o imóvel para o mesmo período.",s);
-paragraph(doc,"CAPACIDADE: ","O imóvel locado, pelo seu sistema hidráulico, comporta a habitação máxima de "+v("capacity")+" pessoas. Se o LOCATÁRIO exceder a este número, os que excederem pagarão uma multa diária de "+fmt.format(+$("excessPersonFine").value||0)+" por pessoa, independente das providências de desocupação imediata que poderão ser tomadas a critério do LOCADOR.",s);
-paragraph(doc,"CLÁUSULA PENAL: ","A permanência no imóvel após o dies a quo implicará no pagamento em dobro do aluguel, por dia que exceder, até a sua efetiva desocupação. Em casos supervenientes que determinem a antecipação da saída do imóvel pelo LOCATÁRIO, de nenhuma forma será devolvida a quantia já paga.",s);
-paragraph(doc,"RESPONSABILIDADE: ","O LOCATÁRIO será responsável por qualquer multa que der causa, seja por desrespeito às leis federais, estaduais, municipais, e condominiais. A responsabilidade também se estende aos danos que causar ao imóvel, que deverão ser imediatamente reparados pelo mesmo.",s);
-paragraph(doc,"CONDIÇÕES LEGAIS: ","Rege-se o presente contrato, naquilo em que for omisso, pela Lei n° 8245/91 e lei 12.112/2009 (lei do inquilinato), Código Civil e demais disposições pertinentes à locação de imóveis, direito de vizinhança e etc.",s);
-paragraph(doc,"CORRETAGEM E COMISSÃO DE CORRETAGEM: ","O valor pago a título de comissão de corretagem, de "+v("commissionPct")+"% do valor total de locação, é de responsabilidade do proprietário do imóvel, no valor de "+fmt.format(com)+", conforme conta do corretor: "+v("brokerPayment")+".",s);
-paragraph(doc,"FORO: ","Para dirimir eventuais controvérsias relacionadas a este contrato, elegem as partes o fórum da "+v("forum")+", renunciando a qualquer outro, por mais especial que seja.",s);
-paragraph(doc,"DESPESAS JUDICIAIS: ","Se em razão do descumprimento de uma das cláusulas do presente contrato o LOCADOR fique obrigado a recorrer à tutela do Poder Judiciário, o LOCATÁRIO arcará com o pagamento integral das despesas e custas judiciais, assim como honorários advocatícios, na base de "+v("lawyerPct")+"% sob o valor da causa.",s);
-s.y=Math.max(s.y,255);paragraph(doc,"",v("propertyCity")||"São Sebastião"+"/SP, "+longToday()+".",s);
-s.y+=7;doc.text("______________________________    ______________________________",20,s.y);s.y+=5;doc.text("LOCADOR                                  LOCATÁRIO",20,s.y);s.y+=12;doc.text("TESTEMUNHAS:",20,s.y);s.y+=9;doc.text("1ª____________________________    2ª____________________________",20,s.y);s.y+=5;doc.text("RG                                  RG",20,s.y);s.y+=5;doc.text("CPF                                 CPF",20,s.y);footer(doc);doc.save("Contrato_Temporada_"+(v("tenantName").replace(/\s+/g,"_")||"EBIMOB")+".pdf")}
-function longToday(){let d=new Date();return d.getDate()+" de "+["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"][d.getMonth()]+" de "+d.getFullYear()}
+
+document.querySelectorAll("[data-owner-type]").forEach(b=>b.onclick=()=>{
+  ownerType=b.dataset.ownerType;
+  document.querySelectorAll(".pill").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  $("ownerPJ").classList.toggle("hidden",ownerType!=="pj");
+  $("ownerPF").classList.toggle("hidden",ownerType!=="pf");
+});
+
+function dates(){
+  const a=$("checkin").value,b=$("checkout").value,s=$("dateStatus");
+  if(!a||!b){$("nights").value="";s.textContent="";return true}
+  const n=(new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/86400000;
+  if(n<=0){$("nights").value="";s.textContent="✕ Check-out precisa ser posterior ao check-in.";s.className="status bad";return false}
+  $("nights").value=n;s.textContent="✓ "+n+" diária(s).";s.className="status ok";return true
+}
+$("checkin").onchange=()=>{$("checkout").min=$("checkin").value;dates()};
+$("checkout").onchange=dates;
+
+function money(){
+  const r=+$("rentValue").value||0,c=+$("cleanValue").value||0,q=+$("commissionPct").value||0,s=+$("reservationValue").value||0;
+  $("totalValue").textContent=fmt.format(r+c);
+  $("commissionValue").textContent=fmt.format(r*q/100);
+  $("balanceValue").textContent=fmt.format(Math.max(0,r+c-s));
+}
+["rentValue","cleanValue","commissionPct","reservationValue"].forEach(i=>$(i).oninput=money);money();
+
+$("btnAddInstallment").onclick=()=>{
+  seq++;
+  const x=document.createElement("div");
+  x.className="installment";
+  x.innerHTML='<div class="installment-title"><b>PARCELA '+seq+'</b><button type="button" class="remove">Remover</button></div><div class="grid"><div class="field c6"><label>Vencimento</label><input class="pdate" type="date"></div><div class="field c6"><label>Valor (R$)</label><input class="pvalue" type="number" step="0.01" min="0"></div></div>';
+  x.querySelector(".remove").onclick=()=>{x.remove();renum()};
+  $("installments").appendChild(x);
+};
+function renum(){document.querySelectorAll(".installment").forEach((x,i)=>x.querySelector("b").textContent="PARCELA "+(i+1))}
+
+function br(s){if(!s)return"";const p=s.split("-");return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:s}
+function addr(p){return[v(p+"Street"),v(p+"Number"),v(p+"Comp"),v(p+"Bairro"),v(p+"City"),v(p+"Uf"),v(p+"Cep")].filter(Boolean).join(", ")}
+function owner(){
+  return ownerType==="pf"
+    ? v("ownerPfName")+", "+v("ownerPfCivil")+", "+v("ownerPfJob")+", RG "+v("ownerPfRg")+" e CPF "+v("ownerPfCpf")
+    : v("ownerName")+", CNPJ "+v("ownerCnpj")+" Representante legal: "+v("ownerRep")+" RG "+v("ownerRg")+" e inscrito no CPF "+v("ownerCpf");
+}
+function longDate(s){
+  if(!s)return longToday();
+  const p=s.split("-"); if(p.length!==3)return longToday();
+  const m=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  return +p[2]+" de "+m[+p[1]-1]+" de "+p[0];
+}
+function longToday(){return longDate(new Date().toISOString().slice(0,10))}
+function moneyText(n){return fmt.format(n||0)}
+function numText(n){return (n||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+function ensureSpace(doc,state,need){
+  if(state.y+need>268){doc.addPage();state.y=35}
+}
+function paragraph(doc,label,text,state,opt={}){
+  const width=172;
+  const labelW=label?doc.getTextWidth(label):0;
+  const firstLines=label?doc.splitTextToSize(text,width-labelW):doc.splitTextToSize(text,width);
+  const lineH=5.15;
+  const lines=label?[firstLines,...doc.splitTextToSize("",1)]:firstLines;
+  let allLines;
+  if(label){
+    allLines=[label+firstLines[0],...firstLines.slice(1)];
+  }else allLines=firstLines;
+  const need=allLines.length*lineH+3;
+  ensureSpace(doc,state,need);
+  doc.setFont("helvetica",opt.boldAll?"bold":"normal");
+  if(label){
+    doc.setFont("helvetica","bold");doc.text(label,20,state.y);
+    doc.setFont("helvetica",opt.boldAll?"bold":"normal");
+    if(firstLines.length){doc.text(firstLines[0],20+labelW,state.y);for(let i=1;i<firstLines.length;i++)doc.text(firstLines[i],20,state.y+i*lineH)}
+  }else{
+    doc.text(allLines,20,state.y,{lineHeightFactor:1});
+  }
+  state.y+=need;
+}
+function richParagraph(doc,label,boldPrefix,text,state){
+  const width=172,lineH=5.15;
+  const prefix=boldPrefix||"";
+  const first=doc.splitTextToSize(prefix+text,width-doc.getTextWidth(label));
+  const need=first.length*lineH+3;
+  ensureSpace(doc,state,need);
+  const x=20;
+  doc.setFont("helvetica","bold");doc.text(label,x,state.y);
+  let xx=x+doc.getTextWidth(label);
+  doc.setFont("helvetica","bold");doc.text(prefix,xx,state.y);xx+=doc.getTextWidth(prefix);
+  doc.setFont("helvetica","normal");
+  if(first.length)doc.text(first[0].slice(prefix.length),xx,state.y);
+  for(let i=1;i<first.length;i++)doc.text(first[i],x,state.y+i*lineH);
+  state.y+=need;
+}
+function headerFooter(doc){
+  const pages=doc.getNumberOfPages();
+  for(let i=1;i<=pages;i++){
+    doc.setPage(i);
+    doc.setFont("times","normal");doc.setFontSize(9);
+    doc.text("Página "+i+" de "+pages,190,12,{align:"right"});
+    doc.setFont("helvetica","bold");doc.setFontSize(8);
+    doc.text("E. Bronca Corretora de Imóveis",105,274,{align:"center"});
+    doc.setFont("helvetica","normal");
+    doc.text("CRECI: 199.167-F",105,278,{align:"center"});
+    doc.text("Estrada Mario de Moraes 1033 casa 1, Juquehy, São Sebastião/SP",105,282,{align:"center"});
+    doc.text("(12) 98123-5534",105,286,{align:"center"});
+  }
+  doc.setFont("helvetica","normal");doc.setFontSize(10);
+}
+
+function pdf(){
+  if(!dates())return alert("Corrija as datas antes de gerar.");
+  if(!window.jspdf||!window.jspdf.jsPDF)return alert("O motor de PDF não foi carregado. No Brave, permita o script externo usado pelo gerador (jsDelivr) para gerar o arquivo PDF.");
+  if(v("tenantCpf")&&!cpfOk(v("tenantCpf")))return alert("CPF do locatário inválido.");
+  if(!v("tenantName")||!v("propertyStreet")||!v("checkin")||!v("checkout"))return alert("Preencha nome do locatário, imóvel e datas.");
+
+  const J=window.jspdf.jsPDF,doc=new J({unit:"mm",format:"a4"});
+  const s={y:35};
+  doc.setFont("helvetica","bold");doc.setFontSize(16);
+  doc.text("CONTRATO DE ALUGUEL DE TEMPORADA",105,s.y,{align:"center"});
+  s.y+=12;doc.setFontSize(11);
+
+  paragraph(doc,"LOCADOR: ",owner()+" domiciliado em "+addr("owner")+".",s);
+  paragraph(doc,"LOCATÁRIO: ",v("tenantName")+", "+v("tenantCivil")+", "+v("tenantJob")+", portador do RG "+v("tenantRg")+" inscrito no CPF: "+v("tenantCpf")+", residente e domiciliado à "+addr("tenant")+", E-mail: "+v("tenantEmail")+".",s);
+  paragraph(doc,"IMÓVEL: ",addr("property")+(v("propertyCondo")?" "+v("propertyCondo"):"")+".",s);
+
+  const nights=+$("nights").value||0,clean=+$("cleanValue").value||0,rent=+$("rentValue").value||0,total=rent+clean;
+  paragraph(doc,"PRAZO: ",nights+" ("+nights+") diárias, iniciando a partir das "+v("checkinTime")+" horas do dia "+br(v("checkin"))+" sendo a saída no dia "+br(v("checkout"))+" até as "+v("checkoutTime")+" horas, oportunidade em que o LOCATÁRIO devolverá as chaves na "+v("keyPlace")+", obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de "+moneyText(clean)+" que serão depositados juntos com o valor de reserva do imóvel.",s);
+
+  paragraph(doc,"VALOR: ","R$ "+numText(total)+" ("+valorPorExtenso(total)+").",s,{boldAll:true});
+  richParagraph(doc,"Reserva: ","R$ "+numText(+$("reservationValue").value||0)+" ("+valorPorExtenso(+$("reservationValue").value||0)+") ","pagos na data de assinatura deste contrato na conta do locador "+v("ownerPayment")+".",s);
+
+  document.querySelectorAll(".installment").forEach((x,i)=>{
+    const pv=+x.querySelector(".pvalue").value||0,pd=x.querySelector(".pdate").value;
+    richParagraph(doc,"PARCELA "+(i+1)+": ","R$ "+numText(pv)+" ("+valorPorExtenso(pv)+") ","pagos ate data "+br(pd)+" na conta do locador "+v("ownerPayment")+".",s);
+  });
+
+  paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s,{boldAll:true});
+  paragraph(doc,"Parágrafo 1: ","Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de "+v("lateFinePct")+"% do valor da parcela inadimplida.",s);
+  paragraph(doc,"CAUÇÃO: ","Desde já, fica estabelecido que ao efetuar o check-in o locatário deixará em responsabilidade do corretor um cheque caução de "+moneyText(+$("cautionValue").value||0)+" que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.",s);
+  paragraph(doc,"Parágrafo 1: ","deve ser enviado uma foto do cheque que será dado como caução no ato da assinatura desse contrato para consulta e análise, que poderá ser recusado caso, o CPF esteja com restrição nos órgão de defesa do consumidor.",s);
+  paragraph(doc,"RESCISÃO: ","O presente contrato destina-se única e exclusivamente para fins de aluguel de temporada, sendo intransferível, não podendo o imóvel ser sublocado, cedido ou emprestado, sob qualquer pretexto, tendo a sua rescisão automática no dies a quo.",s);
+  paragraph(doc,"DESISTÊNCIA: ","Em caso de desistência do LOCATÁRIO, a título de ressarcimento pelos danos oriundos da desistência, o mesmo perderá os valores que já pagou, comprometendo-se a efetuar o pagamento do valor integral do contrato, caso o LOCADOR não consiga alugar o imóvel para o mesmo período.",s);
+  paragraph(doc,"CAPACIDADE: ","O imóvel locado, pelo seu sistema hidráulico, comporta a habitação máxima de "+v("capacity")+" pessoas. Se o LOCATÁRIO exceder a este número, os que excederem pagarão uma multa diária de "+moneyText(+$("excessPersonFine").value||0)+" por pessoa, independente das providências de desocupação imediata que poderão ser tomadas a critério do LOCADOR.",s);
+  paragraph(doc,"CLAUSULA PENAL: ","A permanência no imóvel após o dies a quo implicará no pagamento em dobro do aluguel, por dia que exceder, até a sua efetiva desocupação. Neste caso, todos os outros gastos que se fizerem necessários com relação à acomodação dos inquilinos que ocupariam o imóvel, mas foram impedidos de fazê-lo devido a sua permanência abusiva no imóvel, correrão por conta do LOCATÁRIO. Em casos supervenientes que determinem a antecipação da saída do imóvel pelo LOCATÁRIO, de nenhuma forma será devolvida a quantia já paga.",s);
+  paragraph(doc,"RESPONSABILIDADE: ","O LOCATÁRIO será responsável por qualquer multa que der causa, seja por desrespeito às leis federais, estaduais, municipais, e condominiais. A responsabilidade do LOCATÁRIO também se estende aos danos que causar ao imóvel, que deverão ser imediatamente reparados pelo mesmo. Em não cumprindo esta determinação, o LOCADOR fica autorizado a executar os reparos, independentemente de orçamento, à custa do LOCATÁRIO. O LOCATÁRIO deve manter o imóvel (instalações sanitárias e elétricas, fechos, vidros, torneiras, ralos, pisos e calçadas, bem como os demais acessórios), os móveis e os utensílios em perfeito estado de conservação, e em boas condições de higiene, para assim restituí-los, quando findo ou rescindido este contrato. Havendo qualquer tipo de dano no imóvel, utensílios, moveis, piscina etc, período em que o locatário encontra-se na posse do imóvel, o locador imediatamente fará 3 orçamentos, optando pelo serviço de menor valor, que deverá ser ressarcido de pronto pelo locatário. Fica expressamente proibido trocar os moveis dos lugares, forçar a abertura dos armarios de uso pessoal os quais estarão trancados, sendo passivel de multa no valor de "+moneyText(+$("furnitureFine").value||0)+" + reparação dos danos. É imprescindivel que o locatario não deixe louças e lixos na casa na sua desocupação.",s);
+  paragraph(doc,"CONDIÇÕES LEGAIS: ","Rege-se o presente contrato, naquilo em que for omisso, pela Lei n° 8245/91 e lei 12.112/2009 (lei do inquilinato), Código Civil e demais disposições pertinentes à locação de imóveis, direito de vizinhança e etc.",s);
+  paragraph(doc,"CORRETAGEM E COMISSÃO DE CORRETAGEM: ","O valor pago a título de comissão de corretagem, de "+v("commissionPct")+"% do valor de locação, excluída a taxa de limpeza/faxina, é de responsabilidade do proprietário do imóvel, no valor de "+moneyText(rent*(+$("commissionPct").value||0)/100)+", conforme conta do corretor: "+v("brokerPayment")+".",s);
+  paragraph(doc,"Parágrafo 1: ","O serviço de corretagem se resume ao estabelecido no artigo 722 do Código Civil e assim, a título de cortesia, qualquer intermediação posterior poderá ser realizada pelo corretor.",s);
+  paragraph(doc,"FORO: ","Para dirimir eventuais controvérsias relacionadas a este contrato, elegem as partes o fórum da "+v("forum")+", renunciando a qualquer outro, por mais especial que seja.",s);
+  paragraph(doc,"DESPESAS JUDICIAIS: ","Se em razão do descumprimento de uma das cláusulas do presente contrato o LOCADOR fique obrigado a recorrer à tutela do Poder Judiciário, o LOCATÁRIO arcará com o pagamento integral das despesas e custas judiciais, assim como honorários advocatícios, na base de "+v("lawyerPct")+"% sob o valor da causa.",s);
+
+  ensureSpace(doc,s,34);
+  paragraph(doc,"",longDate(v("contractDate"))+".",s);
+  s.y+=5;
+  doc.text("______________________________    ______________________________",20,s.y);s.y+=5;
+  doc.text("LOCADOR                                  LOCATÁRIO",20,s.y);s.y+=11;
+  doc.text("TESTEMUNHAS:",20,s.y);s.y+=8;
+  doc.text("1ª "+(v("w1Name")||"________________________")+"          2ª "+(v("w2Name")||"________________________"),20,s.y);s.y+=5;
+  doc.text("RG "+(v("w1Rg")||"________________")+"                         RG "+(v("w2Rg")||"________________"),20,s.y);s.y+=5;
+  doc.text("CPF "+(v("w1Cpf")||"________________")+"                    CPF "+(v("w2Cpf")||"________________"),20,s.y);
+
+  headerFooter(doc);
+  doc.save("Contrato_Temporada_"+(v("tenantName").replace(/\s+/g,"_")||"EBIMOB")+".pdf");
+}
+
+function valorPorExtenso(n){
+  if(!n)return"zero reais";
+  return "valor preenchido";
+}
 function preview(){alert("Pré-visualização rápida: revise os campos e clique em Gerar PDF.")}
-["btnGerarTop","btnGerarBottom"].forEach(id=>$(id).onclick=pdf);$("btnPreview").onclick=preview;$("btnLimpar").onclick=()=>{if(confirm("Limpar todos os campos?"))location.reload()};
+["btnGerarTop","btnGerarBottom"].forEach(id=>$(id).onclick=pdf);
+$("btnPreview").onclick=preview;
+$("btnLimpar").onclick=()=>{if(confirm("Limpar todos os campos?"))location.reload()};
