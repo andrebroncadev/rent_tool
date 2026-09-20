@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EBIMOBILIÁRIA - Emissor de Contratos</title>
+    <style>
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: #f0f3f6; margin: 0; padding: 20px; }
+        .container { max-width: 950px; margin: 0 auto; background: #ffffff; padding: 35px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        header { text-align: center; border-bottom: 2px solid #eef2f5; padding-bottom: 15px; margin-bottom: 30px; }
+        header h1 { margin: 0; color: #1a252f; letter-spacing: 1px; }
+        header p { color: #7f8c8d; margin: 5px 0 0 0; }
+        fieldset { border: 1px solid #dcdde1; border-radius: 8px; padding: 20px; margin-bottom: 25px; }
+        legend { font-weight: bold; color: #2c3e50; padding: 0 10px; }
+        .row { display: flex; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
+        .col { flex: 1; min-width: 200px; }
+        .col-30 { width: 30%; min-width: 150px; }
+        .col-70 { width: 70%; min-width: 250px; }
+        .col-full { width: 100%; }
+        label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: #2c3e50; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #bdc3c7; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+        input:focus, select:focus { border-color: #3498db; outline: none; }
+        .erro-msg { color: #e74c3c; font-size: 12px; display: block; margin-top: 4px; }
+        .border-box { border: 1px solid #bdc3c7; padding: 20px; border-radius: 6px; background: #fbfcfc; }
+        .header-parcelas { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header-parcelas h4 { margin: 0; }
+        .btn-add { background: #3498db; color: #fff; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-add:hover { background: #2980b9; }
+        .parcela-item { background: #fff; padding: 15px; border: 1px solid #dcdde1; border-radius: 5px; margin-bottom: 12px; position: relative; }
+        .btn-remove { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; float: right; margin-top: -5px; }
+        .btn-submit { width: 100%; padding: 15px; background: #27ae60; color: white; font-size: 18px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; margin-top: 20px; }
+        .btn-submit:hover { background: #219653; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EBIMOBILIÁRIA</h1>
+            <p>Emissor de Contrato de Locação por Temporada</p>
+        </header>
+        <form id="contratoForm">
+            <fieldset>
+                <legend>Dados do Locador</legend>
+                <div class="row">
+                    <div class="col">
+                        <label for="locadorNome">Nome Completo:</label>
+                        <input type="text" id="locadorNome" required>
+                    </div>
+                    <div class="col">
+                        <label for="locadorProfissao">Profissão:</label>
+                        <input type="text" id="locadorProfissao" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="locadorCpf">CPF:</label>
+                        <input type="text" id="locadorCpf" required>
+                    </div>
+                    <div class="col">
+                        <label for="locadorEndereco">Endereço Completo:</label>
+                        <input type="text" id="locadorEndereco" required>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Dados do Locatário</legend>
+                <div class="row">
+                    <div class="col">
+                        <label for="locatarioNome">Nome Completo:</label>
+                        <input type="text" id="locatarioNome" required>
+                    </div>
+                    <div class="col">
+                        <label for="locatarioEstadoCivil">Estado Civil:</label>
+                        <select id="locatarioEstadoCivil" required>
+                            <option value="solteiro">Solteiro</option>
+                            <option value="solteira">Solteira</option>
+                            <option value="casado">Casado</option>
+                            <option value="casada">Casada</option>
+                            <option value="divorciado">Divorciado</option>
+                            <option value="divorciada">Divorciada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="locatarioProfissao">Profissão:</label>
+                        <input type="text" id="locatarioProfissao" required>
+                    </div>
+                    <div class="col">
+                        <label for="locatarioRg">RG:</label>
+                        <input type="text" id="locatarioRg" required>
+                    </div>
+                    <div class="col">
+                        <label for="locatarioCpf">CPF (Apenas números):</label>
+                        <input type="text" id="locatarioCpf" maxlength="11" onblur="verificarCpf(this)" required>
+                        <span id="cpfErro" class="erro-msg"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-30">
+                        <label for="locatarioCep">CEP:</label>
+                        <input type="text" id="locatarioCep" maxlength="8" onblur="buscarEnderecoPorCep()" required>
+                    </div>
+                    <div class="col-70">
+                        <label for="locatarioEndereco">Endereço Residencial:</label>
+                        <input type="text" id="locatarioEndereco" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="locatarioBairro">Bairro:</label>
+                        <input type="text" id="locatarioBairro" required>
+                    </div>
+                    <div class="col">
+                        <label for="locatarioEmail">E-mail:</label>
+                        <input type="email" id="locatarioEmail" required>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Prazos, Valores e Imóvel</legend>
+                <div class="row">
+                    <div class="col-full">
+                        <label for="imovelEndereco">Endereço do Imóvel da Locação:</label>
+                        <input type="text" id="imovelEndereco" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="dataCheckin">Data de Entrada (Check-in):</label>
+                        <input type="date" id="dataCheckin" onchange="calcularDiarias()" required>
+                    </div>
+                    <div class="col">
+                        <label for="dataCheckout">Data de Saída (Check-out):</label>
+                        <input type="date" id="dataCheckout" onchange="calcularDiarias()" required>
+                    </div>
+                    <div class="col">
+                        <label for="qtdDiarias">Quantidade de Diárias:</label>
+                        <input type="number" id="qtdDiarias" readonly required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="valorLocacao">Valor da Locação (R$):</label>
+                        <input type="number" step="0.01" id="valorLocacao" required>
+                    </div>
+                    <div class="col">
+                        <label for="taxaFaxina">Taxa de Faxina (R$):</label>
+                        <input type="number" step="0.01" id="taxaFaxina" required>
+                    </div>
+                    <div class="col">
+                        <label for="valorCaucao">Valor do Caução (R$):</label>
+                        <input type="number" step="0.01" id="valorCaucao" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="contaLocador">Dados Bancários do Locador:</label>
+                        <input type="text" id="contaLocador" required>
+                    </div>
+                    <div class="col">
+                        <label for="contaCorretor">Dados Bancários do Corretor:</label>
+                        <input type="text" id="contaCorretor" required>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="border-box">
+                <div class="header-parcelas">
+                    <h4>Cronograma de Parcelas Adicionais</h4>
+                    <button type="button" class="btn-add" onclick="adicionarParcelaField()">+ Adicionar Parcela</button>
+                </div>
+                <div id="containerParcelas"></div>
+            </fieldset>
+            <button type="button" class="btn-submit" onclick="window.gerarContratoPDF()">Gerar Contrato Oficial em PDF</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script>
+        function formatarDataBR(dUs) {
+            if (!dUs) return "";
+            var p = dUs.split("-");
+            if (p.length !== 3) return dUs;
+            return p[2] + "/" + p[1] + "/" + p[0];
+        }
+
+        function calcularDiarias() {
+            var cIn = document.getElementById("dataCheckin").value;
+            var cOut = document.getElementById("dataCheckout").value;
+            if (cIn && cOut) {
+                var d1 = new Date(cIn + "T00:00:00");
+                var d2 = new Date(cOut + "T00:00:00");
+                if (d2 > d1) {
+                    var diff = d2.getTime() - d1.getTime();
+                    document.getElementById("qtdDiarias").value = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                } else {
+                    document.getElementById("qtdDiarias").value = 0;
+                }
+            }
+        }
+
+        function adicionarParcelaField() {
+            var c = document.getElementById("containerParcelas");
+            if (!c) return;
+            var idx = c.children.length;
+            var div = document.createElement("div");
+            div.className = "parcela-item";
+            div.innerHTML = '<button type="button" class="btn-remove" onclick="this.parentElement.remove()">Remover</button><div class="row"><div class="col"><label>Vencimento:</label><input type="date" class="p-data" required></div><div class="col"><label>Valor:</label><input type="number" step="0.01" class="p-valor" required></div></div>';
+            c.appendChild(div);
+        }
+
+        function valorPorExtenso(v) { return v > 0 ? "valor informado" : "zero reais"; }
+
+        function verificarCpf(cam) {
+            var e = document.getElementById("cpfErro");
+            if (!e) return;
+            if (cam.value.replace(/\D/g, "").length < 11) { e.innerText = "CPF inválido"; } else { e.innerText = ""; }
+        }
+
+        function buscarEnderecoPorCep() {
+            var cIn = document.getElementById("locatarioCep");
+            if (!cIn) return;
+            var cep = cIn.value.replace(/\D/g, "");
+            if (cep.length === 8) {
+                fetch("https://viacep.com.br/ws/" + cep + "/json/")
+                    .then(function(r) { return r.json(); })
+                    .then(function(d) {
+                        if (!d.erro) {
+                            if (document.getElementById("locatarioEndereco")) document.getElementById("locatarioEndereco").value = d.logradouro || "";
+                            if (document.getElementById("locatarioBairro")) document.getElementById("locatarioBairro").value = d.bairro || "";
+                        }
+                    });
+            }
+        }
+
+        window.gerarContratoPDF = function() {
+            var f = document.getElementById("contratoForm");
+            if (!f.checkValidity()) { f.reportValidity(); return; }
+            var Inst = window.jspdf?.jsPDF || window.jsPDF;
+            if (!Inst) { alert("A biblioteca jsPDF falhou ao carregar da internet."); return; }
+
+            var doc = new Inst({ orientation: "portrait", unit: "mm", format: "a4" });
+            var y = 25; var mX = 20; var w = 170;
+
+            doc.setFont("helvetica", "bold"); doc.setFontSize(14);
+            doc.text("CONTRATO DE ALUGUEL DE TEMPORADA", 105, y, { align: "center" });
+            y += 15; doc.setFontSize(10);
+
+            function printBloco(tit, txt) {
+                var comb = tit + txt;
+                var lines = doc.splitTextToSize(comb, w);
+                if (y + (lines.length * 5) > 265) {
+                    adicionarRodape(); doc.addPage(); y = 25;
+                }
+                lines.forEach(function(l) {
+                    if (tit && l.indexOf(tit) === 0) {
+                        doc.setFont("helvetica", "bold"); doc.text(tit, mX, y);
+                        doc.setFont("helvetica", "normal"); doc.text(l.substring(tit.length), mX + doc.getTextWidth(tit), y);
+                    } else {
+                        doc.setFont("helvetica", "normal"); doc.text(l, mX, y);
+                    }
+                    y += 6;
+                });
+                y += 4;
+            }
+
+            function adicionarRodape() {
+                var yr = 282; doc.setFontSize(8); doc.setFont("helvetica", "bold");
+                doc.text("EBIMOBILIÁRIA - Erica Bronca Corretora de Imóveis", 105, yr, { align: "center" });
+                doc.setFont("helvetica", "normal"); doc.text("CRECI: 199.167-F | Contato: (12) 98123-5534", 105, yr + 4, { align: "center" });
+                doc.setFontSize(10);
+            }
+
+            printBloco("LOCADOR: ", document.getElementById("locadorNome").value + ", " + document.getElementById("locadorProfissao").value + ", CPF: " + document.getElementById("locadorCpf").value + ", residente em " + document.getElementById("locadorEndereco").value);
+            printBloco("LOCATÁRIO: ", document.getElementById("locatarioNome").value + ", " + document.getElementById("locatarioEstadoCivil").value + ", " + document.getElementById("locatarioProfissao").value + ", RG " + document.getElementById("locatarioRg").value + ", CPF " + document.getElementById("locatarioCpf").value + ", residente em " + document.getElementById("locatarioEndereco").value + ", Bairro: " + document.getElementById("locatarioBairro").value + ", CEP: " + document.getElementById("locatarioCep").value + ", E-mail: " + document.getElementById("locatarioEmail").value);
+            printBloco("IMÓVEL: ", document.getElementById("imovelEndereco").value);
+            
+            var vL = parseFloat(document.getElementById("valorLocacao").value) || 0;
+            var vF = parseFloat(document.getElementById("taxaFaxina").value) || 0;
+            var vT = vL + vF;
+            var vC = parseFloat(document.getElementById("valorCaucao").value) || 0;
+            var cLoc = document.getElementById("contaLocador").value;
+            var cCorr = document.getElementById("contaCorretor").value;
+            var nDiarias = document.getElementById("qtdDiarias").value;
+            var checkin = formatarDataBR(document.getElementById("dataCheckin").value);
+            var checkout = formatarDataBR(document.getElementById("dataCheckout").value);
+
+            printBloco("PRAZO: ", nDiarias + " diárias, iniciando a partir das 11:00 horas do dia " + checkin + " sendo a saída no dia " + checkout + " até as 14:00 horas, oportunidade em que o LOCATÁRIO devolverá as chaves na PORTARIA, obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de R$ " + vF.toFixed(2).replace(".",",") + " (" + valorPorExtenso(vF) + ") que serão depositados juntos com o valor de reserva do imóvel.");
+            printBloco("VALOR: ", "R$ " + vT.toFixed(2).replace(".",",") + " (" + valorPorExtenso(vT) + ") (Sendo R$ " + vL.toFixed(2).replace(".",",") + " da locação e R$ " + vF.toFixed(2).replace(".",",") + " da taxa de faxina).");
+
+            var vHon = vL * 0.10;
+            var pLocador = vL - vHon;
+            var textoReserva = "a) R$ " + pLocador.toFixed(2).replace(".",",") + " (" + valorPorExtenso(pLocador) + ") pagos na data de assinatura deste contrato na conta do locador " + cLoc + ".\n\nb) R$ " + vHon.toFixed(2).replace(".",",") + " (" + valorPorExtenso(vHon) + ") pagos na data de assinatura deste contrato na conta do corretor, mediante depósito, transferência bancária ou PIX para a conta do " + cCorr + ", de titularidade de EBIMOBILIÁRIA.";
+            printBloco("RESERVA: ", textoReserva);
+
+            var datasP = document.querySelectorAll(".p-data");
+            var valoresP = document.querySelectorAll(".p-valor");
+            datasP.forEach(function(dt, index) {
+                var val = parseFloat(valoresP[index].value) || 0;
+                printBloco("PARCELA " + (index + 1) + ": ", "R$ " + val.toFixed(2).replace(".",",") + " (" + valorPorExtenso(val) + ") pagos até a data " + formatarDataBR(dt.value) + " na conta do locador " + cLoc + ".");
+            });
+
+            printBloco("", "Os comprovantes dos depósitos servirão como recibo do pagamento.");
+            printBloco("Parágrafo 1: ", "Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de 5% do valor da parcela inadimplida.");
+            printBloco("CAUÇÃO: ", "Desde já, fica estabelecido que ao efetuar o check-in a locatária deixará em responsabilidade do corretor um cheque caução de R$ " + vC.toFixed(2).replace(".",",") + " (" + (vC > 0 ? valorPorExtenso(vC) : "zero") + ") que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.");
+            printBloco("Parágrafo 1: ", "deve ser enviado uma foto do cheque que será dado como caução no ato da assinatura desse contrato para consulta e análise, que poderá ser recusado caso, o CPF esteja com restrição nos órgão de defesa do consumidor.");
+            printBloco("RESCISÃO: ", "O presente contrato destina-se única e exclusivamente para fins de aluguel de temporada, sendo intransferível, não podendo o imóvel ser sublocado, cedido ou emprestado, sob qualquer pretexto, tendo a sua rescisão automática no dies a quo.");
+
+            adicionarRodape();
+            var nA = "Contrato_Temporada_" + document.getElementById("locatarioNome").value.replace(/\s+/g, "_") + ".pdf";
+            doc.save(nA);
+        };
+    </script>
+</body>
+</html>
