@@ -117,19 +117,30 @@ function richParagraph(doc,label,boldPrefix,text,state){
   for(let i=0;i<lines.length;i++)doc.text(lines[i],i?x:xx+prefixW,state.y+i*lineH);
   state.y+=need;
 }
-function pageHeader(doc){
-  doc.setFont("helvetica","bold");doc.setFontSize(8);
-  doc.text("Erica",105,18,{align:"center"});
-  doc.text("Bronca Creci : 199.167-F",105,22,{align:"center"});
+let logoCache;
+function loadLogo(){
+  if(logoCache)return Promise.resolve(logoCache);
+  return new Promise(resolve=>{
+    const i=new Image();
+    i.onload=()=>{logoCache=i;resolve(i)};
+    i.onerror=()=>resolve(null);
+    i.src="logo.jpg";
+  });
 }
-function pdf(){
+function pageHeader(doc,logo){
+  if(logo)doc.addImage(logo,"JPEG",92,5,26,20);
+  doc.setFont("helvetica","bold");doc.setFontSize(8);
+  doc.text("Erica",105,29,{align:"center"});
+  doc.text("Bronca Creci : 199.167-F",105,33,{align:"center"});
+}
+async function pdf(){
   if(!dates())return alert("Corrija as datas antes de gerar.");
   if(!window.jspdf||!window.jspdf.jsPDF)return alert("O motor de PDF não foi carregado. No Brave, permita o script externo usado pelo gerador (jsDelivr) para gerar o arquivo PDF.");
   if(v("tenantCpf")&&!cpfOk(v("tenantCpf")))return alert("CPF do locatário inválido.");
   if(!v("tenantName")||!v("propertyStreet")||!v("checkin")||!v("checkout"))return alert("Preencha nome do locatário, imóvel e datas.");
 
-  const J=window.jspdf.jsPDF,doc=new J({unit:"mm",format:"a4"});
-  const s={y:49}; pageHeader(doc);
+  const J=window.jspdf.jsPDF,doc=new J({unit:"mm",format:"a4"}),logo=await loadLogo();
+  const s={y:49}; pageHeader(doc,logo);
   doc.setFont("helvetica","bold");doc.setFontSize(16);
   doc.text("CONTRATO DE ALUGUEL DE TEMPORADA",105,s.y,{align:"center"});
   s.y+=12;doc.setFontSize(10.5);
