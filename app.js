@@ -122,19 +122,6 @@ function pageHeader(doc){
   doc.text("Erica",105,18,{align:"center"});
   doc.text("Bronca Creci : 199.167-F",105,22,{align:"center"});
 }
-function headerFooter(doc){
-  const pages=doc.getNumberOfPages();
-  for(let i=1;i<=pages;i++){
-    doc.setPage(i); pageHeader(doc);
-    doc.setFont("helvetica","normal");doc.setFontSize(8.5);
-    doc.text("página "+i+" de "+pages,190,268,{align:"right"});
-    doc.setFont("helvetica","normal");doc.setFontSize(7.5);
-    doc.text("Erica Bronca CRECI: 199.167",105,278,{align:"center"});
-    doc.text("Estrada Mario de Moraes, 1033 – Casa 1, Juquehy, São Sebastião/SP",105,282,{align:"center"});
-    doc.text("(12) 98123 5534",105,286,{align:"center"});
-  }
-  doc.setFont("helvetica","normal");doc.setFontSize(10);
-}
 function pdf(){
   if(!dates())return alert("Corrija as datas antes de gerar.");
   if(!window.jspdf||!window.jspdf.jsPDF)return alert("O motor de PDF não foi carregado. No Brave, permita o script externo usado pelo gerador (jsDelivr) para gerar o arquivo PDF.");
