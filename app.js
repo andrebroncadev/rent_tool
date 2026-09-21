@@ -83,46 +83,44 @@ function ensureSpace(doc,state,need){
   if(state.y+need>268){doc.addPage();state.y=35}
 }
 function paragraph(doc,label,text,state,opt={}){
-  const width=172;
+  const width=172,lineH=5,x=20;
+  doc.setFont("helvetica","bold");
   const labelW=label?doc.getTextWidth(label):0;
-  const firstLines=label?doc.splitTextToSize(text,width-labelW):doc.splitTextToSize(text,width);
-  const lineH=5.15;
-  const lines=label?[firstLines,...doc.splitTextToSize("",1)]:firstLines;
-  let allLines;
-  if(label){
-    allLines=[label+firstLines[0],...firstLines.slice(1)];
-  }else allLines=firstLines;
-  const need=allLines.length*lineH+3;
-  ensureSpace(doc,state,need);
   doc.setFont("helvetica",opt.boldAll?"bold":"normal");
+  const lines=label?doc.splitTextToSize(text,width-labelW):doc.splitTextToSize(text,width);
+  const need=lines.length*lineH+3;
+  ensureSpace(doc,state,need);
   if(label){
-    doc.setFont("helvetica","bold");doc.text(label,20,state.y);
+    doc.setFont("helvetica","bold");doc.text(label,x,state.y);
     doc.setFont("helvetica",opt.boldAll?"bold":"normal");
-    if(firstLines.length){doc.text(firstLines[0],20+labelW,state.y);for(let i=1;i<firstLines.length;i++)doc.text(firstLines[i],20,state.y+i*lineH)}
+    if(lines.length){
+      doc.text(lines[0],x+labelW,state.y);
+      for(let i=1;i<lines.length;i++)doc.text(lines[i],x,state.y+i*lineH);
+    }
   }else{
-    doc.text(allLines,20,state.y,{lineHeightFactor:1});
+    doc.text(lines,x,state.y,{lineHeightFactor:1});
   }
   state.y+=need;
 }
 function richParagraph(doc,label,boldPrefix,text,state){
-  const width=172,lineH=5.15;
-  const prefix=boldPrefix||"";
-  const first=doc.splitTextToSize(prefix+text,width-doc.getTextWidth(label));
-  const need=first.length*lineH+3;
-  ensureSpace(doc,state,need);
-  const x=20;
-  doc.setFont("helvetica","bold");doc.text(label,x,state.y);
-  let xx=x+doc.getTextWidth(label);
-  doc.setFont("helvetica","bold");doc.text(prefix,xx,state.y);xx+=doc.getTextWidth(prefix);
+  const width=172,lineH=5,x=20,prefix=boldPrefix||"";
+  doc.setFont("helvetica","bold");
+  const labelW=doc.getTextWidth(label);
+  const prefixW=doc.getTextWidth(prefix);
   doc.setFont("helvetica","normal");
-  if(first.length)doc.text(first[0].slice(prefix.length),xx,state.y);
-  for(let i=1;i<first.length;i++)doc.text(first[i],x,state.y+i*lineH);
+  const lines=doc.splitTextToSize(text,width-labelW-prefixW);
+  const need=lines.length*lineH+3;
+  ensureSpace(doc,state,need);
+  doc.setFont("helvetica","bold");doc.text(label,x,state.y);
+  let xx=x+labelW;
+  doc.text(prefix,xx,state.y);
+  for(let i=0;i<lines.length;i++)doc.text(lines[i],i?x:xx+prefixW,state.y+i*lineH);
   state.y+=need;
 }
 function pageHeader(doc){
   doc.setFont("helvetica","bold");doc.setFontSize(8);
-  doc.text("Erica",15,18);
-  doc.text("Bronca Creci : 199.167-F",15,22);
+  doc.text("Erica",105,18,{align:"center"});
+  doc.text("Bronca Creci : 199.167-F",105,22,{align:"center"});
 }
 function headerFooter(doc){
   const pages=doc.getNumberOfPages();
@@ -187,7 +185,6 @@ function pdf(){
   doc.save("Contrato_Temporada_"+(v("tenantName").replace(/\s+/g,"_")||"EBIMOB")+".pdf");
 }
 
-function valorPorExtenso(n){return""}
 function preview(){alert("Pré-visualização rápida: revise os campos e clique em Gerar PDF.")}
 ["btnGerarTop","btnGerarBottom"].forEach(id=>$(id).onclick=pdf);
 $("btnPreview").onclick=preview;
