@@ -237,8 +237,16 @@ async function pdf(previewOnly=false){
   const installments=[...document.querySelectorAll(".installment")];
   paragraph(doc,"VALOR: ","R$ "+numText(total)+" ("+moneyWords(total)+")",s,{boldAll:true});
   paragraph(doc,"QUANTIDADE DE PARCELAS: ",String(installments.length),s,{boldAll:true});
-  if(ro)richParagraph(doc,"Reserva: ","a) R$ "+numText(ro)+" ("+moneyWords(ro)+") ","pagos na data de assinatura deste contrato na conta do locador "+bankText("owner")+".",s);
-  if(rb)richParagraph(doc,"","b) R$ "+numText(rb)+" ("+moneyWords(rb)+") ","pagos na data de assinatura deste contrato na conta do corretor, mediante depósito, transferência bancária ou PIX para a conta "+bankText("broker")+".",s);
+  if(ro)richText(doc,"Reserva: ",[
+    {text:"a) R$ "+numText(ro)+" ("+moneyWords(ro)+")",bold:true},
+    {text:" pagos na data de assinatura deste contrato na conta do locador ",bold:false},
+    {text:bankText("owner"),bold:true},{text:".",bold:false}
+  ],s);
+  if(rb)richText(doc,"",[
+    {text:"b) R$ "+numText(rb)+" ("+moneyWords(rb)+")",bold:true},
+    {text:" pagos na data de assinatura deste contrato na conta da imobiliária, mediante depósito, transferência bancária ou PIX para a conta ",bold:false},
+    {text:bankText("broker"),bold:true},{text:".",bold:false}
+  ],s);
   installments.forEach((x,i)=>{
     const pv=+(x.querySelector(".pvalue").value)||0,pd=x.querySelector(".pdate").value,target=x.querySelector(".ptarget").value;
     const account=target==="broker"?bankText("broker"):bankText("owner");
@@ -279,7 +287,69 @@ async function pdf(previewOnly=false){
   doc.save("Contrato_Temporada_"+(v("tenantName").replace(/\s+/g,"_")||"EBIMOB")+".pdf");
 }
 
-async function preview(){
+async function docxRuns(D,runs){return runs.map(r=>new D.TextRun({text:r.text,bold:!!r.bold,font:"Arial",size:21}));}
+function docxParagraph(D,label,runs,spacing=120){
+  return new D.Paragraph({children:[new D.TextRun({text:label||"",bold:true,font:"Arial",size:21}),...docxRuns(D,runs)],spacing:{after:spacing,line:276}});
+}
+async function saveDocx(){
+  if(!window.docx)return alert("O motor de DOCX não foi carregado. Permita o script externo usado pelo gerador.");
+  const D=window.docx;
+  const nights=+$("nights").value||0,clean=+$("cleanValue").value||0,rent=+$("rentValue").value||0,total=rent+clean;
+  const ro=+$("reservationOwnerValue").value||0,rb=+$("reservationBrokerValue").value||0;
+  const installments=[...document.querySelectorAll(".installment")];
+  const children=[];
+  children.push(new D.Paragraph({alignment:D.AlignmentType.CENTER,spacing:{after:180},children:[new D.TextRun({text:"CONTRATO DE ALUGUEL DE TEMPORADA",bold:true,font:"Arial",size:28})]}));
+  children.push(docxParagraph(D,"LOCADOR: ",[{text:owner(),bold:true},{text:" domiciliado em ",bold:false},{text:addr("owner"),bold:true},{text:".",bold:false}]));
+  children.push(docxParagraph(D,"LOCATÁRIO: ",[{text:v("tenantName")+", "+v("tenantCivil")+", "+v("tenantJob"),bold:true},{text:", portador do RG ",bold:false},{text:v("tenantRg"),bold:true},{text:" inscrito no CPF: ",bold:false},{text:v("tenantCpf"),bold:true},{text:", residente e domiciliado à ",bold:false},{text:addr("tenant"),bold:true},{text:".",bold:false}]));
+  children.push(docxParagraph(D,"IMÓVEL: ",[{text:addr("property")+(v("propertyCondo")?" "+v("propertyCondo"):""),bold:true},{text:".",bold:false}]));
+  children.push(docxParagraph(D,"PRAZO: ",[
+    {text:nights+" ("+words(nights)+" diárias)",bold:true},{text:" Iniciando a partir das ",bold:false},{text:v("checkinTime")+" horas",bold:true},
+    {text:" do dia ",bold:false},{text:br(v("checkin")),bold:true},{text:" sendo a saída no dia ",bold:false},{text:br(v("checkout")),bold:true},
+    {text:" até as ",bold:false},{text:v("checkoutTime")+" horas",bold:true},{text:", oportunidade em que o LOCATÁRIO devolverá as chaves na ",bold:false},
+    {text:v("keyPlace"),bold:true},{text:", obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de ",bold:false},
+    {text:moneyText(clean),bold:true},{text:" que serão depositados juntos com o valor de reserve do imovel.",bold:false}
+  ]));
+  children.push(docxParagraph(D,"VALOR: ",[{text:"R$ "+numText(total)+" ("+moneyWords(total)+")",bold:true}]));
+  children.push(docxParagraph(D,"QUANTIDADE DE PARCELAS: ",[{text:String(installments.length),bold:true}]));
+  if(ro)children.push(docxParagraph(D,"Reserva: ",[{text:"a) R$ "+numText(ro)+" ("+moneyWords(ro)+")",bold:true},{text:" pagos na data de assinatura deste contrato na conta do locador ",bold:false},{text:bankText("owner"),bold:true},{text:".",bold:false}]));
+  if(rb)children.push(docxParagraph(D,"",[...[
+    {text:"b) R$ "+numText(rb)+" ("+moneyWords(rb)+")",bold:true},{text:" pagos na data de assinatura deste contrato na conta da imobiliária, mediante depósito, transferência bancária ou PIX para a conta ",bold:false},{text:bankText("broker"),bold:true},{text:".",bold:false}
+  ]]));
+  installments.forEach((x,i)=>{
+    const pv=+(x.querySelector(".pvalue").value)||0,pd=x.querySelector(".pdate").value,target=x.querySelector(".ptarget").value;
+    const account=bankText(target==="broker"?"broker":"owner"),who=target==="broker"?"conta do corretor":"conta do locador";
+    children.push(docxParagraph(D,"PARCELA "+(i+1)+": ",[{text:"R$ "+numText(pv)+" ("+moneyWords(pv)+")",bold:true},{text:" pagos até data ",bold:false},{text:br(pd),bold:true},{text:" na "+who+" ",bold:false},{text:account,bold:true},{text:".",bold:false}]));
+    children.push(docxParagraph(D,"",[{text:"A conta do locador: ",bold:false},{text:bankText("owner"),bold:true},{text:". A conta da imobiliária: ",bold:false},{text:bankText("broker"),bold:true},{text:".",bold:false}]));
+  });
+  children.push(docxParagraph(D,"",[{text:"Os comprovantes dos depósitos servirão como recibo do pagamento.",bold:false}]));
+  children.push(docxParagraph(D,"Parágrafo 1: ",[{text:"Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de ",bold:false},{text:v("lateFinePct")+"%",bold:true},{text:" do valor da parcela inadimplida.",bold:false}]));
+  children.push(docxParagraph(D,"CAUÇÃO: ",[{text:"Desde já, fica estabelecido que ao efetuar o check-in a locatária deixara em responsabilidade do corretor um cheque caução de ",bold:false},{text:moneyText(+$("cautionValue").value||0),bold:true},{text:" que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.",bold:false}]));
+  children.push(docxParagraph(D,"Parágrafo 1: ",[{text:"deve ser enviado uma foto do cheque que será dado como caução no ato da assinatura desse contrato para consulta e análise, que poderá ser recusado caso, o CPF esteja com restrição nos órgão de defesa do consumidor.",bold:false}]));
+  children.push(docxParagraph(D,"RESCISÃO: ",[{text:"O presente contrato destina-se única e exclusivamente para fins de aluguel de temporada, sendo intransferível, não podendo o imóvel ser sublocado, cedido ou emprestado, sob qualquer pretexto, tendo a sua rescisão automática no dies a quo.",bold:false}]));
+  children.push(docxParagraph(D,"DESISTÊNCIA: ",[{text:"Em caso de desistência do LOCATÁRIO, a título de ressarcimento pelos danos oriundos da desistência, o mesmo perderá os valores que já pagou, comprometendo-se a efetuar o pagamento do valor integral do contrato, caso o LOCADOR não consiga alugar o imóvel para o mesmo período.",bold:false}]));
+  children.push(docxParagraph(D,"CAPACIDADE: ",[{text:"O imóvel locado, pelo seu sistema hidráulico, comporta a habitação máxima de ",bold:false},{text:v("capacity"),bold:true},{text:" pessoas. Se o LOCATÁRIO exceder a este número, os que excederem pagará uma multa diária de ",bold:false},{text:moneyText(+$("excessPersonFine").value||0),bold:true},{text:" por pessoa, independente das providências de desocupação imediata que poderão ser tomadas a critério do LOCADOR.",bold:false}]));
+  children.push(docxParagraph(D,"CLAUSULA PENAL: ",[{text:"A permanência no imóvel após o dies a quo implicará no pagamento em dobro do aluguel, por dia que exceder, até a sua efetiva desocupação. Neste caso, todos os outros gastos que se fizerem necessários com relação à acomodação dos inquilinos que ocupariam o imóvel, mas foram impedidos de fazê-lo devido a sua permanência abusiva no imóvel, correrão por conta do LOCATÁRIO. Em casos supervenientes que determinem a antecipação da saída do imóvel pelo LOCATÁRIO, de nenhuma forma será devolvida a quantia já paga.",bold:false}]));
+  children.push(docxParagraph(D,"RESPONSABILIDADE: ",[{text:"O LOCATÁRIO será responsável por qualquer multa que der causa, seja por desrespeito às leis federais, estaduais, municipais, e condominiais. A responsabilidade do LOCATÁRIO também se estende aos danos que causar ao imóvel, que deverão ser imediatamente reparados pelo mesmo. Em não cumprindo esta determinação, o LOCADOR fica autorizado a executar os reparos, independentemente de orçamento, à custa do LOCATÁRIO.",bold:false}]));
+  children.push(docxParagraph(D,"",[{text:"O LOCATÁRIO deve manter o imóvel (instalações sanitárias e elétricas, fechos, vidros, torneiras, ralos, pisos e calçadas, bem como os demais acessórios), os móveis e os utensílios em perfeito estado de conservação, e em boas condições de higiene, para assim restituí-los, quando findo ou rescindido este contrato. Havendo qualquer tipo de dano no imóvel, utensílios, moveis, piscina etc, período em que o locatário encontra-se na posse do imóvel, o locador imediatamente fará 3 orçamentos, optando pelo serviço de menor valor, que deverá ser ressarcido de pronto pelo locatário.",bold:false}]));
+  children.push(docxParagraph(D,"",[{text:"Fica expressmente proibido trocar os moveis dos lugares, forçar a abertura dos armarios de uso pessoal os quais estarão trancados, sendo passivel de multa no valor de R$ "+numText(+$("furnitureFine").value||2000)+" + reparação dos danos. É imprescindivel que o locatario não deixe louças e lixos na casa na sua desocupação.",bold:false}]));
+  children.push(docxParagraph(D,"CONDIÇÕES LEGAIS: ",[{text:"Rege-se o presente contrato, naquilo em que for omisso, pela Lei n° 8245/91 e lei 12.112/2009 (lei do inquilinato), Código Civil e demais disposições pertinentes à locação de imóveis, direito de vizinhança e etc.",bold:false}]));
+  children.push(docxParagraph(D,"CORRETAGEM E COMISSÃO DE CORRETAGEM: ",[{text:"O valor pago a título de comissão de corretagem, de ",bold:false},{text:v("commissionPct")+"%",bold:true},{text:" do valor total de locação, é de responsabilidade do proprietário do imóvel, que será descontado da primeira parcela que sera depositado na conta indicada do corretor (",bold:false},{text:bankText("broker"),bold:true},{text:") na data da assinatura do contrato",bold:false}]));
+  children.push(docxParagraph(D,"Parágrafo 1: ",[{text:"O serviço de corretagem se resume ao estabelecido no artigo 722 do Código Civil e assim, a titulo de cortesia, qualquer intermediação posterior poderá ser realizada pelo corretor.",bold:false}]));
+  children.push(docxParagraph(D,"FORO: ",[{text:"Para dirimir eventuais controvérsias relacionadas a este contrato, elegem as partes o fórum da ",bold:false},{text:v("forum"),bold:true},{text:", renunciando a qualquer outro, por mais especial que seja.",bold:false}]));
+  children.push(docxParagraph(D,"DESPESAS JUDICIAIS: ",[{text:"Se em razão do descumprimento de uma das cláusulas do presente contrato o LOCADOR fique obrigado a recorrer à tutela do Poder Judiciário, o LOCATÁRIO arcará com o pagamento integral das despesas e custas judiciais, assim como honorários advocatícios, na base de ",bold:false},{text:v("lawyerPct")+"%",bold:true},{text:" sob o valor da causa.",bold:false}]));
+  children.push(new D.Paragraph({spacing:{before:240,after:120},children:[new D.TextRun({text:"São Sebastião /SP, "+longDate(v("contractDate"))+".",font:"Arial",size:21})]}));
+  children.push(new D.Paragraph({spacing:{before:240,after:120},children:[new D.TextRun({text:"LOCADOR:                                      LOCATÁRIO:",font:"Arial",size:21,bold:true})]}));
+  children.push(new D.Paragraph({spacing:{after:160},children:[new D.TextRun({text:"________________________                    ________________________",font:"Arial",size:21})]}));
+  children.push(new D.Paragraph({children:[new D.TextRun({text:"TESTEMUNHAS:",font:"Arial",size:21,bold:true})]}));
+  children.push(new D.Paragraph({spacing:{after:100},children:[new D.TextRun({text:"1ª____________________                         2ª____________________",font:"Arial",size:21})]}));
+
+  let headerChildren=[new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.TextRun({text:"Erica",bold:true,font:"Arial",size:16})]}),new D.Paragraph({alignment:D.AlignmentType.CENTER,spacing:{after:60},children:[new D.TextRun({text:"Bronca Creci : 199.167-F",bold:true,font:"Arial",size:16})]})];
+  const doc=new D.Document({creator:"EBIMOB",sections:[{headers:{default:new D.Header({children:headerChildren})},properties:{page:{margin:{top:1200,right:1134,bottom:1200,left:1134}}},children}]});
+  const blob=await D.Packer.toBlob(doc);
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Contrato_Temporada_"+(v("tenantName").replace(/\s+/g,"_")||"EBIMOB")+".docx";a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),60000);
+}
+function preview(){
   if(!window.jspdf||!window.jspdf.jsPDF)return alert("O motor de PDF não foi carregado.");
   const w=window.open("about:blank","_blank");
   if(!w)return alert("Permita pop-ups para visualizar o contrato.");
