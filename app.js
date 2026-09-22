@@ -65,7 +65,6 @@ $("btnAddInstallment").onclick=()=>{
 };
 function renum(){
   const xs=document.querySelectorAll(".installment");
-  $("installmentCount").textContent=xs.length;
   xs.forEach((x,i)=>x.querySelector("b").textContent="PARCELA "+(i+1));
 }
 
@@ -123,6 +122,7 @@ function ensureSpace(doc,state,need){
   if(state.y+need>268){doc.addPage();state.y=50;pageHeader(doc,currentLogo)}
 }
 function richText(doc,label,runs,state){
+  doc.setFont("helvetica","normal");doc.setFontSize(10.5);
   const width=172,lineH=5,x=20,tokens=[];
   const push=(t,b)=>String(t??"").split(/(\s+)/).forEach(q=>{if(q)tokens.push({t:q,b})});
   push(label,true);runs.forEach(r=>push(r.text,r.bold));
@@ -142,6 +142,7 @@ function richText(doc,label,runs,state){
   state.y+=need;
 }
 function paragraph(doc,label,text,state,opt={}){
+  doc.setFont("helvetica","normal");doc.setFontSize(10.5);
   const width=172,lineH=5,x=20;
   doc.setFont("helvetica","bold");
   const labelW=label?doc.getTextWidth(label):0;
@@ -219,8 +220,8 @@ function addPdfFooter(doc){
 function pageHeader(doc,logo){
   if(logo)doc.addImage(logo,"PNG",92,5,26,20);
   doc.setFont("helvetica","bold");doc.setFontSize(8);
-  doc.text("Erica",105,29,{align:"center"});
-  doc.text("Bronca Creci : 199.167-F",105,33,{align:"center"});
+  doc.text("Erica Bronca",105,29,{align:"center"});
+  doc.text("CRECI: 199.167-F",105,33,{align:"center"});
 }
 async function pdf(previewOnly=false){
   if(!previewOnly&&$("checkin").value&&$("checkout").value&&!dates())return alert("Corrija as datas antes de gerar.");
@@ -252,7 +253,6 @@ async function pdf(previewOnly=false){
   const ro=+$("reservationOwnerValue").value||0,rb=+$("reservationBrokerValue").value||0;
   const installments=[...document.querySelectorAll(".installment")];
   paragraph(doc,"VALOR: ","R$ "+numText(total)+" ("+moneyWords(total)+")",s,{boldAll:true});
-  paragraph(doc,"QUANTIDADE DE PARCELAS: ",String(installments.length),s,{boldAll:true});
   if(ro)richText(doc,"Reserva: ",[
     {text:"a) R$ "+numText(ro)+" ("+moneyWords(ro)+")",bold:true},
     {text:" pagos na data de assinatura deste contrato na conta do locador ",bold:false},
@@ -283,7 +283,7 @@ async function pdf(previewOnly=false){
   paragraph(doc,"RESCISÃO: ","O presente contrato destina-se única e exclusivamente para fins de aluguel de temporada, sendo intransferível, não podendo o imóvel ser sublocado, cedido ou emprestado, sob qualquer pretexto, tendo a sua rescisão automática no dies a quo.",s);
   paragraph(doc,"DESISTÊNCIA: ","Em caso de desistência do LOCATÁRIO, a título de ressarcimento pelos danos oriundos da desistência, o mesmo perderá os valores que já pagou, comprometendo-se a efetuar o pagamento do valor integral do contrato, caso o LOCADOR não consiga alugar o imóvel para o mesmo período.",s);
   richText(doc,"CAPACIDADE: ",[{text:"O imóvel locado, pelo seu sistema hidráulico, comporta a habitação máxima de ",bold:false},{text:v("capacity"),bold:true},{text:" pessoas. Se o LOCATÁRIO exceder a este número, os que excederem pagará uma multa diária de ",bold:false},{text:moneyText(+$("excessPersonFine").value||0),bold:true},{text:" por pessoa, independente das providências de desocupação imediata que poderão ser tomadas a critério do LOCADOR.",bold:false}],s);
-  paragraph(doc,"CLÁUSULA PENAL: ","A permanência no imóvel após o dies a quo implicará no pagamento em dobro do aluguel, por dia que exceder, até a sua efetiva desocupação. Neste caso, todos os outros gastos que se fizerem necessários com relação à acomodação dos inquilinos que ocupariam o imóvel, mas foram impedidos de fazê-lo devido a sua permanência abusiva no imóvel, correrão por conta do LOCATÁRIO. Em casos supervenientes que determinem a antecipação da saída do imóvel pelo LOCATÁRIO, de nenhuma forma será devolvida a quantia já paga.",s);
+  richText(doc,"CLÁUSULA PENAL: ",[{text:"A permanência no imóvel após o dies a quo implicará no pagamento em dobro do aluguel, por dia que exceder, até a sua efetiva desocupação. Neste caso, todos os outros gastos que se fizerem necessários com relação à acomodação dos inquilinos que ocupariam o imóvel, mas foram impedidos de fazê-lo devido a sua permanência abusiva no imóvel, correrão por conta do LOCATÁRIO. Em casos supervenientes que determinem a antecipação da saída do imóvel pelo LOCATÁRIO, de nenhuma forma será devolvida a quantia já paga.",bold:false}],s);
   paragraph(doc,"RESPONSABILIDADE: ","O LOCATÁRIO será responsável por qualquer multa que der causa, seja por desrespeito às leis federais, estaduais, municipais, e condominiais. A responsabilidade do LOCATÁRIO também se estende aos danos que causar ao imóvel, que deverão ser imediatamente reparados pelo mesmo. Em não cumprindo esta determinação, o LOCADOR fica autorizado a executar os reparos, independentemente de orçamento, à custa do LOCATÁRIO.",s);
   paragraph(doc,"","O LOCATÁRIO deve manter o imóvel (instalações sanitárias e elétricas, fechos, vidros, torneiras, ralos, pisos e calçadas, bem como os demais acessórios), os móveis e os utensílios em perfeito estado de conservação, e em boas condições de higiene, para assim restituí-los, quando findo ou rescindido este contrato. Havendo qualquer tipo de dano no imóvel, utensílios, móveis, piscina etc., período em que o locatário encontra-se na posse do imóvel, o locador imediatamente fará 3 orçamentos, optando pelo serviço de menor valor, que deverá ser ressarcido de pronto pelo locatário.",s);
   richText(doc,"",[{text:"Fica expressamente proibido trocar os móveis dos lugares, forçar a abertura dos armários de uso pessoal os quais estarão trancados, sendo passível de multa no valor de R$ ",bold:false},{text:numText(+$("furnitureFine").value||2000),bold:true},{text:" + reparação dos danos. É imprescindível que o locatário não deixe louças e lixos na casa na sua desocupação.",bold:false}],s);
@@ -333,7 +333,6 @@ async function saveDocx(){
     {text:moneyText(clean),bold:true},{text:" que será depositada junto com o valor da reserva do imóvel.",bold:false}
   ]));
   children.push(docxParagraph(D,"VALOR: ",[{text:"R$ "+numText(total)+" ("+moneyWords(total)+")",bold:true}]));
-  children.push(docxParagraph(D,"QUANTIDADE DE PARCELAS: ",[{text:String(installments.length),bold:true}]));
   if(ro)children.push(docxParagraph(D,"Reserva: ",[{text:"a) R$ "+numText(ro)+" ("+moneyWords(ro)+")",bold:true},{text:" pagos na data de assinatura deste contrato na conta do locador ",bold:false},...bankRuns("owner"),{text:".",bold:false}]));
   if(rb)children.push(docxParagraph(D,"",[...[
     {text:"b) R$ "+numText(rb)+" ("+moneyWords(rb)+")",bold:true},{text:" pagos na data de assinatura deste contrato na conta da imobiliária, mediante depósito, transferência bancária ou PIX para a conta ",bold:false},...bankRuns("broker"),{text:".",bold:false}
@@ -366,7 +365,7 @@ async function saveDocx(){
   children.push(new D.Paragraph({children:[new D.TextRun({text:"TESTEMUNHAS:",font:"Arial",size:21,bold:true})]}));
   children.push(new D.Paragraph({spacing:{after:100},children:[new D.TextRun({text:"1ª____________________                         2ª____________________",font:"Arial",size:21})]}));
 
-  let headerChildren=[new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.TextRun({text:"Erica",bold:true,font:"Arial",size:16})]}),new D.Paragraph({alignment:D.AlignmentType.CENTER,spacing:{after:60},children:[new D.TextRun({text:"Bronca Creci : 199.167-F",bold:true,font:"Arial",size:16})]})];
+  let headerChildren=[new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.TextRun({text:"Erica Bronca",bold:true,font:"Arial",size:16})]}),new D.Paragraph({alignment:D.AlignmentType.CENTER,spacing:{after:60},children:[new D.TextRun({text:"CRECI: 199.167-F",bold:true,font:"Arial",size:16})]})];
   try{const img=await fetch("8cfe7577-9f1e-4c6e-b5e7-e9bb65569ef7.png").then(r=>r.arrayBuffer());headerChildren.unshift(new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.ImageRun({data:img,type:"png",transformation:{width:74,height:57}})]}))}catch(e){}
   const footerChildren=[
     new D.Paragraph({alignment:D.AlignmentType.CENTER,spacing:{after:0},children:[new D.TextRun({text:"E. Bronca Corretora de Imóveis",font:"Arial",size:16})]}),
