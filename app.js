@@ -287,7 +287,7 @@ async function pdf(previewOnly=false){
   doc.save("Contrato_Temporada_"+(v("tenantName").replace(/\s+/g,"_")||"EBIMOB")+".pdf");
 }
 
-async function docxRuns(D,runs){return runs.map(r=>new D.TextRun({text:r.text,bold:!!r.bold,font:"Arial",size:21}));}
+function docxRuns(D,runs){return runs.map(r=>new D.TextRun({text:r.text,bold:!!r.bold,font:"Arial",size:21}));}
 function docxParagraph(D,label,runs,spacing=120){
   return new D.Paragraph({children:[new D.TextRun({text:label||"",bold:true,font:"Arial",size:21}),...docxRuns(D,runs)],spacing:{after:spacing,line:276}});
 }
@@ -349,7 +349,7 @@ async function saveDocx(){
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Contrato_Temporada_"+(v("tenantName").replace(/\s+/g,"_")||"EBIMOB")+".docx";a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),60000);
 }
-function preview(){
+async function preview(){
   if(!window.jspdf||!window.jspdf.jsPDF)return alert("O motor de PDF não foi carregado.");
   const w=window.open("about:blank","_blank");
   if(!w)return alert("Permita pop-ups para visualizar o contrato.");
