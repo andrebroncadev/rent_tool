@@ -247,7 +247,7 @@ async function pdf(previewOnly=false){
     {text:" até as ",bold:false},{text:v("checkoutTime")+" horas",bold:true},
     {text:", oportunidade em que o LOCATÁRIO",bold:false},{text:" devolverá as chaves na ",bold:false},{text:v("keyPlace"),bold:true},
     {text:", obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de ",bold:false},
-    {text:moneyText(clean),bold:true},{text:" que serão depositados juntos com o valor de reserve do imovel.",bold:false}
+    {text:moneyText(clean),bold:true},{text:" que será depositada junto com o valor da reserva do imóvel.",bold:false}
   ],s);
   const ro=+$("reservationOwnerValue").value||0,rb=+$("reservationBrokerValue").value||0;
   const installments=[...document.querySelectorAll(".installment")];
@@ -330,7 +330,7 @@ async function saveDocx(){
     {text:" do dia ",bold:false},{text:br(v("checkin")),bold:true},{text:" sendo a saída no dia ",bold:false},{text:br(v("checkout")),bold:true},
     {text:" até as ",bold:false},{text:v("checkoutTime")+" horas",bold:true},{text:", oportunidade em que o LOCATÁRIO devolverá as chaves na ",bold:false},
     {text:v("keyPlace"),bold:true},{text:", obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de ",bold:false},
-    {text:moneyText(clean),bold:true},{text:" que serão depositados juntos com o valor de reserve do imovel.",bold:false}
+    {text:moneyText(clean),bold:true},{text:" que será depositada junto com o valor da reserva do imóvel.",bold:false}
   ]));
   children.push(docxParagraph(D,"VALOR: ",[{text:"R$ "+numText(total)+" ("+moneyWords(total)+")",bold:true}]));
   children.push(docxParagraph(D,"QUANTIDADE DE PARCELAS: ",[{text:String(installments.length),bold:true}]));
