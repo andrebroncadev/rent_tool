@@ -249,10 +249,16 @@ async function pdf(previewOnly=false){
   ],s);
   installments.forEach((x,i)=>{
     const pv=+(x.querySelector(".pvalue").value)||0,pd=x.querySelector(".pdate").value,target=x.querySelector(".ptarget").value;
-    const account=target==="broker"?bankText("broker"):bankText("owner");
     const who=target==="broker"?"conta do corretor":"conta do locador";
-    richParagraph(doc,"PARCELA "+(i+1)+": ","R$ "+numText(pv)+" ("+moneyWords(pv)+") ","pagos até data "+br(pd)+" na "+who+" "+account+".",s);
-    paragraph(doc,"","A conta do locador: "+bankText("owner")+". A conta da imobiliária: "+bankText("broker")+".",s,{boldAll:true});
+    richText(doc,"PARCELA "+(i+1)+": ",[
+      {text:"R$ "+numText(pv)+" ("+moneyWords(pv)+")",bold:true},
+      {text:" pagos até data ",bold:false},{text:br(pd),bold:true},
+      {text:" na "+who+" ",bold:false},{text:bankText(target==="broker"?"broker":"owner"),bold:true},{text:".",bold:false}
+    ],s);
+    richText(doc,"",[
+      {text:"A conta do locador: ",bold:false},{text:bankText("owner"),bold:true},
+      {text:". A conta da imobiliária: ",bold:false},{text:bankText("broker"),bold:true},{text:".",bold:false}
+    ],s);
   });
   paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s,{boldAll:true});
   richText(doc,"Parágrafo 1: ",[{text:"Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de ",bold:false},{text:v("lateFinePct")+"%",bold:true},{text:" do valor da parcela inadimplida.",bold:false}],s);
