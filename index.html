@@ -127,9 +127,9 @@
           <div class="grid gap-top">
             <div class="field c6"><label for="ownerPayment">Conta / PIX do locador</label><textarea id="ownerPayment"></textarea></div>
             <div class="field c6"><label for="brokerPayment">Conta / PIX do corretor</label><textarea id="brokerPayment"></textarea></div>
-            <div class="field c4"><label for="reservationValue">Reserva / sinal (R$)</label><input id="reservationValue" type="number" step="0.01" min="0"></div>
+            <div class="field c3"><label for="reservationOwnerValue">Reserva - locador (R$)</label><input id="reservationOwnerValue" type="number" step="0.01" min="0"></div><div class="field c3"><label for="reservationBrokerValue">Reserva - imobiliária (R$)</label><input id="reservationBrokerValue" type="number" step="0.01" min="0"></div><div class="summary c3"><span>RESERVA TOTAL</span><strong id="reservationTotalValue">R$ 0,00</strong></div><div class="summary c3"><span>QUANTIDADE DE PARCELAS</span><strong id="installmentCount">0</strong></div>
           </div>
-          <div class="notice">A reserva entra como paga na data de assinatura. A faxina não entra na base da comissão. As parcelas são ilimitadas e aparecem no PDF como PARCELA 1, PARCELA 2 etc.</div>
+          <div class="notice">A reserva entra como paga na data de assinatura. As parcelas aparecem no PDF como PARCELA 1, PARCELA 2 etc.</div>
           <div class="installment-header"><strong>Parcelas adicionais</strong><button type="button" class="btn secondary no-print" id="btnAddInstallment">+ Adicionar parcela</button></div>
           <div id="installments"></div>
         </div>
