@@ -58,7 +58,7 @@ $("btnAddInstallment").onclick=()=>{
   seq++;
   const x=document.createElement("div");
   x.className="installment";
-  x.innerHTML='<div class="installment-title"><b>PARCELA '+seq+'</b><span class="installment-balance">Saldo após esta parcela: R$ 0,00</span><button type="button" class="remove">Remover</button></div><div class="grid"><div class="field c4"><label>Vencimento</label><input class="pdate" type="date"></div><div class="field c4"><label>Valor (R$)</label><input class="pvalue" type="number" step="0.01" min="0"></div><div class="field c4"><label>Conta do locador</label><select class="ptarget"><option value="owner">Locador</option><option value="broker">Imobiliária</option></select></div></div>';
+  x.innerHTML='<div class="installment-title"><b>PARCELA '+seq+'</b><span class="installment-balance">Saldo após esta parcela: R$ 0,00</span><button type="button" class="remove">Remover</button></div><div class="grid"><div class="field c4"><label>Vencimento</label><input class="pdate" type="date"></div><div class="field c4"><label>Valor (R$)</label><input class="pvalue" type="number" step="0.01" min="0"></div><div class="field c4"><label>Destino do pagamento</label><select class="ptarget"><option value="owner">Locador</option><option value="broker">Imobiliária</option></select></div></div>';
   x.querySelector(".remove").onclick=()=>{x.remove();renum();updateInstallmentBalances()};
   x.querySelector(".pvalue").oninput=updateInstallmentBalances;
   $("installments").appendChild(x);renum();updateInstallmentBalances();
@@ -236,7 +236,7 @@ async function pdf(previewOnly=false){
       {text:". A conta da imobiliária: ",bold:false},{text:bankText("broker"),bold:true},{text:".",bold:false}
     ],s);
   });
-  paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s,{boldAll:true});
+  paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s);
   richText(doc,"Parágrafo 1: ",[{text:"Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de ",bold:false},{text:v("lateFinePct")+"%",bold:true},{text:" do valor da parcela inadimplida.",bold:false}],s);
   richText(doc,"CAUÇÃO: ",[{text:"Desde já, fica estabelecido que ao efetuar o check-in a locatária deixara em responsabilidade do corretor um cheque caução de ",bold:false},{text:moneyText(+$("cautionValue").value||0),bold:true},{text:" que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.",bold:false}],s);
   paragraph(doc,"Parágrafo 1: ","deve ser enviado uma foto do cheque que será dado como caução no ato da assinatura desse contrato para consulta e análise, que poderá ser recusado caso, o CPF esteja com restrição nos órgão de defesa do consumidor.",s);
@@ -245,7 +245,7 @@ async function pdf(previewOnly=false){
   richText(doc,"CAPACIDADE: ",[{text:"O imóvel locado, pelo seu sistema hidráulico, comporta a habitação máxima de ",bold:false},{text:v("capacity"),bold:true},{text:" pessoas. Se o LOCATÁRIO exceder a este número, os que excederem pagará uma multa diária de ",bold:false},{text:moneyText(+$("excessPersonFine").value||0),bold:true},{text:" por pessoa, independente das providências de desocupação imediata que poderão ser tomadas a critério do LOCADOR.",bold:false}],s);
   paragraph(doc,"CLAUSULA PENAL: ","A permanência no imóvel após o dies a quo implicará no pagamento em dobro do aluguel, por dia que exceder, até a sua efetiva desocupação. Neste caso, todos os outros gastos que se fizerem necessários com relação à acomodação dos inquilinos que ocupariam o imóvel, mas foram impedidos de fazê-lo devido a sua permanência abusiva no imóvel, correrão por conta do LOCATÁRIO. Em casos supervenientes que determinem a antecipação da saída do imóvel pelo LOCATÁRIO, de nenhuma forma será devolvida a quantia já paga.",s);
   paragraph(doc,"RESPONSABILIDADE: ","O LOCATÁRIO será responsável por qualquer multa que der causa, seja por desrespeito às leis federais, estaduais, municipais, e condominiais. A responsabilidade do LOCATÁRIO também se estende aos danos que causar ao imóvel, que deverão ser imediatamente reparados pelo mesmo. Em não cumprindo esta determinação, o LOCADOR fica autorizado a executar os reparos, independentemente de orçamento, à custa do LOCATÁRIO.",s);
-  paragraph(doc,"","O LOCATÁRIO deve manter o imóvel (instalações sanitárias e elétricas, fechos, vidros, torneiras, ralos, pisos e calçadas, bem como os demais acessórios), os móveis e os utensílios em perfeito estado de conservação, e em boas condições de higiene, para assim restituí-los, quando findo ou rescindido este contrato. Havendo qualquer tipo de dano no imóvel, utensílios, moveis, piscina etc, período em que o locatário encontra-se na posse do imóvel, o locador imediatamente fará 3 orçamentos, optando pelo serviço de menor valor, que deverá ser ressarcido de pronto pelo locatário.",s,{boldAll:true});
+  paragraph(doc,"","O LOCATÁRIO deve manter o imóvel (instalações sanitárias e elétricas, fechos, vidros, torneiras, ralos, pisos e calçadas, bem como os demais acessórios), os móveis e os utensílios em perfeito estado de conservação, e em boas condições de higiene, para assim restituí-los, quando findo ou rescindido este contrato. Havendo qualquer tipo de dano no imóvel, utensílios, moveis, piscina etc, período em que o locatário encontra-se na posse do imóvel, o locador imediatamente fará 3 orçamentos, optando pelo serviço de menor valor, que deverá ser ressarcido de pronto pelo locatário.",s);
   richText(doc,"",[{text:"Fica expressmente proibido trocar os moveis dos lugares, forçar a abertura dos armarios de uso pessoal os quais estarão trancados, sendo passivel de multa no valor de R$ ",bold:false},{text:numText(+$("furnitureFine").value||2000),bold:true},{text:" + reparação dos danos. É imprescindivel que o locatario não deixe louças e lixos na casa na sua desocupação.",bold:false}],s);
   paragraph(doc,"CONDIÇÕES LEGAIS: ","Rege-se o presente contrato, naquilo em que for omisso, pela Lei n° 8245/91 e lei 12.112/2009 (lei do inquilinato), Código Civil e demais disposições pertinentes à locação de imóveis, direito de vizinhança e etc.",s);
   richText(doc,"CORRETAGEM E COMISSÃO DE CORRETAGEM: ",[
@@ -257,8 +257,8 @@ async function pdf(previewOnly=false){
   richText(doc,"FORO: ",[{text:"Para dirimir eventuais controvérsias relacionadas a este contrato, elegem as partes o fórum da ",bold:false},{text:v("forum"),bold:true},{text:", renunciando a qualquer outro, por mais especial que seja.",bold:false}],s);
   richText(doc,"DESPESAS JUDICIAIS: ",[{text:"Se em razão do descumprimento de uma das cláusulas do presente contrato o LOCADOR fique obrigado a recorrer à tutela do Poder Judiciário, o LOCATÁRIO arcará com o pagamento integral das despesas e custas judiciais, assim como honorários advocatícios, na base de ",bold:false},{text:v("lawyerPct")+"%",bold:true},{text:" sob o valor da causa.",bold:false}],s);
 
-  if(s.y<215){s.y+=18}else{doc.addPage();s.y=51;pageHeader(doc,logo);}
-  s.y+=10;paragraph(doc,"","São Sebastião /SP, "+longDate(v("contractDate"))+".",s);
+  if(s.y>215){doc.addPage();s.y=51;pageHeader(doc,logo)}else{s.y+=8}
+  paragraph(doc,"","São Sebastião /SP, "+longDate(v("contractDate"))+".",s);
   s.y+=14;doc.setFont("helvetica","normal");doc.setFontSize(10);
   doc.text("LOCADOR:",76,s.y,{align:"center"});doc.text("LOCATÁRIO:",137,s.y,{align:"center"});s.y+=15;
   doc.text("________________________",52,s.y);doc.text("________________________",126,s.y);s.y+=12;
