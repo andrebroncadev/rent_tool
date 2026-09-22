@@ -255,16 +255,16 @@ async function pdf(previewOnly=false){
     paragraph(doc,"","A conta do locador: "+bankText("owner")+". A conta da imobiliária: "+bankText("broker")+".",s,{boldAll:true});
   });
   paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s,{boldAll:true});
-  paragraph(doc,"Parágrafo 1: ","Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de "+v("lateFinePct")+"% do valor da parcela inadimplida.",s);
-  paragraph(doc,"CAUÇÃO: ","Desde já, fica estabelecido que ao efetuar o check-in a locatária deixara em responsabilidade do corretor um cheque caução de "+moneyText(+$("cautionValue").value||0)+" que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.",s);
+  richText(doc,"Parágrafo 1: ",[{text:"Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de ",bold:false},{text:v("lateFinePct")+"%",bold:true},{text:" do valor da parcela inadimplida.",bold:false}],s);
+  richText(doc,"CAUÇÃO: ",[{text:"Desde já, fica estabelecido que ao efetuar o check-in a locatária deixara em responsabilidade do corretor um cheque caução de ",bold:false},{text:moneyText(+$("cautionValue").value||0),bold:true},{text:" que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.",bold:false}],s);
   paragraph(doc,"Parágrafo 1: ","deve ser enviado uma foto do cheque que será dado como caução no ato da assinatura desse contrato para consulta e análise, que poderá ser recusado caso, o CPF esteja com restrição nos órgão de defesa do consumidor.",s);
   paragraph(doc,"RESCISÃO: ","O presente contrato destina-se única e exclusivamente para fins de aluguel de temporada, sendo intransferível, não podendo o imóvel ser sublocado, cedido ou emprestado, sob qualquer pretexto, tendo a sua rescisão automática no dies a quo.",s);
   paragraph(doc,"DESISTÊNCIA: ","Em caso de desistência do LOCATÁRIO, a título de ressarcimento pelos danos oriundos da desistência, o mesmo perderá os valores que já pagou, comprometendo-se a efetuar o pagamento do valor integral do contrato, caso o LOCADOR não consiga alugar o imóvel para o mesmo período.",s);
-  paragraph(doc,"CAPACIDADE: ","O imóvel locado, pelo seu sistema hidráulico, comporta a habitação máxima de "+v("capacity")+" pessoas. Se o LOCATÁRIO exceder a este número, os que excederem pagará uma multa diária de "+moneyText(+$("excessPersonFine").value||0)+" por pessoa, independente das providências de desocupação imediata que poderão ser tomadas a critério do LOCADOR.",s);
+  richText(doc,"CAPACIDADE: ",[{text:"O imóvel locado, pelo seu sistema hidráulico, comporta a habitação máxima de ",bold:false},{text:v("capacity"),bold:true},{text:" pessoas. Se o LOCATÁRIO exceder a este número, os que excederem pagará uma multa diária de ",bold:false},{text:moneyText(+$("excessPersonFine").value||0),bold:true},{text:" por pessoa, independente das providências de desocupação imediata que poderão ser tomadas a critério do LOCADOR.",bold:false}],s);
   paragraph(doc,"CLAUSULA PENAL: ","A permanência no imóvel após o dies a quo implicará no pagamento em dobro do aluguel, por dia que exceder, até a sua efetiva desocupação. Neste caso, todos os outros gastos que se fizerem necessários com relação à acomodação dos inquilinos que ocupariam o imóvel, mas foram impedidos de fazê-lo devido a sua permanência abusiva no imóvel, correrão por conta do LOCATÁRIO. Em casos supervenientes que determinem a antecipação da saída do imóvel pelo LOCATÁRIO, de nenhuma forma será devolvida a quantia já paga.",s);
   paragraph(doc,"RESPONSABILIDADE: ","O LOCATÁRIO será responsável por qualquer multa que der causa, seja por desrespeito às leis federais, estaduais, municipais, e condominiais. A responsabilidade do LOCATÁRIO também se estende aos danos que causar ao imóvel, que deverão ser imediatamente reparados pelo mesmo. Em não cumprindo esta determinação, o LOCADOR fica autorizado a executar os reparos, independentemente de orçamento, à custa do LOCATÁRIO.",s);
   paragraph(doc,"","O LOCATÁRIO deve manter o imóvel (instalações sanitárias e elétricas, fechos, vidros, torneiras, ralos, pisos e calçadas, bem como os demais acessórios), os móveis e os utensílios em perfeito estado de conservação, e em boas condições de higiene, para assim restituí-los, quando findo ou rescindido este contrato. Havendo qualquer tipo de dano no imóvel, utensílios, moveis, piscina etc, período em que o locatário encontra-se na posse do imóvel, o locador imediatamente fará 3 orçamentos, optando pelo serviço de menor valor, que deverá ser ressarcido de pronto pelo locatário.",s,{boldAll:true});
-  paragraph(doc,"","Fica expressmente proibido trocar os moveis dos lugares, forçar a abertura dos armarios de uso pessoal os quais estarão trancados, sendo passivel de multa no valor de R$ "+numText(+$("furnitureFine").value||2000)+" + reparação dos danos. É imprescindivel que o locatario não deixe louças e lixos na casa na sua desocupação.",s,{boldAll:true});
+  richText(doc,"",[{text:"Fica expressmente proibido trocar os moveis dos lugares, forçar a abertura dos armarios de uso pessoal os quais estarão trancados, sendo passivel de multa no valor de R$ ",bold:false},{text:numText(+$("furnitureFine").value||2000),bold:true},{text:" + reparação dos danos. É imprescindivel que o locatario não deixe louças e lixos na casa na sua desocupação.",bold:false}],s);
   paragraph(doc,"CONDIÇÕES LEGAIS: ","Rege-se o presente contrato, naquilo em que for omisso, pela Lei n° 8245/91 e lei 12.112/2009 (lei do inquilinato), Código Civil e demais disposições pertinentes à locação de imóveis, direito de vizinhança e etc.",s);
   richText(doc,"CORRETAGEM E COMISSÃO DE CORRETAGEM: ",[
     {text:"O valor pago a título de comissão de corretagem, de ",bold:false},{text:v("commissionPct")+"%",bold:true},
@@ -272,8 +272,8 @@ async function pdf(previewOnly=false){
     {text:bankText("broker"),bold:true},{text:") na data da assinatura do contrato",bold:false}
   ],s);
   paragraph(doc,"Parágrafo 1: ","O serviço de corretagem se resume ao estabelecido no artigo 722 do Código Civil e assim, a titulo de cortesia, qualquer intermediação posterior poderá ser realizada pelo corretor.",s);
-  paragraph(doc,"FORO: ","Para dirimir eventuais controvérsias relacionadas a este contrato, elegem as partes o fórum da "+v("forum")+", renunciando a qualquer outro, por mais especial que seja.",s);
-  paragraph(doc,"DESPESAS JUDICIAIS: ","Se em razão do descumprimento de uma das cláusulas do presente contrato o LOCADOR fique obrigado a recorrer à tutela do Poder Judiciário, o LOCATÁRIO arcará com o pagamento integral das despesas e custas judiciais, assim como honorários advocatícios, na base de "+v("lawyerPct")+"% sob o valor da causa.",s);
+  richText(doc,"FORO: ",[{text:"Para dirimir eventuais controvérsias relacionadas a este contrato, elegem as partes o fórum da ",bold:false},{text:v("forum"),bold:true},{text:", renunciando a qualquer outro, por mais especial que seja.",bold:false}],s);
+  richText(doc,"DESPESAS JUDICIAIS: ",[{text:"Se em razão do descumprimento de uma das cláusulas do presente contrato o LOCADOR fique obrigado a recorrer à tutela do Poder Judiciário, o LOCATÁRIO arcará com o pagamento integral das despesas e custas judiciais, assim como honorários advocatícios, na base de ",bold:false},{text:v("lawyerPct")+"%",bold:true},{text:" sob o valor da causa.",bold:false}],s);
 
   if(s.y<215){s.y+=18}else{doc.addPage();s.y=51;pageHeader(doc,logo);}
   s.y+=10;paragraph(doc,"","São Sebastião /SP, "+longDate(v("contractDate"))+".",s);
@@ -344,6 +344,7 @@ async function saveDocx(){
   children.push(new D.Paragraph({spacing:{after:100},children:[new D.TextRun({text:"1ª____________________                         2ª____________________",font:"Arial",size:21})]}));
 
   let headerChildren=[new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.TextRun({text:"Erica",bold:true,font:"Arial",size:16})]}),new D.Paragraph({alignment:D.AlignmentType.CENTER,spacing:{after:60},children:[new D.TextRun({text:"Bronca Creci : 199.167-F",bold:true,font:"Arial",size:16})]})];
+  try{const img=await fetch("8cfe7577-9f1e-4c6e-b5e7-e9bb65569ef7.png").then(r=>r.arrayBuffer());headerChildren.unshift(new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.ImageRun({data:img,type:"png",transformation:{width:74,height:57}})]}))}catch(e){}
   const doc=new D.Document({creator:"EBIMOB",sections:[{headers:{default:new D.Header({children:headerChildren})},properties:{page:{margin:{top:1200,right:1134,bottom:1200,left:1134}}},children}]});
   const blob=await D.Packer.toBlob(doc);
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Contrato_Temporada_"+(v("tenantName").replace(/\s+/g,"_")||"EBIMOB")+".docx";a.click();
@@ -362,4 +363,5 @@ async function preview(){
 ["btnGerarTop","btnGerarBottom"].forEach(id=>$(id).onclick=pdf);
 $("btnPreview").onclick=preview;
 $("btnGerarDocx").onclick=saveDocx;
+$("btnGerarDocxTop").onclick=saveDocx;
 $("btnLimpar").onclick=()=>{if(confirm("Limpar todos os campos?"))location.reload()};
