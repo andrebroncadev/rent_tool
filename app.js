@@ -120,7 +120,7 @@ function moneyWords(n){
 }
 
 function ensureSpace(doc,state,need){
-  if(state.y+need>268){doc.addPage();state.y=35;pageHeader(doc,currentLogo)}
+  if(state.y+need>268){doc.addPage();state.y=50;pageHeader(doc,currentLogo)}
 }
 function richText(doc,label,runs,state){
   const width=172,lineH=5,x=20,tokens=[];
@@ -195,8 +195,8 @@ async function pdf(previewOnly=false){
   doc.text("CONTRATO DE ALUGUEL DE TEMPORADA",105,s.y,{align:"center"});
   s.y+=12;doc.setFontSize(10.5);
 
-  richText(doc,"LOCADOR: ",[{text:owner(),bold:true},{text:" domiciliado em ",bold:false},{text:addr("owner"),bold:true},{text:".",bold:false}],s);
-  richText(doc,"LOCATÁRIO: ",[{text:v("tenantName")+", "+v("tenantCivil")+", "+v("tenantJob"),bold:true},{text:", portador do RG ",bold:false},{text:v("tenantRg"),bold:true},{text:" inscrito no CPF: ",bold:false},{text:v("tenantCpf"),bold:true},{text:", residente e domiciliado à ",bold:false},{text:addr("tenant"),bold:true},{text:".",bold:false}],s);
+  richText(doc,"LOCADOR: ",[{text:owner(),bold:true},{text:" domiciliado em ",bold:false},{text:addr("owner"),bold:false},{text:".",bold:false}],s);
+  richText(doc,"LOCATÁRIO: ",[{text:v("tenantName")+", "+v("tenantCivil")+", "+v("tenantJob"),bold:false},{text:", portador do RG ",bold:false},{text:v("tenantRg"),bold:true},{text:" inscrito no CPF: ",bold:false},{text:v("tenantCpf"),bold:true},{text:", residente e domiciliado à ",bold:false},{text:addr("tenant"),bold:true},{text:".",bold:false}],s);
   richText(doc,"IMÓVEL: ",[{text:addr("property")+(v("propertyCondo")?" "+v("propertyCondo"):""),bold:true},{text:".",bold:false}],s);
   const nights=+$("nights").value||0,clean=+$("cleanValue").value||0,rent=+$("rentValue").value||0,total=rent+clean;
   richText(doc,"PRAZO: ",[
