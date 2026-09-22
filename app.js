@@ -134,16 +134,18 @@ function paragraph(doc,label,text,state,opt={}){
 function richParagraph(doc,label,boldPrefix,text,state){
   const width=172,lineH=5,x=20,prefix=boldPrefix||"";
   doc.setFont("helvetica","bold");
-  const labelW=doc.getTextWidth(label);
-  const prefixW=doc.getTextWidth(prefix);
+  const labelW=doc.getTextWidth(label),prefixW=doc.getTextWidth(prefix);
   doc.setFont("helvetica","normal");
-  const lines=doc.splitTextToSize(text,width-labelW-prefixW);
-  const need=lines.length*lineH+3;
+  const first=prefix+text,firstLines=doc.splitTextToSize(first,width-labelW),need=firstLines.length*lineH+3;
   ensureSpace(doc,state,need);
   doc.setFont("helvetica","bold");doc.text(label,x,state.y);
-  let xx=x+labelW;
-  doc.text(prefix,xx,state.y);
-  for(let i=0;i<lines.length;i++)doc.text(lines[i],i?x:xx+prefixW,state.y+i*lineH);
+  doc.setFont("helvetica","bold");doc.text(prefix,x+labelW,state.y);
+  doc.setFont("helvetica","normal");
+  const restLines=doc.splitTextToSize(text,width-labelW-prefixW);
+  if(restLines.length){
+    doc.text(restLines[0],x+labelW+prefixW,state.y);
+    for(let i=1;i<restLines.length;i++)doc.text(restLines[i],x,state.y+i*lineH);
+  }
   state.y+=need;
 }
 let logoCache;
@@ -179,14 +181,14 @@ async function pdf(){
   paragraph(doc,"IMÓVEL: ",addr("property")+(v("propertyCondo")?" "+v("propertyCondo"):"")+".",s);
   const nights=+$("nights").value||0,clean=+$("cleanValue").value||0,rent=+$("rentValue").value||0,total=rent+clean;
   paragraph(doc,"PRAZO: ",nights+" ("+nights+") diárias, iniciando a partir das "+v("checkinTime")+" horas do dia "+br(v("checkin"))+" sendo a saída no dia "+br(v("checkout"))+" até as "+v("checkoutTime")+" horas, oportunidade em que o LOCATÁRIO devolverá as chaves na "+v("keyPlace")+", obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de "+moneyText(clean)+" que serão depositados juntos com o valor de reserve do imovel.",s);
-  const ro=+$("reservationOwnerValue").value||0,rb=+$("reservationBrokerValue").value||0,res=ro+rb;
+  const ro=+$("reservationOwnerValue").value||0,rb=+$("reservationBrokerValue").value||0;
   const installments=[...document.querySelectorAll(".installment")];
   paragraph(doc,"VALOR: ","R$ "+numText(total)+" ("+moneyWords(total)+")",s,{boldAll:true});
   paragraph(doc,"QUANTIDADE DE PARCELAS: ",String(installments.length),s,{boldAll:true});
   if(ro)richParagraph(doc,"Reserva: ","a) R$ "+numText(ro)+" ("+moneyWords(ro)+") ","pagos na data de assinatura deste contrato na conta do locador "+v("ownerPayment")+".",s);
   if(rb)richParagraph(doc,"","b) R$ "+numText(rb)+" ("+moneyWords(rb)+") ","pagos na data de assinatura deste contrato na conta do corretor, mediante depósito, transferência bancária ou PIX para a conta "+v("brokerPayment")+".",s);
   installments.forEach((x,i)=>{
-    const pv=+$((x.querySelector(".pvalue")).value)||0,pd=x.querySelector(".pdate").value,target=x.querySelector(".ptarget").value;
+    const pv=+(x.querySelector(".pvalue").value)||0,pd=x.querySelector(".pdate").value,target=x.querySelector(".ptarget").value;
     const account=target==="broker"?v("brokerPayment"):v("ownerPayment");
     const who=target==="broker"?"conta do corretor":"conta do locador";
     richParagraph(doc,"PARCELA "+(i+1)+": ","R$ "+numText(pv)+" ("+moneyWords(pv)+") ","pagos até data "+br(pd)+" na "+who+" "+account+".",s);
