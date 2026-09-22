@@ -196,8 +196,8 @@ async function pdf(previewOnly=false){
   s.y+=12;doc.setFontSize(10.5);
 
   richText(doc,"LOCADOR: ",[{text:owner(),bold:true},{text:" domiciliado em ",bold:false},{text:addr("owner"),bold:false},{text:".",bold:false}],s);
-  richText(doc,"LOCATÁRIO: ",[{text:v("tenantName")+", "+v("tenantCivil")+", "+v("tenantJob"),bold:false},{text:", portador do RG ",bold:false},{text:v("tenantRg"),bold:true},{text:" inscrito no CPF: ",bold:false},{text:v("tenantCpf"),bold:true},{text:", residente e domiciliado à ",bold:false},{text:addr("tenant"),bold:true},{text:".",bold:false}],s);
-  richText(doc,"IMÓVEL: ",[{text:addr("property")+(v("propertyCondo")?" "+v("propertyCondo"):""),bold:true},{text:".",bold:false}],s);
+  richText(doc,"LOCATÁRIO: ",[{text:v("tenantName")+", "+v("tenantCivil")+", "+v("tenantJob"),bold:false},{text:", portador do RG ",bold:false},{text:v("tenantRg"),bold:false},{text:" inscrito no CPF: ",bold:false},{text:v("tenantCpf"),bold:false},{text:", residente e domiciliado à ",bold:false},{text:addr("tenant"),bold:false},{text:".",bold:false}],s);
+  richText(doc,"IMÓVEL: ",[{text:addr("property")+(v("propertyCondo")?" "+v("propertyCondo"):""),bold:false},{text:".",bold:false}],s);
   const nights=+$("nights").value||0,clean=+$("cleanValue").value||0,rent=+$("rentValue").value||0,total=rent+clean;
   richText(doc,"PRAZO: ",[
     {text:nights+" ("+words(nights)+" diárias)",bold:true},
@@ -232,8 +232,8 @@ async function pdf(previewOnly=false){
       {text:" na "+who+" ",bold:false},{text:bankText(target==="broker"?"broker":"owner"),bold:true},{text:".",bold:false}
     ],s);
     richText(doc,"",[
-      {text:"A conta do locador: ",bold:false},{text:bankText("owner"),bold:true},
-      {text:". A conta da imobiliária: ",bold:false},{text:bankText("broker"),bold:true},{text:".",bold:false}
+      {text:"A conta do locador: ",bold:false},{text:bankText("owner"),bold:false},
+      {text:". A conta da imobiliária: ",bold:false},{text:bankText("broker"),bold:false},{text:".",bold:false}
     ],s);
   });
   paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s);
@@ -251,7 +251,7 @@ async function pdf(previewOnly=false){
   richText(doc,"CORRETAGEM E COMISSÃO DE CORRETAGEM: ",[
     {text:"O valor pago a título de comissão de corretagem, de ",bold:false},{text:v("commissionPct")+"%",bold:true},
     {text:" do valor total de locação, é de responsabilidade do proprietário do imóvel, que será descontado da primeira parcela que sera depositado na conta indicada do corretor (",bold:false},
-    {text:bankText("broker"),bold:true},{text:") na data da assinatura do contrato",bold:false}
+    {text:bankText("broker"),bold:false},{text:") na data da assinatura do contrato",bold:false}
   ],s);
   paragraph(doc,"Parágrafo 1: ","O serviço de corretagem se resume ao estabelecido no artigo 722 do Código Civil e assim, a titulo de cortesia, qualquer intermediação posterior poderá ser realizada pelo corretor.",s);
   richText(doc,"FORO: ",[{text:"Para dirimir eventuais controvérsias relacionadas a este contrato, elegem as partes o fórum da ",bold:false},{text:v("forum"),bold:true},{text:", renunciando a qualquer outro, por mais especial que seja.",bold:false}],s);
