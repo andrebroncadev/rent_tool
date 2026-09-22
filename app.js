@@ -45,22 +45,27 @@ $("checkin").onchange=()=>{$("checkout").min=$("checkin").value;dates()};
 $("checkout").onchange=dates;
 
 function money(){
-  const r=+$("rentValue").value||0,c=+$("cleanValue").value||0,q=+$("commissionPct").value||0,s=+$("reservationValue").value||0;
+  const r=+$("rentValue").value||0,c=+$("cleanValue").value||0,q=+$("commissionPct").value||0,s=(+$("reservationOwnerValue").value||0)+(+$("reservationBrokerValue").value||0);
   $("totalValue").textContent=fmt.format(r+c);
   $("commissionValue").textContent=fmt.format(r*q/100);
   $("balanceValue").textContent=fmt.format(Math.max(0,r+c-s));
+  $("reservationTotalValue").textContent=fmt.format(s);
 }
-["rentValue","cleanValue","commissionPct","reservationValue"].forEach(i=>$(i).oninput=money);money();
+["rentValue","cleanValue","commissionPct","reservationOwnerValue","reservationBrokerValue"].forEach(i=>$(i).oninput=money);money();
 
 $("btnAddInstallment").onclick=()=>{
   seq++;
   const x=document.createElement("div");
   x.className="installment";
-  x.innerHTML='<div class="installment-title"><b>PARCELA '+seq+'</b><button type="button" class="remove">Remover</button></div><div class="grid"><div class="field c6"><label>Vencimento</label><input class="pdate" type="date"></div><div class="field c6"><label>Valor (R$)</label><input class="pvalue" type="number" step="0.01" min="0"></div></div>';
+  x.innerHTML='<div class="installment-title"><b>PARCELA '+seq+'</b><button type="button" class="remove">Remover</button></div><div class="grid"><div class="field c4"><label>Vencimento</label><input class="pdate" type="date"></div><div class="field c4"><label>Valor (R$)</label><input class="pvalue" type="number" step="0.01" min="0"></div><div class="field c4"><label>Conta do locador</label><select class="ptarget"><option value="owner">Locador</option><option value="broker">Imobiliária</option></select></div></div>';
   x.querySelector(".remove").onclick=()=>{x.remove();renum()};
-  $("installments").appendChild(x);
+  $("installments").appendChild(x);renum();
 };
-function renum(){document.querySelectorAll(".installment").forEach((x,i)=>x.querySelector("b").textContent="PARCELA "+(i+1))}
+function renum(){
+  const xs=document.querySelectorAll(".installment");
+  $("installmentCount").textContent=xs.length;
+  xs.forEach((x,i)=>x.querySelector("b").textContent="PARCELA "+(i+1));
+}
 
 function br(s){if(!s)return"";const p=s.split("-");return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:s}
 function addr(p){return[v(p+"Street"),v(p+"Number"),v(p+"Comp"),v(p+"Bairro"),v(p+"City"),v(p+"Uf"),v(p+"Cep")].filter(Boolean).join(", ")}
@@ -78,6 +83,30 @@ function longDate(s){
 function longToday(){return longDate(new Date().toISOString().slice(0,10))}
 function moneyText(n){return fmt.format(n||0)}
 function numText(n){return (n||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}
+const units=["zero","um","dois","três","quatro","cinco","seis","sete","oito","nove"],teens=["dez","onze","doze","treze","quatorze","quinze","dezesseis","dezessete","dezoito","dezenove"],tens=["","","vinte","trinta","quarenta","cinquenta","sessenta","setenta","oitenta","noventa"],hundreds=["","cento","duzentos","trezentos","quatrocentos","quinhentos","seiscentos","setecentos","oitocentos","novecentos"];
+function words1000(n){
+  if(n<10)return units[n];
+  if(n<20)return teens[n-10];
+  if(n<100)return tens[Math.floor(n/10)]+(n%10?" e "+units[n%10]:"");
+  if(n===100)return"cem";
+  return hundreds[Math.floor(n/100)]+(n%100?" e "+words1000(n%100):"");
+}
+function words(n){
+  n=Math.round(Number(n)||0);
+  if(n<1000)return words1000(n);
+  const groups=[];
+  const mil=Math.floor(n/1000),rest=n%1000;
+  if(mil===1)groups.push("mil"); else groups.push(words1000(mil)+" mil");
+  if(rest)groups.push(words1000(rest));
+  return groups.join(" e ");
+}
+function moneyWords(n){
+  n=Number(n)||0;
+  const reais=Math.floor(n),cent=Math.round((n-reais)*100);
+  let s=(reais===1?"um real":words(reais)+" reais");
+  if(cent)s+=" e "+words(cent)+" centavos";
+  return s;
+}
 
 function ensureSpace(doc,state,need){
   if(state.y+need>268){doc.addPage();state.y=35}
@@ -150,9 +179,19 @@ async function pdf(){
   paragraph(doc,"IMÓVEL: ",addr("property")+(v("propertyCondo")?" "+v("propertyCondo"):"")+".",s);
   const nights=+$("nights").value||0,clean=+$("cleanValue").value||0,rent=+$("rentValue").value||0,total=rent+clean;
   paragraph(doc,"PRAZO: ",nights+" ("+nights+") diárias, iniciando a partir das "+v("checkinTime")+" horas do dia "+br(v("checkin"))+" sendo a saída no dia "+br(v("checkout"))+" até as "+v("checkoutTime")+" horas, oportunidade em que o LOCATÁRIO devolverá as chaves na "+v("keyPlace")+", obrigando-se a restituir o imóvel locado no perfeito estado de conservação em que o recebeu. Será incluso no valor total desta locação, a taxa de limpeza de "+moneyText(clean)+" que serão depositados juntos com o valor de reserve do imovel.",s);
-  paragraph(doc,"VALOR: ","R$ "+numText(total)+".",s,{boldAll:true});
-  richParagraph(doc,"Reserva: ","R$ "+numText(+$("reservationValue").value||0)+" ","pagos na data de assinatura deste contrato na conta do locador "+v("ownerPayment")+".",s);
-  document.querySelectorAll(".installment").forEach((x,i)=>{const pv=+x.querySelector(".pvalue").value||0,pd=x.querySelector(".pdate").value;richParagraph(doc,"PARCELA "+(i+1)+": ","R$ "+numText(pv)+" ","pagos ate data "+br(pd)+" na conta do locador "+v("ownerPayment")+".",s)});
+  const ro=+$("reservationOwnerValue").value||0,rb=+$("reservationBrokerValue").value||0,res=ro+rb;
+  const installments=[...document.querySelectorAll(".installment")];
+  paragraph(doc,"VALOR: ","R$ "+numText(total)+" ("+moneyWords(total)+")",s,{boldAll:true});
+  paragraph(doc,"QUANTIDADE DE PARCELAS: ",String(installments.length),s,{boldAll:true});
+  if(ro)richParagraph(doc,"Reserva: ","a) R$ "+numText(ro)+" ("+moneyWords(ro)+") ","pagos na data de assinatura deste contrato na conta do locador "+v("ownerPayment")+".",s);
+  if(rb)richParagraph(doc,"","b) R$ "+numText(rb)+" ("+moneyWords(rb)+") ","pagos na data de assinatura deste contrato na conta do corretor, mediante depósito, transferência bancária ou PIX para a conta "+v("brokerPayment")+".",s);
+  installments.forEach((x,i)=>{
+    const pv=+$((x.querySelector(".pvalue")).value)||0,pd=x.querySelector(".pdate").value,target=x.querySelector(".ptarget").value;
+    const account=target==="broker"?v("brokerPayment"):v("ownerPayment");
+    const who=target==="broker"?"conta do corretor":"conta do locador";
+    richParagraph(doc,"PARCELA "+(i+1)+": ","R$ "+numText(pv)+" ("+moneyWords(pv)+") ","pagos até data "+br(pd)+" na "+who+" "+account+".",s);
+    paragraph(doc,"","A conta do locador: "+v("ownerPayment")+". A conta da imobiliária: "+v("brokerPayment")+".",s,{boldAll:true});
+  });
   paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s,{boldAll:true});
   paragraph(doc,"Parágrafo 1: ","Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de "+v("lateFinePct")+"% do valor da parcela inadimplida.",s);
   paragraph(doc,"CAUÇÃO: ","Desde já, fica estabelecido que ao efetuar o check-in a locatária deixara em responsabilidade do corretor um cheque caução de "+moneyText(+$("cautionValue").value||0)+" que será devolvido após vistoria do imóvel e constatação da integridade do imóvel.",s);
