@@ -176,14 +176,6 @@ function bankText(prefix){
   const conta=type==="CC (Corrente)"?"CC":type;
   return [bank&&bank!=="Selecione o banco"?bank:"",agency?"Agência "+agency:"",account?"Conta "+conta+" "+account:"",pix?"PIX "+pix:""].filter(Boolean).join(", ");
 }
-function bankParts(prefix){
-  const bank=$(prefix+"BankCode")?.selectedOptions[0]?.textContent||"",agency=v(prefix+"Agency"),account=v(prefix+"Account"),type=$(prefix+"AccountType")?.selectedOptions[0]?.textContent||"",pix=v(prefix+"Pix"),a=[];
-  if(bank&&bank!=="Selecione o banco")a.push({text:bank,bold:true});
-  if(agency)a.push({text:(a.length?", ":"")+"Agência ",bold:false},{text:agency,bold:true});
-  if(account)a.push({text:(a.length?", ":"")+"Conta "+type.toLowerCase()+" ",bold:false},{text:account,bold:true});
-  if(pix)a.push({text:(a.length?", ":"")+"PIX ",bold:false},{text:pix,bold:true});
-  return a.length?a:[{text:"",bold:false}];
-}
 function pageHeader(doc,logo){
   if(logo)doc.addImage(logo,"PNG",92,5,26,20);
   doc.setFont("helvetica","bold");doc.setFontSize(8);
