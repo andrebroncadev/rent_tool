@@ -125,8 +125,20 @@
             <div class="summary c4"><span>SALDO APÓS RESERVA</span><strong id="balanceValue">R$ 0,00</strong></div>
           </div>
           <div class="grid gap-top">
-            <div class="field c6"><label for="ownerPayment">Conta / PIX do locador</label><textarea id="ownerPayment"></textarea></div>
-            <div class="field c6"><label for="brokerPayment">Conta / PIX do corretor</label><textarea id="brokerPayment"></textarea></div>
+            <div class="bank-card c6"><h3>Dados bancários do locador</h3><div class="bank-grid">
+              <div class="field"><label for="ownerBankCode">Banco</label><select id="ownerBankCode"><option value="">Selecione o banco</option><option value="001">001 - Banco do Brasil</option><option value="033">033 - Santander</option><option value="077">077 - Inter</option><option value="104">104 - Caixa Econômica Federal</option><option value="208">208 - BTG Pactual</option><option value="212">212 - Banco Original</option><option value="237">237 - Bradesco</option><option value="260">260 - Nubank</option><option value="290">290 - PagBank</option><option value="336">336 - C6 Bank</option><option value="341">341 - Itaú</option><option value="403">403 - Cora</option><option value="748">748 - Sicredi</option><option value="756">756 - Sicoob</option></select></div>
+              <div class="field"><label for="ownerAgency">Agência</label><input id="ownerAgency"></div>
+              <div class="field"><label for="ownerAccountType">Tipo de conta</label><select id="ownerAccountType"><option>Corrente</option><option>Poupança</option></select></div>
+              <div class="field"><label for="ownerAccount">Conta</label><input id="ownerAccount"></div>
+              <div class="field"><label for="ownerPix">PIX</label><input id="ownerPix"></div>
+            </div></div>
+            <div class="bank-card c6"><h3>Dados bancários da imobiliária</h3><div class="bank-grid">
+              <div class="field"><label for="brokerBankCode">Banco</label><select id="brokerBankCode"><option value="">Selecione o banco</option><option value="001">001 - Banco do Brasil</option><option value="033">033 - Santander</option><option value="077">077 - Inter</option><option value="104">104 - Caixa Econômica Federal</option><option value="208">208 - BTG Pactual</option><option value="212">212 - Banco Original</option><option value="237">237 - Bradesco</option><option value="260">260 - Nubank</option><option value="290">290 - PagBank</option><option value="336">336 - C6 Bank</option><option value="341">341 - Itaú</option><option value="403">403 - Cora</option><option value="748">748 - Sicredi</option><option value="756">756 - Sicoob</option></select></div>
+              <div class="field"><label for="brokerAgency">Agência</label><input id="brokerAgency"></div>
+              <div class="field"><label for="brokerAccountType">Tipo de conta</label><select id="brokerAccountType"><option>Corrente</option><option>Poupança</option></select></div>
+              <div class="field"><label for="brokerAccount">Conta</label><input id="brokerAccount"></div>
+              <div class="field"><label for="brokerPix">PIX</label><input id="brokerPix"></div>
+            </div></div>
             <div class="field c3"><label for="reservationOwnerValue">Reserva - locador (R$)</label><input id="reservationOwnerValue" type="number" step="0.01" min="0"></div><div class="field c3"><label for="reservationBrokerValue">Reserva - imobiliária (R$)</label><input id="reservationBrokerValue" type="number" step="0.01" min="0"></div><div class="summary c3"><span>RESERVA TOTAL</span><strong id="reservationTotalValue">R$ 0,00</strong></div><div class="summary c3"><span>QUANTIDADE DE PARCELAS</span><strong id="installmentCount">0</strong></div>
           </div>
           <div class="notice">A reserva entra como paga na data de assinatura. As parcelas aparecem no PDF como PARCELA 1, PARCELA 2 etc.</div>
@@ -158,11 +170,12 @@
 
       <footer class="bottom no-print">
         <small>Atalhos: CPF validado, CEP automático, check-out posterior ao check-in e PDF A4 baseado no contrato enviado.</small>
-        <div class="actions"><button class="btn secondary" type="button" id="btnPreview">Pré-visualizar</button><button class="btn primary" type="button" id="btnGerarBottom">Gerar PDF</button></div>
+        <div class="actions"><button class="btn secondary" type="button" id="btnPreview">Pré-visualizar</button><button class="btn secondary" type="button" id="btnGerarDocx">Salvar como DOCX</button><button class="btn primary" type="button" id="btnGerarBottom">Gerar PDF</button></div>
       </footer>
     </form>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="app.js?v=6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@9.7.1/build/index.umd.js"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>
