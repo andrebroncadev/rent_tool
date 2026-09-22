@@ -174,7 +174,37 @@ function loadLogo(){
 function bankText(prefix){
   const bank=$(prefix+"BankCode")?.selectedOptions[0]?.textContent||"",agency=v(prefix+"Agency"),account=v(prefix+"Account"),type=$(prefix+"AccountType")?.selectedOptions[0]?.textContent||"",pix=v(prefix+"Pix");
   const conta=type==="CC (Corrente)"?"CC":type;
-  return [bank&&bank!=="Selecione o banco"?bank:"",agency?"Agência "+agency:"",account?"Conta "+conta+" "+account:"",pix?"PIX "+pix:""].filter(Boolean).join(", ");
+  return [bank&&bank!=="Selecione o banco"?bank.replace(" = "," - "):"",agency?"Agência "+agency:"",account?"Conta "+conta+" "+account:"",pix?"PIX "+pix:""].filter(Boolean).join(", ");
+}
+function bankRuns(prefix){
+  const bank=$(prefix+"BankCode")?.selectedOptions[0]?.textContent||"",agency=v(prefix+"Agency"),account=v(prefix+"Account"),type=$(prefix+"AccountType")?.selectedOptions[0]?.textContent||"",pix=v(prefix+"Pix");
+  const conta=type==="CC (Corrente)"?"CC":type;
+  const out=[];
+  if(bank&&bank!=="Selecione o banco"){out.push({text:"Banco: ",bold:true},{text:bank.replace(" = "," - "),bold:false});}
+  if(agency)out.push({text:", Agência: ",bold:true},{text:agency,bold:false});
+  if(account)out.push({text:", Conta "+conta+": ",bold:true},{text:account,bold:false});
+  if(pix)out.push({text:", PIX: ",bold:true},{text:pix,bold:false});
+  return out;
+}
+function ownerRuns(){
+  if(ownerType==="pf"){
+    return [
+      {text:v("ownerPfName"),bold:false},{text:", ",bold:false},{text:v("ownerPfCivil"),bold:false},{text:", ",bold:false},{text:v("ownerPfJob"),bold:false},
+      {text:", RG ",bold:true},{text:v("ownerPfRg"),bold:false},{text:" e CPF ",bold:true},{text:v("ownerPfCpf"),bold:false}
+    ];
+  }
+  return [
+    {text:v("ownerName"),bold:false},{text:", ",bold:false},{text:"CNPJ ",bold:true},{text:v("ownerCnpj"),bold:false},
+    {text:" Representante legal: ",bold:true},{text:v("ownerRep"),bold:false},
+    {text:" RG ",bold:true},{text:v("ownerRg"),bold:false},{text:" e inscrito no CPF ",bold:true},{text:v("ownerCpf"),bold:false}
+  ];
+}
+function tenantRuns(){
+  return [
+    {text:v("tenantName"),bold:false},{text:", ",bold:false},{text:v("tenantCivil"),bold:false},{text:", ",bold:false},{text:v("tenantJob"),bold:false},
+    {text:", portador do RG ",bold:true},{text:v("tenantRg"),bold:false},{text:" inscrito no CPF: ",bold:true},{text:v("tenantCpf"),bold:false},
+    {text:", residente e domiciliado à ",bold:false},{text:addr("tenant"),bold:false}
+  ];
 }
 function pageHeader(doc,logo){
   if(logo)doc.addImage(logo,"PNG",92,5,26,20);
@@ -195,8 +225,8 @@ async function pdf(previewOnly=false){
   doc.text("CONTRATO DE ALUGUEL DE TEMPORADA",105,s.y,{align:"center"});
   s.y+=12;doc.setFontSize(10.5);
 
-  richText(doc,"LOCADOR: ",[{text:owner(),bold:true},{text:" domiciliado em ",bold:false},{text:addr("owner"),bold:false},{text:".",bold:false}],s);
-  richText(doc,"LOCATÁRIO: ",[{text:v("tenantName")+", "+v("tenantCivil")+", "+v("tenantJob"),bold:false},{text:", portador do RG ",bold:false},{text:v("tenantRg"),bold:false},{text:" inscrito no CPF: ",bold:false},{text:v("tenantCpf"),bold:false},{text:", residente e domiciliado à ",bold:false},{text:addr("tenant"),bold:false},{text:".",bold:false}],s);
+  richText(doc,"LOCADOR: ",[...ownerRuns(),{text:" domiciliado em ",bold:false},{text:addr("owner"),bold:false},{text:".",bold:false}],s);
+  richText(doc,"LOCATÁRIO: ",[...tenantRuns(),{text:".",bold:false}],s);
   richText(doc,"IMÓVEL: ",[{text:addr("property")+(v("propertyCondo")?" "+v("propertyCondo"):""),bold:false},{text:".",bold:false}],s);
   const nights=+$("nights").value||0,clean=+$("cleanValue").value||0,rent=+$("rentValue").value||0,total=rent+clean;
   richText(doc,"PRAZO: ",[
@@ -221,7 +251,7 @@ async function pdf(previewOnly=false){
   if(rb)richText(doc,"",[
     {text:"b) R$ "+numText(rb)+" ("+moneyWords(rb)+")",bold:true},
     {text:" pagos na data de assinatura deste contrato na conta da imobiliária, mediante depósito, transferência bancária ou PIX para a conta ",bold:false},
-    {text:bankText("broker"),bold:true},{text:".",bold:false}
+    ...bankRuns("broker"),{text:".",bold:false}
   ],s);
   installments.forEach((x,i)=>{
     const pv=+(x.querySelector(".pvalue").value)||0,pd=x.querySelector(".pdate").value,target=x.querySelector(".ptarget").value;
@@ -229,11 +259,11 @@ async function pdf(previewOnly=false){
     richText(doc,"PARCELA "+(i+1)+": ",[
       {text:"R$ "+numText(pv)+" ("+moneyWords(pv)+")",bold:true},
       {text:" pagos até data ",bold:false},{text:br(pd),bold:true},
-      {text:" na "+who+" ",bold:false},{text:bankText(target==="broker"?"broker":"owner"),bold:true},{text:".",bold:false}
+      {text:" na "+who+" ",bold:false},...bankRuns(target==="broker"?"broker":"owner"),{text:".",bold:false}
     ],s);
     richText(doc,"",[
-      {text:"A conta do locador: ",bold:false},{text:bankText("owner"),bold:false},
-      {text:". A conta da imobiliária: ",bold:false},{text:bankText("broker"),bold:false},{text:".",bold:false}
+      {text:"A conta do locador: ",bold:false},...bankRuns("owner"),
+      {text:". A conta da imobiliária: ",bold:false},...bankRuns("broker"),{text:".",bold:false}
     ],s);
   });
   paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s);
@@ -251,7 +281,7 @@ async function pdf(previewOnly=false){
   richText(doc,"CORRETAGEM E COMISSÃO DE CORRETAGEM: ",[
     {text:"O valor pago a título de comissão de corretagem, de ",bold:false},{text:v("commissionPct")+"%",bold:true},
     {text:" do valor total de locação, é de responsabilidade do proprietário do imóvel, que será descontado da primeira parcela que sera depositado na conta indicada do corretor (",bold:false},
-    {text:bankText("broker"),bold:false},{text:") na data da assinatura do contrato",bold:false}
+    ...bankRuns("broker"),{text:") na data da assinatura do contrato",bold:false}
   ],s);
   paragraph(doc,"Parágrafo 1: ","O serviço de corretagem se resume ao estabelecido no artigo 722 do Código Civil e assim, a titulo de cortesia, qualquer intermediação posterior poderá ser realizada pelo corretor.",s);
   richText(doc,"FORO: ",[{text:"Para dirimir eventuais controvérsias relacionadas a este contrato, elegem as partes o fórum da ",bold:false},{text:v("forum"),bold:true},{text:", renunciando a qualquer outro, por mais especial que seja.",bold:false}],s);
@@ -275,14 +305,14 @@ function docxParagraph(D,label,runs,spacing=120){
 }
 async function saveDocx(){
   if(!window.docx)return alert("O motor de DOCX não foi carregado. Permita o script externo usado pelo gerador.");
-  const D=window.docx;
+  const D=window.docx||window.Docx;
   const nights=+$("nights").value||0,clean=+$("cleanValue").value||0,rent=+$("rentValue").value||0,total=rent+clean;
   const ro=+$("reservationOwnerValue").value||0,rb=+$("reservationBrokerValue").value||0;
   const installments=[...document.querySelectorAll(".installment")];
   const children=[];
   children.push(new D.Paragraph({alignment:D.AlignmentType.CENTER,spacing:{after:180},children:[new D.TextRun({text:"CONTRATO DE ALUGUEL DE TEMPORADA",bold:true,font:"Arial",size:28})]}));
-  children.push(docxParagraph(D,"LOCADOR: ",[{text:owner(),bold:true},{text:" domiciliado em ",bold:false},{text:addr("owner"),bold:true},{text:".",bold:false}]));
-  children.push(docxParagraph(D,"LOCATÁRIO: ",[{text:v("tenantName")+", "+v("tenantCivil")+", "+v("tenantJob"),bold:true},{text:", portador do RG ",bold:false},{text:v("tenantRg"),bold:true},{text:" inscrito no CPF: ",bold:false},{text:v("tenantCpf"),bold:true},{text:", residente e domiciliado à ",bold:false},{text:addr("tenant"),bold:true},{text:".",bold:false}]));
+  children.push(docxParagraph(D,"LOCADOR: ",[...ownerRuns(),{text:" domiciliado em ",bold:false},{text:addr("owner"),bold:false},{text:".",bold:false}]));
+  children.push(docxParagraph(D,"LOCATÁRIO: ",[...tenantRuns(),{text:".",bold:false}]));
   children.push(docxParagraph(D,"IMÓVEL: ",[{text:addr("property")+(v("propertyCondo")?" "+v("propertyCondo"):""),bold:true},{text:".",bold:false}]));
   children.push(docxParagraph(D,"PRAZO: ",[
     {text:nights+" ("+words(nights)+" diárias)",bold:true},{text:" Iniciando a partir das ",bold:false},{text:v("checkinTime")+" horas",bold:true},
@@ -293,15 +323,15 @@ async function saveDocx(){
   ]));
   children.push(docxParagraph(D,"VALOR: ",[{text:"R$ "+numText(total)+" ("+moneyWords(total)+")",bold:true}]));
   children.push(docxParagraph(D,"QUANTIDADE DE PARCELAS: ",[{text:String(installments.length),bold:true}]));
-  if(ro)children.push(docxParagraph(D,"Reserva: ",[{text:"a) R$ "+numText(ro)+" ("+moneyWords(ro)+")",bold:true},{text:" pagos na data de assinatura deste contrato na conta do locador ",bold:false},{text:bankText("owner"),bold:true},{text:".",bold:false}]));
+  if(ro)children.push(docxParagraph(D,"Reserva: ",[{text:"a) R$ "+numText(ro)+" ("+moneyWords(ro)+")",bold:true},{text:" pagos na data de assinatura deste contrato na conta do locador ",bold:false},...bankRuns("owner"),{text:".",bold:false}]));
   if(rb)children.push(docxParagraph(D,"",[...[
-    {text:"b) R$ "+numText(rb)+" ("+moneyWords(rb)+")",bold:true},{text:" pagos na data de assinatura deste contrato na conta da imobiliária, mediante depósito, transferência bancária ou PIX para a conta ",bold:false},{text:bankText("broker"),bold:true},{text:".",bold:false}
+    {text:"b) R$ "+numText(rb)+" ("+moneyWords(rb)+")",bold:true},{text:" pagos na data de assinatura deste contrato na conta da imobiliária, mediante depósito, transferência bancária ou PIX para a conta ",bold:false},...bankRuns("broker"),{text:".",bold:false}
   ]]));
   installments.forEach((x,i)=>{
     const pv=+(x.querySelector(".pvalue").value)||0,pd=x.querySelector(".pdate").value,target=x.querySelector(".ptarget").value;
-    const account=bankText(target==="broker"?"broker":"owner"),who=target==="broker"?"conta do corretor":"conta do locador";
-    children.push(docxParagraph(D,"PARCELA "+(i+1)+": ",[{text:"R$ "+numText(pv)+" ("+moneyWords(pv)+")",bold:true},{text:" pagos até data ",bold:false},{text:br(pd),bold:true},{text:" na "+who+" ",bold:false},{text:account,bold:true},{text:".",bold:false}]));
-    children.push(docxParagraph(D,"",[{text:"A conta do locador: ",bold:false},{text:bankText("owner"),bold:true},{text:". A conta da imobiliária: ",bold:false},{text:bankText("broker"),bold:true},{text:".",bold:false}]));
+    const who=target==="broker"?"conta do corretor":"conta do locador";
+    children.push(docxParagraph(D,"PARCELA "+(i+1)+": ",[{text:"R$ "+numText(pv)+" ("+moneyWords(pv)+")",bold:true},{text:" pagos até data ",bold:false},{text:br(pd),bold:true},{text:" na "+who+" ",bold:false},...bankRuns(target==="broker"?"broker":"owner"),{text:".",bold:false}]));
+    children.push(docxParagraph(D,"",[{text:"A conta do locador: ",bold:false},...bankRuns("owner"),{text:". A conta da imobiliária: ",bold:false},...bankRuns("broker"),{text:".",bold:false}]));
   });
   children.push(docxParagraph(D,"",[{text:"Os comprovantes dos depósitos servirão como recibo do pagamento.",bold:false}]));
   children.push(docxParagraph(D,"Parágrafo 1: ",[{text:"Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de ",bold:false},{text:v("lateFinePct")+"%",bold:true},{text:" do valor da parcela inadimplida.",bold:false}]));
@@ -315,7 +345,7 @@ async function saveDocx(){
   children.push(docxParagraph(D,"",[{text:"O LOCATÁRIO deve manter o imóvel (instalações sanitárias e elétricas, fechos, vidros, torneiras, ralos, pisos e calçadas, bem como os demais acessórios), os móveis e os utensílios em perfeito estado de conservação, e em boas condições de higiene, para assim restituí-los, quando findo ou rescindido este contrato. Havendo qualquer tipo de dano no imóvel, utensílios, moveis, piscina etc, período em que o locatário encontra-se na posse do imóvel, o locador imediatamente fará 3 orçamentos, optando pelo serviço de menor valor, que deverá ser ressarcido de pronto pelo locatário.",bold:false}]));
   children.push(docxParagraph(D,"",[{text:"Fica expressmente proibido trocar os moveis dos lugares, forçar a abertura dos armarios de uso pessoal os quais estarão trancados, sendo passivel de multa no valor de R$ "+numText(+$("furnitureFine").value||2000)+" + reparação dos danos. É imprescindivel que o locatario não deixe louças e lixos na casa na sua desocupação.",bold:false}]));
   children.push(docxParagraph(D,"CONDIÇÕES LEGAIS: ",[{text:"Rege-se o presente contrato, naquilo em que for omisso, pela Lei n° 8245/91 e lei 12.112/2009 (lei do inquilinato), Código Civil e demais disposições pertinentes à locação de imóveis, direito de vizinhança e etc.",bold:false}]));
-  children.push(docxParagraph(D,"CORRETAGEM E COMISSÃO DE CORRETAGEM: ",[{text:"O valor pago a título de comissão de corretagem, de ",bold:false},{text:v("commissionPct")+"%",bold:true},{text:" do valor total de locação, é de responsabilidade do proprietário do imóvel, que será descontado da primeira parcela que sera depositado na conta indicada do corretor (",bold:false},{text:bankText("broker"),bold:true},{text:") na data da assinatura do contrato",bold:false}]));
+  children.push(docxParagraph(D,"CORRETAGEM E COMISSÃO DE CORRETAGEM: ",[{text:"O valor pago a título de comissão de corretagem, de ",bold:false},{text:v("commissionPct")+"%",bold:true},{text:" do valor total de locação, é de responsabilidade do proprietário do imóvel, que será descontado da primeira parcela que sera depositado na conta indicada do corretor (",bold:false},...bankRuns("broker"),{text:") na data da assinatura do contrato",bold:false}]));
   children.push(docxParagraph(D,"Parágrafo 1: ",[{text:"O serviço de corretagem se resume ao estabelecido no artigo 722 do Código Civil e assim, a titulo de cortesia, qualquer intermediação posterior poderá ser realizada pelo corretor.",bold:false}]));
   children.push(docxParagraph(D,"FORO: ",[{text:"Para dirimir eventuais controvérsias relacionadas a este contrato, elegem as partes o fórum da ",bold:false},{text:v("forum"),bold:true},{text:", renunciando a qualquer outro, por mais especial que seja.",bold:false}]));
   children.push(docxParagraph(D,"DESPESAS JUDICIAIS: ",[{text:"Se em razão do descumprimento de uma das cláusulas do presente contrato o LOCADOR fique obrigado a recorrer à tutela do Poder Judiciário, o LOCATÁRIO arcará com o pagamento integral das despesas e custas judiciais, assim como honorários advocatícios, na base de ",bold:false},{text:v("lawyerPct")+"%",bold:true},{text:" sob o valor da causa.",bold:false}]));
@@ -342,8 +372,8 @@ async function preview(){
     setTimeout(()=>URL.revokeObjectURL(url),60000);
   }catch(e){w.close();alert(e.message||"Não foi possível gerar a pré-visualização.")}
 }
-["btnGerarTop","btnGerarBottom"].forEach(id=>$(id).onclick=pdf);
+["btnGerarTop","btnGerarBottom"].forEach(id=>$(id).onclick=()=>pdf(false));
 $("btnPreview").onclick=preview;
-$("btnGerarDocx").onclick=saveDocx;
-$("btnGerarDocxTop").onclick=saveDocx;
+$("btnGerarDocx").onclick=()=>saveDocx();
+$("btnGerarDocxTop").onclick=()=>saveDocx();
 $("btnLimpar").onclick=()=>{if(confirm("Limpar todos os campos?"))location.reload()};
