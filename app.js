@@ -153,7 +153,7 @@ function loadLogo(){
     const i=new Image();
     i.onload=()=>{logoCache=i;resolve(i)};
     i.onerror=()=>resolve(null);
-    i.src="logo.jpg";
+    i.src="8cfe7577-9f1e-4c6e-b5e7-e9bb65569ef7.png";
   });
 }
 function pageHeader(doc,logo){
@@ -164,7 +164,7 @@ function pageHeader(doc,logo){
 }
 async function pdf(){
   if(!dates())return alert("Corrija as datas antes de gerar.");
-  if(!window.jspdf||!window.jspdf.jsPDF)return alert("O motor de PDF não foi carregado. No Brave, permita o script externo usado pelo gerador (jsDelivr) para gerar o arquivo PDF.");
+  if(!window.jspdf||!window.jspdf.jsPDF)return alert("O motor de PDF não foi carregado. No navegador, permita o script externo usado pelo gerador (jsDelivr) para gerar o arquivo PDF.");
   if(v("tenantCpf")&&!cpfOk(v("tenantCpf")))return alert("CPF do locatário inválido.");
   if(!v("tenantName")||!v("propertyStreet")||!v("checkin")||!v("checkout"))return alert("Preencha nome do locatário, imóvel e datas.");
 
