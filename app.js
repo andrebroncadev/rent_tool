@@ -161,23 +161,6 @@ function paragraph(doc,label,text,state,opt={}){
   }
   state.y+=need;
 }
-function richParagraph(doc,label,boldPrefix,text,state){
-  const width=172,lineH=5,x=20,prefix=boldPrefix||"";
-  doc.setFont("helvetica","bold");
-  const labelW=doc.getTextWidth(label),prefixW=doc.getTextWidth(prefix);
-  doc.setFont("helvetica","normal");
-  const first=prefix+text,firstLines=doc.splitTextToSize(first,width-labelW),need=firstLines.length*lineH+3;
-  ensureSpace(doc,state,need);
-  doc.setFont("helvetica","bold");doc.text(label,x,state.y);
-  doc.setFont("helvetica","bold");doc.text(prefix,x+labelW,state.y);
-  doc.setFont("helvetica","normal");
-  const restLines=doc.splitTextToSize(text,width-labelW-prefixW);
-  if(restLines.length){
-    doc.text(restLines[0],x+labelW+prefixW,state.y);
-    for(let i=1;i<restLines.length;i++)doc.text(restLines[i],x,state.y+i*lineH);
-  }
-  state.y+=need;
-}
 let logoCache;
 function loadLogo(){
   if(logoCache)return Promise.resolve(logoCache);
@@ -190,7 +173,8 @@ function loadLogo(){
 }
 function bankText(prefix){
   const bank=$(prefix+"BankCode")?.selectedOptions[0]?.textContent||"",agency=v(prefix+"Agency"),account=v(prefix+"Account"),type=$(prefix+"AccountType")?.selectedOptions[0]?.textContent||"",pix=v(prefix+"Pix");
-  return [bank&&bank!=="Selecione o banco"?bank:"",agency?"Agência "+agency:"",account?"Conta "+type.toLowerCase()+" "+account:"",pix?"PIX "+pix:""].filter(Boolean).join(", ");
+  const conta=type==="CC (Corrente)"?"CC":type;
+  return [bank&&bank!=="Selecione o banco"?bank:"",agency?"Agência "+agency:"",account?"Conta "+conta+" "+account:"",pix?"PIX "+pix:""].filter(Boolean).join(", ");
 }
 function bankParts(prefix){
   const bank=$(prefix+"BankCode")?.selectedOptions[0]?.textContent||"",agency=v(prefix+"Agency"),account=v(prefix+"Account"),type=$(prefix+"AccountType")?.selectedOptions[0]?.textContent||"",pix=v(prefix+"Pix"),a=[];
