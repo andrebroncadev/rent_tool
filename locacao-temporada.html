@@ -55,6 +55,35 @@ html[data-theme="dark"] .hint,html[data-theme="dark"] .topbar p,html[data-theme=
     </header>
 
     <form id="contratoForm" novalidate>
+      <section class="card" id="directoryCard">
+        <div class="card-title"><h2>Diretório compartilhado</h2><span>Acesso protegido por login</span></div>
+        <div class="card-body">
+          <div id="directoryLogin">
+            <p class="hint">Entre com a conta interna compartilhada para acessar e salvar proprietários e imóveis da equipe.</p>
+            <div class="grid">
+              <div class="field c5"><label for="directoryEmail">E-mail da equipe</label><input id="directoryEmail" type="email" autocomplete="username"></div>
+              <div class="field c5"><label for="directoryPassword">Senha</label><input id="directoryPassword" type="password" autocomplete="current-password"></div>
+              <div class="field c2" style="display:flex;align-items:end"><button class="btn primary" id="directoryLoginBtn" type="button" style="width:100%">Entrar</button></div>
+            </div>
+            <div id="directoryStatus" class="status" role="status" aria-live="polite"></div>
+          </div>
+          <div id="directoryContent" class="hidden">
+            <div class="grid">
+              <div class="field c5"><label for="savedOwnerSelect">Proprietários salvos</label><select id="savedOwnerSelect"><option value="">Selecione um proprietário</option></select></div>
+              <div class="field c3"><label for="savedPropertySelect">Imóveis deste proprietário</label><select id="savedPropertySelect"><option value="">Selecione um imóvel</option></select></div>
+              <div class="field c2" style="display:flex;align-items:end"><button class="btn secondary" id="newOwnerBtn" type="button" style="width:100%">Adicionar proprietário</button></div>
+              <div class="field c2" style="display:flex;align-items:end"><button class="btn secondary" id="newPropertyBtn" type="button" style="width:100%">Novo imóvel</button></div>
+            </div>
+            <div class="actions" style="margin-top:12px;flex-wrap:wrap">
+              <button class="btn primary" id="saveOwnerBtn" type="button">Salvar proprietário</button>
+              <button class="btn primary" id="savePropertyBtn" type="button">Salvar imóvel</button>
+              <button class="btn secondary" id="directoryLogoutBtn" type="button">Sair do diretório</button>
+            </div>
+            <div id="directoryDataStatus" class="status" role="status" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
       <section class="card">
         <div class="card-title"><h2>1. Locador / proprietário</h2><span>Bloco LOCADOR</span></div>
         <div class="card-body">
@@ -211,6 +240,8 @@ html[data-theme="dark"] .hint,html[data-theme="dark"] .topbar p,html[data-theme=
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docx@9.7.1/dist/index.iife.js"></script>
   <script src="app.js?v=12"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="owner-directory.js?v=1"></script>
 
 <script>
 (function(){
