@@ -21,8 +21,7 @@
     bank_agency: "ownerAgency", bank_account_type: "ownerAccountType", bank_account: "ownerAccount", pix: "ownerPix"
   };
   const propertyFields = {
-    cep: "propertyCep", street: "propertyStreet", number: "propertyNumber", complement: "propertyComp",
-    condominium: "propertyCondo", neighborhood: "propertyBairro", city: "propertyCity", uf: "propertyUf", capacity: "capacity"
+    cep: "directoryPropertyCep", street: "directoryPropertyAddress", condominium: "directoryPropertyCondo"
   };
   function status(message, isError = false, area = "directoryDataStatus") {
     const el = $(area);
@@ -40,35 +39,40 @@
   function clearFields(map) { Object.values(map).forEach(id => setValue(id, "")); }
   function fillFields(map, row) { Object.entries(map).forEach(([column, id]) => setValue(id, row[column])); }
   function currentOwnerName(row) {
-    return row.owner_type === "pf" ? (row.pf_name || "Pessoa física sem nome") : (row.owner_name || "Pessoa jurídica sem nome");
+    return row.identifier || (row.owner_type === "pf" ? (row.pf_name || "Proprietário") : (row.owner_name || "Proprietário"));
   }
   function resetOwnerForm() {
     ownerId = null;
     $("savedOwnerSelect").value = "";
+    $("ownerIdentifier").value = "";
     $("savedPropertySelect").innerHTML = '<option value="">Selecione um imóvel</option>';
     propertyId = null;
     clearFields(ownerFields);
     clearFields(propertyFields);
     document.querySelector('[data-owner-type="pj"]')?.click();
-    status("Novo proprietário: preencha os campos e clique em “Salvar proprietário”.");
+    status("Novo proprietário: preencha o identificador e os dados do proprietário.");
   }
   function resetPropertyForm() {
     propertyId = null;
     $("savedPropertySelect").value = "";
     clearFields(propertyFields);
-    status(ownerId ? "Novo imóvel: preencha o endereço e clique em “Salvar imóvel”." : "Selecione ou salve um proprietário antes de cadastrar um imóvel.", !ownerId);
+    status(ownerId ? "Novo imóvel: informe o CEP, o endereço e o condomínio, se houver." : "Selecione ou salve um proprietário antes de adicionar um imóvel.", !ownerId);
   }
   async function loadOwners(selectId = "") {
     const { data, error } = await client.from("owners")
-      .select("id,owner_type,owner_name,cnpj,representative_name,representative_rg,representative_cpf,pf_name,pf_job,pf_civil_status,pf_rg,pf_cpf,cep,street,number,complement,neighborhood,city,uf,bank_code,bank_agency,bank_account_type,bank_account,pix,created_at")
+      .select("id,identifier,owner_type,owner_name,cnpj,representative_name,representative_rg,representative_cpf,pf_name,pf_job,pf_civil_status,pf_rg,pf_cpf,cep,street,number,complement,neighborhood,city,uf,bank_code,bank_agency,bank_account_type,bank_account,pix,created_at")
       .order("created_at", { ascending: false });
     if (error) throw error;
     const select = $("savedOwnerSelect");
     select.innerHTML = '<option value="">Selecione um proprietário</option>';
+    const seen = new Map();
     (data || []).forEach(row => {
+      const base = currentOwnerName(row);
+      const count = (seen.get(base) || 0) + 1;
+      seen.set(base, count);
       const option = document.createElement("option");
       option.value = row.id;
-      option.textContent = currentOwnerName(row) + (row.city ? " — " + row.city : "");
+      option.textContent = count > 1 ? base + " (" + count + ")" : base;
       select.appendChild(option);
     });
     if (selectId) {
@@ -83,19 +87,19 @@
     if (!id) return;
     const { data: owner, error } = await client.from("owners").select("*").eq("id", id).single();
     if (error) throw error;
+    $("ownerIdentifier").value = owner.identifier || currentOwnerName(owner);
     document.querySelector('[data-owner-type="' + owner.owner_type + '"]')?.click();
     fillFields(ownerFields, owner);
     const { data: properties, error: pError } = await client.from("properties")
       .select("*").eq("owner_id", id).order("created_at", { ascending: false });
     if (pError) throw pError;
-    (properties || []).forEach(row => {
+    (properties || []).forEach((row, index) => {
       const option = document.createElement("option");
       option.value = row.id;
-      const address = [row.street, row.number, row.neighborhood, row.city].filter(Boolean).join(", ");
-      option.textContent = address || "Imóvel sem endereço";
+      option.textContent = row.condominium || row.street || row.cep || ("Imóvel " + (index + 1));
       $("savedPropertySelect").appendChild(option);
     });
-    status("Proprietário carregado. Selecione um imóvel ou cadastre outro.");
+    status("Proprietário carregado. Selecione um imóvel ou adicione outro.");
   }
   async function loadProperty(id) {
     propertyId = id || null;
@@ -103,7 +107,10 @@
     const { data, error } = await client.from("properties").select("*").eq("id", id).single();
     if (error) throw error;
     fillFields(propertyFields, data);
-    status("Dados do imóvel carregados no formulário.");
+    setValue("propertyCep", data.cep);
+    setValue("propertyStreet", data.street);
+    setValue("propertyCondo", data.condominium);
+    status("Imóvel carregado no formulário.");
   }
   function ownerPayload() {
     const row = { owner_type: document.querySelector("[data-owner-type].active")?.dataset.ownerType || "pj" };
@@ -118,8 +125,10 @@
     return row;
   }
   async function saveOwner() {
-    if (!sessionUser) throw new Error("Entre no diretório antes de salvar.");
-    const row = { ...ownerPayload(), user_id: sessionUser.id };
+    if (!sessionUser) throw new Error("Entre para continuar.");
+    const identifier = $("ownerIdentifier").value.trim();
+    if (!identifier) throw new Error("Informe um identificador para localizar este proprietário na lista.");
+    const row = { ...ownerPayload(), identifier, user_id: sessionUser.id };
     if (row.owner_type === "pf" && !row.pf_name) throw new Error("Informe o nome completo do proprietário pessoa física.");
     if (row.owner_type === "pj" && !row.owner_name) throw new Error("Informe a razão social/nome do proprietário pessoa jurídica.");
     let result;
@@ -128,23 +137,32 @@
     if (result.error) throw result.error;
     ownerId = result.data.id;
     await loadOwners(ownerId);
-    status("Proprietário salvo no diretório compartilhado.");
+    status("Proprietário salvo.");
   }
   async function saveProperty() {
-    if (!sessionUser) throw new Error("Entre no diretório antes de salvar.");
+    if (!sessionUser) throw new Error("Entre para continuar.");
     if (!ownerId) throw new Error("Selecione ou salve um proprietário antes de salvar o imóvel.");
-    const row = { ...propertyPayload(), user_id: sessionUser.id };
-    if (!row.street && !row.condominium && !row.city) throw new Error("Informe ao menos o endereço, condomínio ou cidade do imóvel.");
+    const row = {
+      user_id: sessionUser.id,
+      owner_id: ownerId,
+      cep: $("directoryPropertyCep").value.trim() || null,
+      street: $("directoryPropertyAddress").value.trim() || null,
+      condominium: $("directoryPropertyCondo").value.trim() || null
+    };
+    if (!row.cep && !row.street && !row.condominium) throw new Error("Informe o CEP, o endereço ou o nome do condomínio.");
     let result;
     if (propertyId) result = await client.from("properties").update(row).eq("id", propertyId).select("id").single();
     else result = await client.from("properties").insert(row).select("id").single();
     if (result.error) throw result.error;
     const savedPropertyId = result.data.id;
+    setValue("propertyCep", row.cep);
+    setValue("propertyStreet", row.street);
+    setValue("propertyCondo", row.condominium);
     await loadOwner(ownerId);
     propertyId = savedPropertyId;
     $("savedPropertySelect").value = savedPropertyId;
     await loadProperty(savedPropertyId);
-    status("Imóvel salvo e vinculado ao proprietário.");
+    status("Imóvel salvo.");
   }
   async function showSession(session) {
     sessionUser = session?.user || null;
@@ -153,7 +171,7 @@
     $("directoryLogin").classList.toggle("hidden", authorized);
     $("directoryContent").classList.toggle("hidden", !authorized);
     if (authorized) {
-      try { await loadOwners(); status("Conectado ao diretório compartilhado."); }
+      try { await loadOwners(); status("Proprietários carregados."); }
       catch (e) { status("Não foi possível carregar os proprietários: " + (e.message || "erro desconhecido"), true); }
     } else {
       ownerId = null; propertyId = null;
@@ -162,7 +180,8 @@
       $("savedPropertySelect").innerHTML = '<option value="">Selecione um imóvel</option>';
     }
   }
-  $("directoryLoginBtn").addEventListener("click", async () => {
+  $("directoryLoginForm").addEventListener("submit", async event => {
+    event.preventDefault();
     const email = $("directoryEmail").value.trim();
     const password = $("directoryPassword").value;
     if (!email || !password) return status("Informe o e-mail e a senha.", true, "directoryStatus");
@@ -184,11 +203,6 @@
     button.disabled = false;
     if (error) return status("Não foi possível enviar a recuperação. Confira o e-mail e tente novamente.", true, "directoryStatus");
     status("Se houver uma conta para esse e-mail, você receberá instruções para redefinir a senha.", false, "directoryStatus");
-  });
-  $("directoryLogoutBtn").addEventListener("click", async () => {
-    const { error } = await client.auth.signOut();
-    if (error) return status("Não foi possível encerrar a sessão: " + error.message, true);
-    await showSession(null);
   });
   $("savedOwnerSelect").addEventListener("change", async e => {
     try { if (e.target.value) await loadOwner(e.target.value); else { ownerId = null; propertyId = null; $("savedPropertySelect").innerHTML = '<option value="">Selecione um imóvel</option>'; } }
