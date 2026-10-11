@@ -180,7 +180,7 @@
       $("savedPropertySelect").innerHTML = '<option value="">Selecione um imóvel</option>';
     }
   }
-  $("directoryLoginForm").addEventListener("submit", async event => {
+  $("directoryLoginBtn").addEventListener("click", async event => {
     event.preventDefault();
     const email = $("directoryEmail").value.trim();
     const password = $("directoryPassword").value;
