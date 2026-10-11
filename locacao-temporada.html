@@ -77,6 +77,15 @@ html[data-theme="dark"] .auth-form input{background:#25272a;color:#f4f1e8;border
 html[data-theme="dark"] .auth-forgot{color:#d2b46b}
 @media(max-width:420px){body:not(.directory-authenticated) form#contratoForm{padding:18px 12px}.auth-login-card{border-radius:17px;padding:24px 20px}}
 
+
+/* Diretório compacto de proprietários e imóveis */
+.directory-section{padding:14px;border:1px solid var(--theme-line,var(--line));border-radius:12px;background:var(--theme-surface,#fffefa)}
+.directory-section .field label{display:block;margin-bottom:6px}
+.directory-section input,.directory-section select{width:100%;min-height:42px;padding:10px 11px;border:1px solid var(--theme-line,var(--line));border-radius:8px;background:var(--theme-surface,#fffefa);color:var(--theme-text,var(--ink));font:inherit}
+.directory-section input:focus,.directory-section select:focus{outline:2px solid var(--theme-gold,#b49350);outline-offset:1px}
+.directory-section .actions{display:flex;gap:8px}
+@media(max-width:620px){.directory-section .field{grid-column:span 12}.directory-section{padding:11px}}
+
 </style>
 </head>
 <body>
@@ -112,19 +121,30 @@ html[data-theme="dark"] .auth-forgot{color:#d2b46b}
           <footer class="auth-footer">EBIMOB · Ferramentas internas</footer>
         </div>
         <div id="directoryContent" class="hidden">
+          <div class="directory-section">
             <div class="grid">
-              <div class="field c5"><label for="savedOwnerSelect">Proprietários salvos</label><select id="savedOwnerSelect"><option value="">Selecione um proprietário</option></select></div>
-              <div class="field c3"><label for="savedPropertySelect">Imóveis deste proprietário</label><select id="savedPropertySelect"><option value="">Selecione um imóvel</option></select></div>
-              <div class="field c2" style="display:flex;align-items:end"><button class="btn secondary" id="newOwnerBtn" type="button" style="width:100%">Adicionar proprietário</button></div>
-              <div class="field c2" style="display:flex;align-items:end"><button class="btn secondary" id="newPropertyBtn" type="button" style="width:100%">Novo imóvel</button></div>
+              <div class="field c7"><label for="savedOwnerSelect">Selecionar proprietário</label><select id="savedOwnerSelect"><option value="">Selecione um proprietário</option></select></div>
+              <div class="field c5"><label for="ownerIdentifier">Identificador</label><input id="ownerIdentifier" placeholder="Ex.: Casa da praia — Juquehy" autocomplete="off"></div>
             </div>
-            <div class="actions" style="margin-top:12px;flex-wrap:wrap">
+            <div class="actions" style="margin-top:10px;flex-wrap:wrap">
+              <button class="btn secondary" id="newOwnerBtn" type="button">Adicionar proprietário</button>
               <button class="btn primary" id="saveOwnerBtn" type="button">Salvar proprietário</button>
-              <button class="btn primary" id="savePropertyBtn" type="button">Salvar imóvel</button>
-              <button class="btn secondary" id="directoryLogoutBtn" type="button">Sair do diretório</button>
             </div>
-            <div id="directoryDataStatus" class="status" role="status" aria-live="polite"></div>
           </div>
+          <div class="directory-section" style="margin-top:18px">
+            <div class="grid">
+              <div class="field c7"><label for="savedPropertySelect">Imóvel do proprietário</label><select id="savedPropertySelect"><option value="">Selecione um imóvel</option></select></div>
+              <div class="field c5" style="display:flex;align-items:end"><button class="btn secondary" id="newPropertyBtn" type="button" style="width:100%">Adicionar imóvel</button></div>
+              <div class="field c4"><label for="directoryPropertyCep">CEP</label><input id="directoryPropertyCep" class="cep" maxlength="9" placeholder="00000-000"></div>
+              <div class="field c4"><label for="directoryPropertyAddress">Endereço</label><input id="directoryPropertyAddress" placeholder="Rua, número e complemento"></div>
+              <div class="field c4"><label for="directoryPropertyCondo">Nome do condomínio</label><input id="directoryPropertyCondo" placeholder="Condomínio (se houver)"></div>
+            </div>
+            <div class="actions" style="margin-top:10px;flex-wrap:wrap">
+              <button class="btn primary" id="savePropertyBtn" type="button">Salvar imóvel</button>
+            </div>
+          </div>
+          <div id="directoryDataStatus" class="status" role="status" aria-live="polite"></div>
+        </div>
         </div>
       
       </section>
