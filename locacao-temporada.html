@@ -42,6 +42,41 @@ html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[
 html[data-theme="dark"] .btn.secondary,html[data-theme="dark"] .pill{background:var(--theme-surface-2);color:var(--theme-text);border-color:var(--theme-line)}
 html[data-theme="dark"] .pill.active{background:#41434a;border-color:var(--theme-gold);color:var(--theme-text)}
 html[data-theme="dark"] .hint,html[data-theme="dark"] .topbar p,html[data-theme="dark"] .card-title span{color:var(--theme-muted)}
+
+/* Tela de acesso padronizada EBIMOB */
+body:not(.directory-authenticated) header{display:none!important}
+body:not(.directory-authenticated) .app{width:100%;max-width:none;margin:0;padding:0}
+body:not(.directory-authenticated) form#contratoForm{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;margin:0}
+body:not(.directory-authenticated) #directoryCard{display:block!important;width:100%;max-width:490px;margin:0;border:0;background:transparent;box-shadow:none;padding:0}
+body:not(.directory-authenticated) #directoryCard>.card-title{display:none!important}
+.auth-login-shell{min-height:calc(100vh - 48px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:0;background:radial-gradient(ellipse at 80% 0%,#e9e8e5,transparent 42%),#f6f5f1}
+.auth-login-card{width:min(100%,460px);padding:clamp(24px,5vw,38px);background:#fffefa;border:1px solid #d8d6d0;border-radius:22px;box-shadow:0 24px 70px #17324f12;color:#28292d}
+.auth-brand{display:flex;align-items:center;gap:11px;margin-bottom:28px;color:#17324f}
+.auth-logo-mark{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#17324f;color:white;font:800 23px/1 system-ui,sans-serif;letter-spacing:-1px}
+.auth-brand b,.auth-brand small{display:block}.auth-brand b{font:800 18px/1.1 system-ui,sans-serif;letter-spacing:1.2px}.auth-brand small{margin-top:4px;color:#6f7075;font-size:9px;font-weight:800;letter-spacing:1.5px}
+.auth-kicker{font-size:10px;font-weight:800;letter-spacing:1.6px;color:#b52332}
+.auth-tool h1{margin:8px 0 4px;font:800 clamp(27px,5vw,34px)/1.1 system-ui,sans-serif;letter-spacing:-1px;color:#17324f}
+.auth-tool p,.auth-subtitle{margin:0;color:#6f7075;font-size:13px;line-height:1.7}
+.auth-divider{height:1px;background:#e9e8e5;margin:22px 0}
+.auth-login-card h2{margin:0 0 5px;font:800 19px/1.25 system-ui,sans-serif;color:#28292d}
+.auth-form{display:flex;flex-direction:column;gap:9px;margin-top:20px}
+.auth-form label{margin-top:4px;color:#45464b;font-size:12px;font-weight:700}
+.auth-form input{width:100%;min-height:46px;border:1px solid #d8d6d0;border-radius:10px;padding:12px 13px;background:#fffefa;color:#28292d;font:400 14px system-ui,sans-serif;outline:none}
+.auth-form input:focus{border-color:#b49350;box-shadow:0 0 0 3px #b493501c}
+.auth-submit{min-height:47px;display:flex;align-items:center;justify-content:space-between;margin-top:9px;padding:0 16px;border:0;border-radius:10px;background:#17324f;color:white;font-size:13px;font-weight:800;cursor:pointer}
+.auth-submit:hover{background:#b52332}.auth-submit:disabled{opacity:.6;cursor:wait}
+.auth-feedback{min-height:18px;margin:2px 0 0;font-size:12px;color:#6f7075}.auth-feedback.bad{color:#b52332}.auth-feedback.ok{color:#26734d}.auth-feedback.error{color:#b52332}.auth-feedback.success{color:#26734d}
+.auth-forgot{display:block;margin:8px auto 0;border:0;background:transparent;color:#17324f;font-size:12px;font-weight:700;cursor:pointer}.auth-forgot:hover{text-decoration:underline}
+.auth-footnote{text-align:center;margin:22px 0 0;color:#6f7075;font-size:11px}.auth-footer{color:#6f7075;font-size:11px;text-align:center}
+html[data-theme="dark"] .auth-login-shell{background:radial-gradient(ellipse at 80% 0%,#383a3f,transparent 42%),#222326}
+html[data-theme="dark"] .auth-login-card{background:#2d2f33;border-color:#4b4c50;color:#f4f1e8}
+html[data-theme="dark"] .auth-brand,html[data-theme="dark"] .auth-tool h1,html[data-theme="dark"] .auth-login-card h2,html[data-theme="dark"] .auth-form label{color:#f4f1e8}
+html[data-theme="dark"] .auth-brand small,html[data-theme="dark"] .auth-tool p,html[data-theme="dark"] .auth-subtitle,html[data-theme="dark"] .auth-footnote,html[data-theme="dark"] .auth-footer{color:#b8b5ad}
+html[data-theme="dark"] .auth-divider{background:#4b4c50}
+html[data-theme="dark"] .auth-form input{background:#25272a;color:#f4f1e8;border-color:#4b4c50}
+html[data-theme="dark"] .auth-forgot{color:#d2b46b}
+@media(max-width:420px){body:not(.directory-authenticated) form#contratoForm{padding:18px 12px}.auth-login-card{border-radius:17px;padding:24px 20px}}
+
 </style>
 </head>
 <body>
@@ -59,18 +94,24 @@ html[data-theme="dark"] .hint,html[data-theme="dark"] .topbar p,html[data-theme=
 
     <form id="contratoForm" novalidate>
       <section class="card" id="directoryCard">
-        <div class="card-title"><h2>Diretório compartilhado</h2><span>Acesso protegido por login</span></div>
-        <div class="card-body">
-          <div id="directoryLogin">
-            <p class="hint">Entre com a conta interna compartilhada para acessar e salvar proprietários e imóveis da equipe.</p>
-            <div class="grid">
-              <div class="field c5"><label for="directoryEmail">E-mail da equipe</label><input id="directoryEmail" type="email" autocomplete="username"></div>
-              <div class="field c5"><label for="directoryPassword">Senha</label><input id="directoryPassword" type="password" autocomplete="current-password"></div>
-              <div class="field c2" style="display:flex;align-items:end"><button class="btn primary" id="directoryLoginBtn" type="button" style="width:100%">Entrar</button></div>
+        <div id="directoryLogin" class="auth-login-shell">
+          <div class="auth-login-card">
+            <div class="auth-brand"><span class="auth-logo-mark" aria-hidden="true">E</span><span><b>EBIMOB</b><small>ÁREA INTERNA</small></span></div>
+            <div class="auth-tool"><span class="auth-kicker">ACESSO SEGURO</span><h1>Contrato Generator</h1><p>Geração de contratos de locação de temporada</p></div>
+            <div class="auth-divider"></div>
+            <h2>Acesse sua conta</h2><p class="auth-subtitle">Entre com seu e-mail e senha para continuar.</p>
+            <div class="auth-form">
+              <label for="directoryEmail">E-mail</label><input id="directoryEmail" type="email" autocomplete="username" placeholder="Seu e-mail">
+              <label for="directoryPassword">Senha</label><input id="directoryPassword" type="password" autocomplete="current-password" placeholder="Sua senha">
+              <button class="auth-submit" id="directoryLoginBtn" type="button">Entrar <span aria-hidden="true">→</span></button>
+              <div id="directoryStatus" class="auth-feedback" role="status" aria-live="polite"></div>
             </div>
-            <div id="directoryStatus" class="status" role="status" aria-live="polite"></div>
+            <button id="directoryForgotPassword" class="auth-forgot" type="button">Esqueci minha senha</button>
+            <p class="auth-footnote">Acesso restrito à equipe autorizada.</p>
           </div>
-          <div id="directoryContent" class="hidden">
+          <footer class="auth-footer">EBIMOB · Ferramentas internas</footer>
+        </div>
+        <div id="directoryContent" class="hidden">
             <div class="grid">
               <div class="field c5"><label for="savedOwnerSelect">Proprietários salvos</label><select id="savedOwnerSelect"><option value="">Selecione um proprietário</option></select></div>
               <div class="field c3"><label for="savedPropertySelect">Imóveis deste proprietário</label><select id="savedPropertySelect"><option value="">Selecione um imóvel</option></select></div>
@@ -85,6 +126,7 @@ html[data-theme="dark"] .hint,html[data-theme="dark"] .topbar p,html[data-theme=
             <div id="directoryDataStatus" class="status" role="status" aria-live="polite"></div>
           </div>
         </div>
+      
       </section>
 
       <section class="card">
