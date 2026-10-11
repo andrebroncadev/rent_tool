@@ -43,6 +43,10 @@ html[data-theme="dark"] .btn.secondary,html[data-theme="dark"] .pill{background:
 html[data-theme="dark"] .pill.active{background:#41434a;border-color:var(--theme-gold);color:var(--theme-text)}
 html[data-theme="dark"] .hint,html[data-theme="dark"] .topbar p,html[data-theme="dark"] .card-title span{color:var(--theme-muted)}
 
+/* Seletores da base com área de toque maior e texto dentro do controle */
+.directory-picker select{min-height:48px;padding:12px 14px;font-weight:750;font-size:15px;cursor:pointer;border-radius:10px;}
+.directory-picker select:focus-visible{outline:3px solid var(--theme-gold,#b49350);outline-offset:2px;}
+@media(max-width:600px){.directory-picker select{min-height:52px;font-size:16px;}}
 /* Padrão de autenticação EBIMOB */
 .auth-login-shell{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:28px 16px;background:radial-gradient(ellipse at 80% 0%,#e9e8e5,transparent 42%),#f6f5f1}
 .auth-login-card{width:min(100%,460px);padding:clamp(24px,5vw,38px);background:#fffefa;border:1px solid #d8d6d0;border-radius:22px;box-shadow:0 24px 70px #17324f12;color:#28292d}
@@ -131,7 +135,7 @@ html.app-auth-ready #directoryLogin{display:none!important}
         <div id="directoryContent" class="hidden">
           <div class="directory-section">
             <div class="grid">
-              <div class="field c7"><label for="savedOwnerSelect">Selecionar proprietário</label><select id="savedOwnerSelect"><option value="">Selecione um proprietário</option></select></div>
+              <div class="field c7 directory-picker"><select id="savedOwnerSelect" aria-label="Selecionar proprietário"><option value="">Selecionar proprietário</option></select></div>
               <div class="field c5"><label for="ownerIdentifier">Identificador</label><input id="ownerIdentifier" placeholder="Ex.: Casa da praia — Juquehy" autocomplete="off"></div>
             </div>
             <div class="actions" style="margin-top:10px;flex-wrap:wrap">
@@ -141,7 +145,7 @@ html.app-auth-ready #directoryLogin{display:none!important}
           </div>
           <div class="directory-section" style="margin-top:18px">
             <div class="grid">
-              <div class="field c7"><label for="savedPropertySelect">Imóvel do proprietário</label><select id="savedPropertySelect"><option value="">Selecione um imóvel</option></select></div>
+              <div class="field c7 directory-picker"><select id="savedPropertySelect" aria-label="Selecionar imóvel"><option value="">Selecionar imóvel</option></select></div>
               <div class="field c5" style="display:flex;align-items:end"><button class="btn secondary" id="newPropertyBtn" type="button" style="width:100%">Adicionar imóvel</button></div>
               <div class="field c4"><label for="directoryPropertyCep">CEP</label><input id="directoryPropertyCep" class="cep" maxlength="9" placeholder="00000-000"></div>
               <div class="field c4"><label for="directoryPropertyAddress">Endereço</label><input id="directoryPropertyAddress" placeholder="Rua, número e complemento"></div>
