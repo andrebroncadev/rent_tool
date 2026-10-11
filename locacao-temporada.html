@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contrato Generator EBIMOB">
+  <title>Contrato Generator EBIMOB</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>Contrato Generator EBIMOB</h1>
+        <p>Emissor de contrato de aluguel de temporada em PDF</p>
+      </div>
+      <div class="actions no-print">
+        <button class="btn secondary" type="button" id="btnLimpar">Limpar</button>
+        <button class="btn secondary" type="button" id="btnGerarDocxTop">Salvar como DOCX</button><button class="btn primary" type="button" id="btnGerarTop">Gerar PDF</button>
+      </div>
+    </header>
+
+    <form id="contratoForm" novalidate>
+      <section class="card">
+        <div class="card-title"><h2>1. Locador / proprietário</h2><span>Bloco LOCADOR</span></div>
+        <div class="card-body">
+          <div class="toggle-row no-print">
+            <button class="pill active" type="button" data-owner-type="pj">Pessoa jurídica</button>
+            <button class="pill" type="button" data-owner-type="pf">Pessoa física</button>
+          </div>
+
+          <div id="ownerPJ">
+            <div class="grid">
+              <div class="field c6"><label for="ownerName">Razão social / nome</label><input id="ownerName"></div>
+              <div class="field c3"><label for="ownerCnpj">CNPJ</label><input id="ownerCnpj"></div>
+              <div class="field c3"><label for="ownerRep">Representante legal</label><input id="ownerRep"></div>
+              <div class="field c3"><label for="ownerRg">RG do representante</label><input id="ownerRg"></div>
+              <div class="field c5"><label for="ownerCpf">CPF do representante</label><input id="ownerCpf" class="cpf" maxlength="14"><div id="ownerCpfStatus" class="status"></div></div>
+            </div>
+          </div>
+
+          <div id="ownerPF" class="hidden">
+            <div class="grid">
+              <div class="field c5"><label for="ownerPfName">Nome completo</label><input id="ownerPfName"></div>
+              <div class="field c4"><label for="ownerPfJob">Profissão</label><input id="ownerPfJob"></div>
+              <div class="field c3"><label for="ownerPfCivil">Estado civil</label><select id="ownerPfCivil"><option>solteiro(a)</option><option>casado(a)</option><option>divorciado(a)</option><option>viúvo(a)</option><option>união estável</option></select></div>
+              <div class="field c3"><label for="ownerPfRg">RG</label><input id="ownerPfRg"></div>
+              <div class="field c5"><label for="ownerPfCpf">CPF</label><input id="ownerPfCpf" class="cpf" maxlength="14"><div id="ownerPfCpfStatus" class="status"></div></div>
+            </div>
+          </div>
+
+          <div class="grid address-grid">
+            <div class="field c3"><label for="ownerCep">CEP</label><input id="ownerCep" class="cep" maxlength="9"></div>
+            <div class="field c6"><label for="ownerStreet">Rua / logradouro</label><input id="ownerStreet"></div>
+            <div class="field c3"><label for="ownerNumber">Número</label><input id="ownerNumber"></div>
+            <div class="field c4"><label for="ownerComp">Complemento</label><input id="ownerComp"></div>
+            <div class="field c4"><label for="ownerBairro">Bairro</label><input id="ownerBairro"></div>
+            <div class="field c3"><label for="ownerCity">Cidade</label><input id="ownerCity"></div>
+            <div class="field c1"><label for="ownerUf">UF</label><input id="ownerUf" maxlength="2"></div>
+          </div>
+          <small class="hint">Ao sair do CEP, rua, bairro, cidade e UF são preenchidos automaticamente.</small>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-title"><h2>2. Locatário</h2><span>Dados pessoais e residência</span></div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="field c6"><label for="tenantName">Nome completo</label><input id="tenantName"></div>
+            <div class="field c3"><label for="tenantCivil">Estado civil</label><select id="tenantCivil"><option>solteiro(a)</option><option>casado(a)</option><option>divorciado(a)</option><option>viúvo(a)</option><option>união estável</option></select></div>
+            <div class="field c3"><label for="tenantJob">Profissão</label><input id="tenantJob"></div>
+            <div class="field c3"><label for="tenantRg">RG</label><input id="tenantRg"></div>
+            <div class="field c4"><label for="tenantCpf">CPF</label><input id="tenantCpf" class="cpf" maxlength="14"><div id="tenantCpfStatus" class="status"></div></div>
+            <div class="field c3"><label for="tenantEmail">E-mail</label><input id="tenantEmail" type="email"></div>
+            <div class="field c2"><label for="tenantPhone">Telefone</label><input id="tenantPhone"></div>
+            <div class="field c3"><label for="tenantCep">CEP</label><input id="tenantCep" class="cep" maxlength="9"></div>
+            <div class="field c6"><label for="tenantStreet">Rua / logradouro</label><input id="tenantStreet"></div>
+            <div class="field c3"><label for="tenantNumber">Número</label><input id="tenantNumber"></div>
+            <div class="field c4"><label for="tenantComp">Complemento</label><input id="tenantComp"></div>
+            <div class="field c4"><label for="tenantBairro">Bairro</label><input id="tenantBairro"></div>
+            <div class="field c3"><label for="tenantCity">Cidade</label><input id="tenantCity"></div>
+            <div class="field c1"><label for="tenantUf">UF</label><input id="tenantUf" maxlength="2"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-title"><h2>3. Imóvel</h2><span>Endereço e capacidade</span></div>
+        <div class="card-body"><div class="grid">
+          <div class="field c3"><label for="propertyCep">CEP</label><input id="propertyCep" class="cep" maxlength="9"></div>
+          <div class="field c6"><label for="propertyStreet">Rua / logradouro</label><input id="propertyStreet"></div>
+          <div class="field c3"><label for="propertyNumber">Número</label><input id="propertyNumber"></div>
+          <div class="field c4"><label for="propertyComp">Complemento</label><input id="propertyComp"></div>
+          <div class="field c4"><label for="propertyCondo">Condomínio / empreendimento</label><input id="propertyCondo"></div>
+          <div class="field c4"><label for="propertyBairro">Bairro</label><input id="propertyBairro"></div>
+          <div class="field c5"><label for="propertyCity">Cidade</label><input id="propertyCity"></div>
+          <div class="field c2"><label for="propertyUf">UF</label><input id="propertyUf" maxlength="2"></div>
+          <div class="field c5"><label for="capacity">Capacidade máxima de pessoas</label><input id="capacity" type="number" min="1" value="10"></div>
+        </div></div>
+      </section>
+
+      <section class="card">
+        <div class="card-title"><h2>4. Datas e horários</h2><span>Validação automática</span></div>
+        <div class="card-body"><div class="grid">
+          <div class="field c3"><label for="contractDate">Data do contrato</label><input id="contractDate" type="date"></div>
+          <div class="field c3"><label for="checkin">Check-in</label><input id="checkin" type="date"></div>
+          <div class="field c3"><label for="checkinTime">Hora do check-in</label><input id="checkinTime" type="time" value="07:00"></div>
+          <div class="field c3"><label for="checkout">Check-out</label><input id="checkout" type="date"></div>
+          <div class="field c3"><label for="checkoutTime">Hora do check-out</label><input id="checkoutTime" type="time" value="11:00"></div>
+          <div class="field c3"><label for="keyPlace">Devolução das chaves</label><input id="keyPlace" value="PORTARIA"></div>
+          <div class="field c3"><label for="nights">Diárias</label><input id="nights" readonly></div>
+        </div><div id="dateStatus" class="status"></div></div>
+      </section>
+
+      <section class="card">
+        <div class="card-title"><h2>5. Valores e pagamento</h2><span>Cálculo automático</span></div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="field c3"><label for="rentValue">Valor da locação (R$)</label><input id="rentValue" type="number" step="0.01" min="0"></div>
+            <div class="field c3"><label for="cleanValue">Taxa de faxina / limpeza (R$)</label><input id="cleanValue" type="number" step="0.01" min="0" value="350"></div>
+            <div class="field c3"><label for="cautionValue">Caução (R$)</label><input id="cautionValue" type="number" step="0.01" min="0" value="2000"></div>
+            <div class="field c3"><label for="commissionPct">Comissão sobre locação (%)</label><input id="commissionPct" type="number" step="0.1" min="0" value="10"></div>
+            <div class="summary c4"><span>VALOR TOTAL</span><strong id="totalValue">R$ 0,00</strong></div>
+            <div class="summary c4"><span>COMISSÃO</span><strong id="commissionValue">R$ 0,00</strong></div>
+            <div class="summary c4"><span>SALDO APÓS RESERVA</span><strong id="balanceValue">R$ 0,00</strong></div>
+          </div>
+          <div class="grid gap-top">
+            <div class="bank-card c6"><h3>Dados bancários do locador</h3><div class="bank-grid">
+              <div class="field"><label for="ownerBankCode">Banco</label><select id="ownerBankCode"><option value="">Selecione o banco</option><option value="001">001 = Banco do Brasil</option><option value="033">033 = Santander</option><option value="077">077 = Inter</option><option value="104">104 = Caixa Econômica Federal</option><option value="208">208 = BTG Pactual</option><option value="212">212 = Banco Original</option><option value="237">237 = Bradesco</option><option value="260">260 = Nubank</option><option value="290">290 = PagBank</option><option value="336">336 = C6 Bank</option><option value="341">341 = Itaú</option><option value="403">403 = Cora</option><option value="748">748 = Sicredi</option><option value="756">756 = Sicoob</option></select></div>
+              <div class="field"><label for="ownerAgency">Agência</label><input id="ownerAgency"></div>
+              <div class="field"><label for="ownerAccountType">Tipo de conta</label><select id="ownerAccountType"><option>CC (Corrente)</option><option>Poupança</option></select></div>
+              <div class="field"><label for="ownerAccount">Conta</label><input id="ownerAccount"></div>
+              <div class="field"><label for="ownerPix">PIX</label><input id="ownerPix"></div>
+            </div></div>
+            <div class="bank-card c6"><h3>Dados bancários da imobiliária</h3><div class="bank-grid">
+              <div class="field"><label for="brokerBankCode">Banco</label><select id="brokerBankCode"><option value="">Selecione o banco</option><option value="001">001 = Banco do Brasil</option><option value="033">033 = Santander</option><option value="077">077 = Inter</option><option value="104">104 = Caixa Econômica Federal</option><option value="208">208 = BTG Pactual</option><option value="212">212 = Banco Original</option><option value="237">237 = Bradesco</option><option value="260">260 = Nubank</option><option value="290">290 = PagBank</option><option value="336">336 = C6 Bank</option><option value="341">341 = Itaú</option><option value="403">403 = Cora</option><option value="748">748 = Sicredi</option><option value="756">756 = Sicoob</option></select></div>
+              <div class="field"><label for="brokerAgency">Agência</label><input id="brokerAgency"></div>
+              <div class="field"><label for="brokerAccountType">Tipo de conta</label><select id="brokerAccountType"><option>CC (Corrente)</option><option>Poupança</option></select></div>
+              <div class="field"><label for="brokerAccount">Conta</label><input id="brokerAccount"></div>
+              <div class="field"><label for="brokerPix">PIX</label><input id="brokerPix"></div>
+            </div></div>
+            <div class="field c3"><label for="reservationOwnerValue">Reserva - locador (R$)</label><input id="reservationOwnerValue" type="number" step="0.01" min="0"></div><div class="field c3"><label for="reservationBrokerValue">Reserva - imobiliária (R$)</label><input id="reservationBrokerValue" type="number" step="0.01" min="0"></div><div class="summary c3"><span>RESERVA TOTAL</span><strong id="reservationTotalValue">R$ 0,00</strong></div>
+          </div>
+          <div class="notice">A reserva entra como paga na data de assinatura. As parcelas aparecem no PDF como PARCELA 1, PARCELA 2 etc.</div>
+          <div class="installment-header"><strong>Parcelas adicionais</strong><button type="button" class="btn secondary no-print" id="btnAddInstallment">+ Adicionar parcela</button></div>
+          <div id="installments"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-title"><h2>6. Parâmetros das cláusulas</h2><span>Defaults do documento anexado</span></div>
+        <div class="card-body"><div class="grid">
+          <div class="field c3"><label for="lateFinePct">Multa por atraso (%)</label><input id="lateFinePct" type="number" step="0.1" value="5"></div>
+          <div class="field c3"><label for="excessPersonFine">Multa diária por pessoa excedente (R$)</label><input id="excessPersonFine" type="number" step="0.01" value="1000"></div>
+          <div class="field c3"><label for="furnitureFine">Multa móveis/armários (R$)</label><input id="furnitureFine" type="number" step="0.01" value="2000"></div>
+          <div class="field c3"><label for="lawyerPct">Honorários advocatícios (%)</label><input id="lawyerPct" type="number" step="0.1" value="20"></div>
+          <div class="field c8"><label for="forum">Foro</label><input id="forum" value="Comarca de São Sebastião/SP"></div>
+        </div>
+        <div class="notice warning">As cláusulas fixas são reproduzidas a partir do contrato anexado. Revise o conteúdo antes de uma operação real.</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-title"><h2>7. Testemunhas</h2><span>Saem no final do PDF</span></div>
+        <div class="card-body"><div class="grid">
+          <div class="field c4"><label for="w1Name">1ª testemunha - nome</label><input id="w1Name"></div><div class="field c4"><label for="w1Rg">RG</label><input id="w1Rg"></div><div class="field c4"><label for="w1Cpf">CPF</label><input id="w1Cpf" class="cpf" maxlength="14"></div>
+          <div class="field c4"><label for="w2Name">2ª testemunha - nome</label><input id="w2Name"></div><div class="field c4"><label for="w2Rg">RG</label><input id="w2Rg"></div><div class="field c4"><label for="w2Cpf">CPF</label><input id="w2Cpf" class="cpf" maxlength="14"></div>
+        </div></div>
+      </section>
+
+      <footer class="bottom no-print">
+        <small>Atalhos: CPF validado, CEP automático, check-out posterior ao check-in e PDF A4 baseado no contrato enviado.</small>
+        <div class="actions"><button class="btn secondary" type="button" id="btnPreview">Pré-visualizar</button><button class="btn secondary" type="button" id="btnGerarDocx">Salvar como DOCX</button><button class="btn primary" type="button" id="btnGerarBottom">Gerar PDF</button></div>
+      </footer>
+    </form>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@9.7.1/dist/index.iife.js"></script>
+  <script src="app.js?v=12"></script>
+</body>
+</html>
