@@ -27,7 +27,11 @@
     const el = $(area);
     if (!el) return;
     el.textContent = message;
-    el.className = "status " + (message ? (isError ? "bad" : "ok") : "");
+    if (area === "directoryStatus") {
+      el.className = "auth-feedback " + (message ? (isError ? "error" : "success") : "");
+    } else {
+      el.className = "status " + (message ? (isError ? "bad" : "ok") : "");
+    }
   }
   function setValue(id, value) {
     const el = $(id);
