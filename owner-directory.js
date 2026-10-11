@@ -56,6 +56,9 @@
     propertyId = null;
     $("savedPropertySelect").value = "";
     clearFields(propertyFields);
+    setValue("propertyCep", "");
+    setValue("propertyStreet", "");
+    setValue("propertyCondo", "");
     status(ownerId ? "Novo imóvel: informe o CEP, o endereço e o condomínio, se houver." : "Selecione ou salve um proprietário antes de adicionar um imóvel.", !ownerId);
   }
   async function loadOwners(selectId = "") {
