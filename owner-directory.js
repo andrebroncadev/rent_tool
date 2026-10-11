@@ -139,9 +139,11 @@
     if (propertyId) result = await client.from("properties").update(row).eq("id", propertyId).select("id").single();
     else result = await client.from("properties").insert(row).select("id").single();
     if (result.error) throw result.error;
-    propertyId = result.data.id;
+    const savedPropertyId = result.data.id;
     await loadOwner(ownerId);
-    $("savedPropertySelect").value = propertyId;
+    propertyId = savedPropertyId;
+    $("savedPropertySelect").value = savedPropertyId;
+    await loadProperty(savedPropertyId);
     status("Imóvel salvo e vinculado ao proprietário.");
   }
   async function showSession(session) {
