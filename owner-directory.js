@@ -84,6 +84,10 @@
     ownerId = id || null;
     propertyId = null;
     $("savedPropertySelect").innerHTML = '<option value="">Selecione um imóvel</option>';
+    clearFields(propertyFields);
+    setValue("propertyCep", "");
+    setValue("propertyStreet", "");
+    setValue("propertyCondo", "");
     if (!id) return;
     const { data: owner, error } = await client.from("owners").select("*").eq("id", id).single();
     if (error) throw error;
