@@ -24,6 +24,14 @@ window.supabaseClient = window.supabase.createClient(
   "https://vqenzubwfzwwndgjucim.supabase.co",
   "sb_publishable_s4o-wW-rdUbEesSKe6NhNg_u7gzYeCf"
 );
+window.supabaseClient.auth.getSession().then(async ({data, error}) => {
+  if (error || !data?.session) return;
+  if ((data.session.user.email || "").toLowerCase() === "andrebronca60@gmail.com") {
+    location.replace("index.html");
+  } else {
+    await window.supabaseClient.auth.signOut();
+  }
+});
 </script>
 <script>
 document.getElementById("loginForm").addEventListener("submit", async e=>{
