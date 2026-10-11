@@ -178,9 +178,15 @@ function bankText(prefix){
   return [bank&&bank!=="Selecione o banco"?bank.replace(" = "," - "):"",agency?"Agência "+agency:"",account?"Conta "+conta+" "+account:"",pix?"PIX "+pix:""].filter(Boolean).join(", ");
 }
 function bankRuns(prefix){
-  const bank=$(prefix+"BankCode")?.selectedOptions[0]?.textContent||"",agency=v(prefix+"Agency"),account=v(prefix+"Account"),type=$(prefix+"AccountType")?.selectedOptions[0]?.textContent||"",pix=v(prefix+"Pix");
+  const fixedBroker = prefix === "broker";
+  const bank=fixedBroker ? "336 = C6 Bank" : ($(prefix+"BankCode")?.selectedOptions[0]?.textContent||"");
+  const agency=fixedBroker ? "0001" : v(prefix+"Agency");
+  const account=fixedBroker ? "41243219-6" : v(prefix+"Account");
+  const type=fixedBroker ? "CC (Corrente)" : ($(prefix+"AccountType")?.selectedOptions[0]?.textContent||"");
+  const pix=fixedBroker ? "63.420.410/0001-01" : v(prefix+"Pix");
   const conta=type==="CC (Corrente)"?"CC":type;
   const out=[];
+  if(fixedBroker)out.push({text:"EBIMOBILIARIA LTDA",bold:true},{text:", CNPJ: ",bold:true},{text:"63.420.410/0001-01",bold:false},{text:", ",bold:false});
   if(bank&&bank!=="Selecione o banco"){out.push({text:"Banco: ",bold:true},{text:bank.replace(" = "," - "),bold:false});}
   if(agency)out.push({text:", Agência: ",bold:true},{text:agency,bold:false});
   if(account)out.push({text:", Conta "+conta+": ",bold:true},{text:account,bold:false});
