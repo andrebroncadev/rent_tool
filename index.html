@@ -1,135 +1,61 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f6f5f1">
-  <meta name="description" content="Central de contratos EBIMOB">
-  <title>Contrato Generator | EBIMOB</title>
-  <style>
-    :root{color-scheme:dark;--navy:#0c2749;--red:#dc1c2e;--ink:#f5f7fb;--muted:#b8c6d8;--panel:#142f50;--line:#304967}
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top right,#183c62 0%,transparent 42%),linear-gradient(145deg,#07182d,var(--navy) 68%,#102b49);color:var(--ink);font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:28px;display:grid;place-items:center}
-    main{width:min(780px,100%);margin:auto}
-    .brand{display:flex;align-items:center;gap:12px;margin-bottom:34px}
-    .brand-mark{display:grid;place-items:center;width:46px;height:46px;border-radius:12px;background:var(--red);font-weight:900;font-size:.9rem;letter-spacing:-.06em;box-shadow:0 8px 24px #0003}
-    .brand-name{font-size:.83rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:750}
-    .eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.18em;font-weight:800;color:#ff7d88}
-    h1{font-size:clamp(2.2rem,7vw,3.6rem);line-height:1.04;letter-spacing:-.045em;margin:10px 0 14px}
-    .intro{color:var(--muted);margin:0 0 30px;max-width:560px}
-    .list{display:grid;gap:12px}
-    .contract{position:relative;display:flex;align-items:center;gap:16px;width:100%;min-height:86px;padding:17px 20px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(120deg,#173657,#122b48);color:var(--ink);text-decoration:none;text-align:left;font:inherit;transition:transform .16s,border-color .16s,background .16s}
-    a.contract:hover,a.contract:focus-visible{transform:translateY(-2px);border-color:#f26b77;background:linear-gradient(120deg,#1b4167,#163250);outline:none}
-    .icon{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:12px;background:#254565;color:#fff;font-size:1.35rem}
-    .text{flex:1;min-width:0}.text strong{display:block;font-size:1.03rem}.text small{display:block;margin-top:3px;color:var(--muted);font-size:.87rem}
-    .arrow{color:#ff7d88;font-size:1.35rem}
-    .contract.disabled{color:#8a99ac;background:#111f30;border-color:#26374a;cursor:not-allowed;opacity:.68}
-    .contract.disabled .icon{background:#253344;color:#7f8da0}
-    .contract.disabled .text small{color:#8794a5}
-    .soon-wrap{position:relative}
-    .tooltip{position:absolute;z-index:2;left:50%;bottom:calc(100% - 5px);transform:translate(-50%,5px);padding:7px 11px;border:1px solid #52657c;border-radius:8px;background:#050e19;color:#fff;font-size:.8rem;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s,transform .15s}
-    .soon-wrap:hover .tooltip,.soon-wrap:focus-within .tooltip{opacity:1;visibility:visible;transform:translate(-50%,0)}
-    footer{margin-top:28px;color:#8fa4be;font-size:.8rem}
-    @media(max-width:520px){body{padding:22px 16px}.contract{padding:15px;gap:12px}.icon{flex-basis:40px;width:40px;height:40px}.tooltip{left:auto;right:0;transform:translateY(5px)}.soon-wrap:hover .tooltip,.soon-wrap:focus-within .tooltip{transform:translateY(0)}}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
-  </style>
-  <style>
-/* Identidade visual unificada */
-:root{color-scheme:light;--theme-bg:#f6f5f1;--theme-surface:#fffefa;--theme-surface-2:#e9e8e5;--theme-surface-3:#d5d4d0;--theme-text:#28292d;--theme-muted:#6f7075;--theme-line:#d8d6d0;--theme-gold:#b49350;--theme-red:#b52332;--theme-navy:#17324f;--theme-green:#26734d}
-html[data-theme="dark"]{color-scheme:dark;--theme-bg:#222326;--theme-surface:#2d2f33;--theme-surface-2:#383a3f;--theme-surface-3:#484a4f;--theme-text:#f4f1e8;--theme-muted:#b8b5ad;--theme-line:#4b4c50;--theme-gold:#d2b46b;--theme-red:#d94a57;--theme-navy:#294b6d;--theme-green:#3b9a68}
-html,body{background:var(--theme-bg);color:var(--theme-text)}
-.theme-toggle{position:fixed;right:16px;bottom:16px;z-index:9999;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--theme-line);border-radius:999px;padding:9px 13px;background:var(--theme-surface);color:var(--theme-text);font:600 12px/1.2 system-ui,sans-serif;box-shadow:0 3px 14px #00000016;opacity:.82;cursor:pointer;transition:opacity .15s,transform .15s}
-.theme-toggle:hover,.theme-toggle:focus-visible{opacity:1;transform:translateY(-1px);outline:2px solid var(--theme-gold);outline-offset:2px}
-@media(max-width:600px){.theme-toggle{right:10px;bottom:10px;padding:8px 11px;font-size:11px}}
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f6f5f1">
+<meta name="description" content="Central de contratos EBIMOB"><title>Contrato Generator | EBIMOB</title>
+<style>
+
+:root{color-scheme:light;--bg:#f6f5f1;--surface:#fffefa;--surface-2:#e9e8e5;--surface-3:#d5d4d0;--text:#28292d;--muted:#6f7075;--line:#d8d6d0;--gold:#b49350;--red:#b52332;--navy:#17324f;--green:#26734d}
+html[data-theme="dark"]{color-scheme:dark;--bg:#222326;--surface:#2d2f33;--surface-2:#383a3f;--surface-3:#484a4f;--text:#f4f1e8;--muted:#b8b5ad;--line:#4b4c50;--gold:#d2b46b;--red:#d94a57;--navy:#294b6d;--green:#3b9a68}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;align-items:center;justify-content:center;padding:28px}
+main{width:min(760px,100%)}
+.brand{font-size:.78rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.eyebrow{font-size:.78rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-top:28px}
+h1{font-size:clamp(2rem,7vw,3.3rem);line-height:1.08;letter-spacing:-.04em;margin:.6rem 0}
+.intro{color:var(--muted);margin:0 0 28px}
+.list{display:grid;gap:14px}
+.tool{display:flex;align-items:center;gap:16px;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:16px;color:var(--text);text-decoration:none;transition:transform .15s,border-color .15s,background .15s}
+.tool:hover,.tool:focus-visible{transform:translateY(-2px);border-color:var(--gold);background:var(--surface-2);outline:none}
+.symbol{width:46px;height:46px;flex:0 0 46px;border-radius:12px;display:grid;place-items:center;background:var(--surface-2);color:var(--navy);font-size:1.35rem}
+.copy{flex:1;min-width:0}.copy strong{display:block;font-size:1.08rem}.copy span{display:block;color:var(--muted);font-size:.92rem;margin-top:3px}
+.arrow{color:var(--red);font-size:1.35rem}
+footer{margin-top:26px;color:var(--muted);font-size:.82rem}
+.theme-toggle{position:fixed;right:16px;bottom:16px;z-index:9999;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:9px 13px;background:var(--surface);color:var(--text);font:600 12px/1.2 system-ui,sans-serif;box-shadow:0 3px 14px #00000016;opacity:.88;cursor:pointer}
+.theme-toggle:hover,.theme-toggle:focus-visible{opacity:1;outline:2px solid var(--gold);outline-offset:2px}
+@media(min-width:640px){.list{grid-template-columns:1fr 1fr}.tool:first-child{grid-column:1/-1}}
+@media(max-width:600px){body{padding:22px 16px}.theme-toggle{right:10px;bottom:10px;padding:8px 11px;font-size:11px}}
 @media print{.theme-toggle{display:none!important}}
 
-/* Paleta unificada e suporte a modo escuro */
-:root{color-scheme:light;--navy:#17324f;--red:#b52332;--ink:#28292d;--muted:#6f7075;--panel:#fffefa;--line:#d8d6d0;--gold:#b49350;--surface2:#e9e8e5}
-html[data-theme="dark"]{color-scheme:dark;--navy:#294b6d;--red:#d94a57;--ink:#f4f1e8;--muted:#b8b5ad;--panel:#2d2f33;--line:#4b4c50;--gold:#d2b46b;--surface2:#383a3f}
-body{background:var(--theme-bg,#f6f5f1);color:var(--ink)}
-.brand-name,.intro{color:var(--muted)}
-.eyebrow,.arrow{color:var(--red)}
-.contract{background:var(--panel);border-color:var(--line);color:var(--ink)}
-a.contract:hover,a.contract:focus-visible{background:var(--surface2);border-color:var(--gold)}
-.icon{background:var(--surface2);color:var(--navy)}
-.contract small,.tooltip{color:var(--muted)}
-.contract.disabled{background:var(--surface2);color:var(--muted);border-color:var(--line)}
-footer{color:var(--muted)}
-html[data-theme="dark"] body{background:var(--theme-bg);color:var(--ink)}
-html[data-theme="dark"] .contract{background:var(--panel);color:var(--ink);border-color:var(--line)}
-html[data-theme="dark"] a.contract:hover,html[data-theme="dark"] a.contract:focus-visible{background:var(--surface2);border-color:var(--gold)}
-html[data-theme="dark"] .icon{background:#45474c;color:var(--ink)}
-html[data-theme="dark"] .contract.disabled{background:#34363a;color:#999a9d}
-</style>
-</head>
-<body>
-  <main>
-    <div class="brand"><div class="brand-mark" aria-hidden="true">EB</div><div class="brand-name">EBIMOB · Ferramentas internas</div></div>
-    <div class="eyebrow">Contrato Generator</div>
-    <h1>Qual contrato vamos gerar?</h1>
-    <p class="intro">Escolha um modelo para começar. Os outros documentos serão liberados conforme seus modelos forem adicionados.</p>
-    <section class="list" aria-label="Modelos de contrato">
-      <a class="contract" href="locacao-temporada.html">
-        <span class="icon" aria-hidden="true">⌂</span>
-        <span class="text"><strong>Locação de temporada</strong><small>Preencher os dados e gerar o documento</small></span>
-        <span class="arrow" aria-hidden="true">↗</span>
-      </a>
-      <div class="soon-wrap">
-        <button class="contract disabled" type="button" disabled aria-disabled="true" title="Em breve">
-          <span class="icon" aria-hidden="true">▤</span>
-          <span class="text"><strong>Autorização de locação</strong><small>Modelo ainda não cadastrado</small></span>
-          <span class="arrow" aria-hidden="true">🔒</span>
-        </button>
-        <span class="tooltip" role="tooltip">Em breve</span>
-      </div>
-      <div class="soon-wrap">
-        <button class="contract disabled" type="button" disabled aria-disabled="true" title="Em breve">
-          <span class="icon" aria-hidden="true">✎</span>
-          <span class="text"><strong>CRE (Contrato de Representação Exclusiva)</strong><small>Modelo ainda não cadastrado</small></span>
-          <span class="arrow" aria-hidden="true">🔒</span>
-        </button>
-        <span class="tooltip" role="tooltip">Em breve</span>
-      </div>
-      <div class="soon-wrap">
-        <button class="contract disabled" type="button" disabled aria-disabled="true" title="Em breve">
-          <span class="icon" aria-hidden="true">⇄</span>
-          <span class="text"><strong>Proposta de compra</strong><small>Modelo ainda não cadastrado</small></span>
-          <span class="arrow" aria-hidden="true">🔒</span>
-        </button>
-        <span class="tooltip" role="tooltip">Em breve</span>
-      </div>
-      <div class="soon-wrap">
-        <button class="contract disabled" type="button" disabled aria-disabled="true" title="Em breve">
-          <span class="icon" aria-hidden="true">▣</span>
-          <span class="text"><strong>Contrato de compra/venda</strong><small>Modelo ainda não cadastrado</small></span>
-          <span class="arrow" aria-hidden="true">🔒</span>
-        </button>
-        <span class="tooltip" role="tooltip">Em breve</span>
-      </div>
-    </section>
-    <footer>Contrato Generator · EBIMOB</footer>
-  </main>
-
-<script>
-(function(){
-  const key='remax-unified-theme';
-  const root=document.documentElement;
-  let saved='light';
-  try{saved=localStorage.getItem(key)||'light'}catch(e){}
-  function apply(theme){
-    root.dataset.theme=theme;
-    const button=document.getElementById('themeToggle');
-    if(button){button.textContent=theme==='dark'?'☀ Modo claro':'☾ Modo escuro';button.setAttribute('aria-pressed',String(theme==='dark'));button.setAttribute('aria-label',theme==='dark'?'Ativar modo claro':'Ativar modo escuro');}
-    const meta=document.querySelector('meta[name="theme-color"]');
-    if(meta)meta.content=theme==='dark'?'#222326':'#f6f5f1';
-  }
-  const button=document.createElement('button');
-  button.type='button';button.id='themeToggle';button.className='theme-toggle';button.textContent='☾ Modo escuro';button.setAttribute('aria-pressed','false');button.setAttribute('aria-label','Ativar modo escuro');button.title='Alternar entre modo claro e escuro';
-  button.addEventListener('click',function(){const next=root.dataset.theme==='dark'?'light':'dark';apply(next);try{localStorage.setItem(key,next)}catch(e){}});
-  apply(saved);
-  if(document.body)document.body.appendChild(button);else document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(button),{once:true});
-})();
-</script>
-
-</body>
-</html>
+main{width:min(780px,100%);margin:auto}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:34px;letter-spacing:normal}
+.brand-mark{display:grid;place-items:center;width:46px;height:46px;border-radius:12px;background:var(--red);color:#fff;font-weight:900;font-size:.9rem;letter-spacing:-.06em}
+.brand-name{font-size:.83rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:750}
+.eyebrow{margin-top:0}
+.list{display:grid;gap:12px}
+.contract{position:relative;display:flex;align-items:center;gap:16px;width:100%;min-height:86px;padding:17px 20px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--text);text-decoration:none;text-align:left;font:inherit;transition:transform .16s,border-color .16s,background .16s}
+a.contract:hover,a.contract:focus-visible{transform:translateY(-2px);border-color:var(--gold);background:var(--surface-2);outline:none}
+.icon{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:12px;background:var(--surface-2);color:var(--navy);font-size:1.35rem}
+.text{flex:1;min-width:0}.text strong{display:block;font-size:1.03rem}.text small{display:block;margin-top:3px;color:var(--muted);font-size:.87rem}
+.arrow{color:var(--red);font-size:1.35rem}
+.contract.disabled{color:var(--muted);background:var(--surface-2);border-color:var(--line);cursor:not-allowed;opacity:.72}
+.contract.disabled .icon{background:var(--surface-3);color:var(--muted)}
+.soon-wrap{position:relative}
+.tooltip{position:absolute;z-index:2;left:50%;bottom:calc(100% - 5px);transform:translate(-50%,5px);padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);font-size:.8rem;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s,transform .15s}
+.soon-wrap:hover .tooltip,.soon-wrap:focus-within .tooltip{opacity:1;visibility:visible;transform:translate(-50%,0)}
+footer{margin-top:28px;color:var(--muted);font-size:.8rem}
+@media(max-width:520px){body{padding:22px 16px}.contract{padding:15px;gap:12px}.icon{flex-basis:40px;width:40px;height:40px}.tooltip{left:auto;right:0;transform:translateY(5px)}.soon-wrap:hover .tooltip,.soon-wrap:focus-within .tooltip{transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+</style></head><body><main>
+<div class="brand"><div class="brand-mark" aria-hidden="true">EB</div><div class="brand-name">EBIMOB · Ferramentas internas</div></div>
+<div class="eyebrow">Contrato Generator</div><h1>Qual contrato vamos gerar?</h1>
+<p class="intro">Escolha um modelo para começar. Os outros documentos serão liberados conforme seus modelos forem adicionados.</p>
+<section class="list" aria-label="Modelos de contrato">
+<a class="contract" href="locacao-temporada.html"><span class="icon" aria-hidden="true">⌂</span><span class="text"><strong>Locação de temporada</strong><small>Preencher os dados e gerar o documento</small></span><span class="arrow" aria-hidden="true">↗</span></a>
+<div class="soon-wrap"><button class="contract disabled" type="button" disabled aria-disabled="true" title="Em breve"><span class="icon" aria-hidden="true">▤</span><span class="text"><strong>Autorização de locação</strong><small>Modelo ainda não cadastrado</small></span><span class="arrow" aria-hidden="true">🔒</span></button><span class="tooltip" role="tooltip">Em breve</span></div>
+<div class="soon-wrap"><button class="contract disabled" type="button" disabled aria-disabled="true" title="Em breve"><span class="icon" aria-hidden="true">✎</span><span class="text"><strong>CRE (Contrato de Representação Exclusiva)</strong><small>Modelo ainda não cadastrado</small></span><span class="arrow" aria-hidden="true">🔒</span></button><span class="tooltip" role="tooltip">Em breve</span></div>
+<div class="soon-wrap"><button class="contract disabled" type="button" disabled aria-disabled="true" title="Em breve"><span class="icon" aria-hidden="true">⇄</span><span class="text"><strong>Proposta de compra</strong><small>Modelo ainda não cadastrado</small></span><span class="arrow" aria-hidden="true">🔒</span></button><span class="tooltip" role="tooltip">Em breve</span></div>
+<div class="soon-wrap"><button class="contract disabled" type="button" disabled aria-disabled="true" title="Em breve"><span class="icon" aria-hidden="true">▣</span><span class="text"><strong>Contrato de compra/venda</strong><small>Modelo ainda não cadastrado</small></span><span class="arrow" aria-hidden="true">🔒</span></button><span class="tooltip" role="tooltip">Em breve</span></div>
+</section><footer>Contrato Generator · EBIMOB</footer></main>
+<script>(function(){const key='remax-unified-theme',root=document.documentElement;let theme='light';try{theme=localStorage.getItem(key)||'light'}catch(e){}const b=document.createElement('button');b.type='button';b.id='themeToggle';b.className='theme-toggle';b.title='Alternar entre modo claro e escuro';function apply(t){root.dataset.theme=t;b.textContent=t==='dark'?'☀ Modo claro':'☾ Modo escuro';b.setAttribute('aria-pressed',String(t==='dark'));b.setAttribute('aria-label',t==='dark'?'Ativar modo claro':'Ativar modo escuro');const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='dark'?'#222326':'#f6f5f1'}b.addEventListener('click',()=>{theme=root.dataset.theme==='dark'?'light':'dark';apply(theme);try{localStorage.setItem(key,theme)}catch(e){}});apply(theme);document.body.appendChild(b)})();</script>
+</body></html>
