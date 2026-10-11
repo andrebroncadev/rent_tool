@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6f5f1"><title>Entrar · Contrato Generator</title>
+<style>
+:root{color-scheme:light;--bg:#f6f5f1;--surface:#fffefa;--text:#28292d;--muted:#6f7075;--line:#d8d6d0;--navy:#17324f;--red:#b52332}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,sans-serif}
+main{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px}
+.brand{font-size:.75rem;letter-spacing:.14em;font-weight:800;color:var(--muted)}h1{font-size:1.7rem;margin:10px 0 4px}p{color:var(--muted);margin:0 0 24px}
+label{display:block;font-size:.9rem;font-weight:650;margin:14px 0 6px}input{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;background:white;color:#222;font:inherit}
+button{width:100%;margin-top:20px;padding:12px;border:0;border-radius:9px;background:var(--navy);color:white;font:inherit;font-weight:750;cursor:pointer}
+#status{margin-top:12px;font-size:.9rem;color:var(--red);overflow-wrap:anywhere}
+</style>
+</head><body><main>
+<div class="brand">EBIMOB · FERRAMENTAS INTERNAS</div><h1>Contrato Generator</h1><p>Entre com sua conta autorizada para acessar os contratos e os dados salvos.</p>
+<form id="loginForm"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" required>
+<label for="password">Senha</label><input id="password" type="password" autocomplete="current-password" required>
+<button id="submit" type="submit">Entrar</button><div id="status" role="status"></div></form>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script>
+document.getElementById("loginForm").addEventListener("submit", async e=>{
+ e.preventDefault(); const button=document.getElementById("submit"), status=document.getElementById("status");
+ button.disabled=true; button.textContent="Entrando…"; status.textContent="";
+ const {error}=await window.supabaseClient.auth.signInWithPassword({email:document.getElementById("email").value.trim(),password:document.getElementById("password").value});
+ if(error){status.textContent="Não foi possível entrar. Confira e-mail e senha.";button.disabled=false;button.textContent="Entrar";return}
+ location.replace("index.html");
+});
+</script></body></html>
