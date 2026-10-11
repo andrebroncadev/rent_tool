@@ -19,13 +19,24 @@ button{width:100%;margin-top:20px;padding:12px;border:0;border-radius:9px;backgr
 <button id="submit" type="submit">Entrar</button><div id="status" role="status"></div></form>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-client.js"></script>
+<script>
+window.supabaseClient = window.supabase.createClient(
+  "https://vqenzubwfzwwndgjucim.supabase.co",
+  "sb_publishable_s4o-wW-rdUbEesSKe6NhNg_u7gzYeCf"
+);
+</script>
 <script>
 document.getElementById("loginForm").addEventListener("submit", async e=>{
  e.preventDefault(); const button=document.getElementById("submit"), status=document.getElementById("status");
  button.disabled=true; button.textContent="Entrando…"; status.textContent="";
- const {error}=await window.supabaseClient.auth.signInWithPassword({email:document.getElementById("email").value.trim(),password:document.getElementById("password").value});
+ const email=document.getElementById("email").value.trim();
+ const {data,error}=await window.supabaseClient.auth.signInWithPassword({email,password:document.getElementById("password").value});
  if(error){status.textContent="Não foi possível entrar. Confira e-mail e senha.";button.disabled=false;button.textContent="Entrar";return}
+ if((data.user?.email||"").toLowerCase()!=="andrebronca60@gmail.com"){
+   await window.supabaseClient.auth.signOut();
+   status.textContent="Esta conta não tem permissão para acessar o Contrato Generator.";
+   button.disabled=false;button.textContent="Entrar";return;
+ }
  location.replace("index.html");
 });
 </script></body></html>
