@@ -6,6 +6,39 @@
   <meta name="description" content="Contrato Generator EBIMOB">
   <title>Contrato Generator EBIMOB</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+/* Identidade visual unificada */
+:root{color-scheme:light;--theme-bg:#f6f5f1;--theme-surface:#fffefa;--theme-surface-2:#e9e8e5;--theme-surface-3:#d5d4d0;--theme-text:#28292d;--theme-muted:#6f7075;--theme-line:#d8d6d0;--theme-gold:#b49350;--theme-red:#b52332;--theme-navy:#17324f;--theme-green:#26734d}
+html[data-theme="dark"]{color-scheme:dark;--theme-bg:#222326;--theme-surface:#2d2f33;--theme-surface-2:#383a3f;--theme-surface-3:#484a4f;--theme-text:#f4f1e8;--theme-muted:#b8b5ad;--theme-line:#4b4c50;--theme-gold:#d2b46b;--theme-red:#d94a57;--theme-navy:#294b6d;--theme-green:#3b9a68}
+html,body{background:var(--theme-bg);color:var(--theme-text)}
+.theme-toggle{position:fixed;right:16px;bottom:16px;z-index:9999;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--theme-line);border-radius:999px;padding:9px 13px;background:var(--theme-surface);color:var(--theme-text);font:600 12px/1.2 inherit;box-shadow:0 3px 14px #00000016;opacity:.82;cursor:pointer;transition:opacity .15s,transform .15s}
+.theme-toggle:hover,.theme-toggle:focus-visible{opacity:1;transform:translateY(-1px);outline:2px solid var(--theme-gold);outline-offset:2px}
+@media(max-width:600px){.theme-toggle{right:10px;bottom:10px;padding:8px 11px;font-size:11px}}
+@media print{.theme-toggle{display:none!important}}
+
+/* Paleta unificada EBIMOB */
+:root{--g:#17324f;--gd:#10263d;--bg:#f6f5f1;--ink:#28292d;--muted:#6f7075;--line:#d8d6d0;--soft:#e9e8e5;--bad:#b52332}
+body{background:var(--theme-bg,var(--bg));color:var(--theme-text,var(--ink))}
+.card,.bank-card,.summary,.notice,.bottom{background:var(--theme-surface,#fffefa);color:var(--theme-text,var(--ink));border-color:var(--theme-line,var(--line))}
+.card-title{background:var(--theme-surface-2,#e9e8e5);border-color:var(--theme-line,var(--line))}
+.field label,.card-title h2,.topbar h1{color:var(--theme-text,var(--ink))}
+.field input,.field select,.field textarea{background:var(--theme-surface,#fffefa);color:var(--theme-text,var(--ink));border-color:var(--theme-line,var(--line))}
+.btn.primary{background:var(--theme-navy,#17324f);color:#fff}
+.btn.primary:hover{background:var(--theme-red,#b52332)}
+.btn.secondary,.pill{background:var(--theme-surface-2,#e9e8e5);color:var(--theme-text,var(--ink));border-color:var(--theme-line,var(--line))}
+.pill.active{background:var(--theme-surface-3,#d5d4d0);border-color:var(--theme-gold,#b49350);color:var(--theme-navy,#17324f)}
+.summary{background:var(--theme-surface-2,#e9e8e5);border-color:var(--theme-line,var(--line))}
+.summary strong{color:var(--theme-navy,#17324f)}
+.notice.warning{border-left-color:var(--theme-gold,#b49350)}
+html[data-theme="dark"] body{background:var(--theme-bg);color:var(--theme-text)}
+html[data-theme="dark"] .card,html[data-theme="dark"] .bank-card,html[data-theme="dark"] .summary,html[data-theme="dark"] .notice,html[data-theme="dark"] .bottom{background:var(--theme-surface);color:var(--theme-text);border-color:var(--theme-line)}
+html[data-theme="dark"] .card-title{background:var(--theme-surface-2);border-color:var(--theme-line)}
+html[data-theme="dark"] .field label,html[data-theme="dark"] .card-title h2,html[data-theme="dark"] .topbar h1,html[data-theme="dark"] .summary strong{color:var(--theme-text)}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea{background:#25272a;color:var(--theme-text);border-color:var(--theme-line)}
+html[data-theme="dark"] .btn.secondary,html[data-theme="dark"] .pill{background:var(--theme-surface-2);color:var(--theme-text);border-color:var(--theme-line)}
+html[data-theme="dark"] .pill.active{background:#41434a;border-color:var(--theme-gold);color:var(--theme-text)}
+html[data-theme="dark"] .hint,html[data-theme="dark"] .topbar p,html[data-theme="dark"] .card-title span{color:var(--theme-muted)}
+</style>
 </head>
 <body>
   <main class="app">
@@ -177,5 +210,27 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docx@9.7.1/dist/index.iife.js"></script>
   <script src="app.js?v=12"></script>
+
+<script>
+(function(){
+  const key='remax-unified-theme';
+  const root=document.documentElement;
+  let saved='light';
+  try{saved=localStorage.getItem(key)||'light'}catch(e){}
+  function apply(theme){
+    root.dataset.theme=theme;
+    const button=document.getElementById('themeToggle');
+    if(button){button.textContent=theme==='dark'?'☀ Modo claro':'☾ Modo escuro';button.setAttribute('aria-pressed',String(theme==='dark'));button.setAttribute('aria-label',theme==='dark'?'Ativar modo claro':'Ativar modo escuro');}
+    const meta=document.querySelector('meta[name="theme-color"]');
+    if(meta)meta.content=theme==='dark'?'#222326':'#f6f5f1';
+  }
+  const button=document.createElement('button');
+  button.type='button';button.id='themeToggle';button.className='theme-toggle';button.textContent='☾ Modo escuro';button.setAttribute('aria-pressed','false');button.setAttribute('aria-label','Ativar modo escuro');button.title='Alternar entre modo claro e escuro';
+  button.addEventListener('click',function(){const next=root.dataset.theme==='dark'?'light':'dark';apply(next);try{localStorage.setItem(key,next)}catch(e){}});
+  apply(saved);
+  if(document.body)document.body.appendChild(button);else document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(button),{once:true});
+})();
+</script>
+
 </body>
 </html>
