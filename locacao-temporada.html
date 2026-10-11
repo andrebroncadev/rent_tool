@@ -268,15 +268,15 @@ html.app-auth-ready #directoryLogin{display:none!important}
               <div class="field"><label for="ownerAccount">Conta</label><input id="ownerAccount"></div>
               <div class="field"><label for="ownerPix">PIX</label><input id="ownerPix"></div>
             </div></div>
-            <div class="bank-card c6"><h3>Dados fixos da imobiliária</h3><div class="bank-grid">
-              <div class="field"><label for="brokerCompany">Razão social</label><input id="brokerCompany" value="EBIMOBILIARIA LTDA" readonly></div>
-              <div class="field"><label for="brokerCnpj">CNPJ</label><input id="brokerCnpj" value="63.420.410/0001-01" readonly></div>
-              <div class="field"><label for="brokerBankCode">Banco</label><select id="brokerBankCode" disabled><option value="336" selected>336 = C6 Bank</option></select></div>
-              <div class="field"><label for="brokerAgency">Agência</label><input id="brokerAgency" value="0001" readonly></div>
-              <div class="field"><label for="brokerAccountType">Tipo de conta</label><select id="brokerAccountType" disabled><option selected>CC (Corrente)</option></select></div>
-              <div class="field"><label for="brokerAccount">Conta</label><input id="brokerAccount" value="41243219-6" readonly></div>
-              <div class="field"><label for="brokerPix">PIX (CNPJ)</label><input id="brokerPix" value="63.420.410/0001-01" readonly></div>
-            </div><small class="hint">Esses dados são fixos e serão incluídos automaticamente no contrato.</small></div>
+            <div class="bank-card c6"><h3>Dados da imobiliária</h3><div class="bank-grid">
+              <div class="field"><label for="brokerCompany">Razão social</label><input id="brokerCompany" value="EBIMOBILIARIA LTDA"></div>
+              <div class="field"><label for="brokerCnpj">CNPJ</label><input id="brokerCnpj" value="63.420.410/0001-01"></div>
+              <div class="field"><label for="brokerBankCode">Banco</label><select id="brokerBankCode"><option value="">Selecione o banco</option><option value="001">001 = Banco do Brasil</option><option value="033">033 = Santander</option><option value="077">077 = Inter</option><option value="104">104 = Caixa Econômica Federal</option><option value="208">208 = BTG Pactual</option><option value="212">212 = Banco Original</option><option value="237">237 = Bradesco</option><option value="260">260 = Nubank</option><option value="290">290 = PagBank</option><option value="336" selected>336 = C6 Bank</option><option value="341">341 = Itaú</option><option value="403">403 = Cora</option><option value="748">748 = Sicredi</option><option value="756">756 = Sicoob</option></select></div>
+              <div class="field"><label for="brokerAgency">Agência</label><input id="brokerAgency" value="0001"></div>
+              <div class="field"><label for="brokerAccountType">Tipo de conta</label><select id="brokerAccountType"><option selected>CC (Corrente)</option><option>Poupança</option></select></div>
+              <div class="field"><label for="brokerAccount">Conta</label><input id="brokerAccount" value="41243219-6"></div>
+              <div class="field"><label for="brokerPix">PIX</label><input id="brokerPix" value="63.420.410/0001-01"></div>
+            </div><small class="hint">Os dados começam preenchidos, mas você pode editar antes de gerar o contrato.</small></div>
             <div class="field c3"><label for="reservationOwnerValue">Reserva - locador (R$)</label><input id="reservationOwnerValue" type="number" step="0.01" min="0"></div><div class="field c3"><label for="reservationBrokerValue">Reserva - imobiliária (R$)</label><input id="reservationBrokerValue" type="number" step="0.01" min="0"></div><div class="summary c3"><span>RESERVA TOTAL</span><strong id="reservationTotalValue">R$ 0,00</strong></div>
           </div>
           <div class="notice">A reserva entra como paga na data de assinatura. As parcelas aparecem no PDF como PARCELA 1, PARCELA 2 etc.</div>
