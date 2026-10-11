@@ -148,6 +148,7 @@
   }
   async function showSession(session) {
     sessionUser = session?.user || null;
+    document.body.classList.toggle("directory-authenticated", !!sessionUser && sessionUser.email === "andrebronca60@gmail.com");
     $("directoryLogin").classList.toggle("hidden", !!sessionUser);
     $("directoryContent").classList.toggle("hidden", !sessionUser);
     if (sessionUser) {
