@@ -174,6 +174,17 @@
     $("directoryPassword").value = "";
     await showSession(data.session);
   });
+  $("directoryForgotPassword").addEventListener("click", async () => {
+    const email = $("directoryEmail").value.trim();
+    if (!email) return status("Digite seu e-mail acima primeiro.", true, "directoryStatus");
+    const button = $("directoryForgotPassword");
+    button.disabled = true;
+    status("Enviando instruções de recuperação...", false, "directoryStatus");
+    const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    button.disabled = false;
+    if (error) return status("Não foi possível enviar a recuperação. Confira o e-mail e tente novamente.", true, "directoryStatus");
+    status("Se houver uma conta para esse e-mail, você receberá instruções para redefinir a senha.", false, "directoryStatus");
+  });
   $("directoryLogoutBtn").addEventListener("click", async () => {
     const { error } = await client.auth.signOut();
     if (error) return status("Não foi possível encerrar a sessão: " + error.message, true);
