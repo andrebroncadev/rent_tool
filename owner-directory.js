@@ -148,15 +148,16 @@
   }
   async function showSession(session) {
     sessionUser = session?.user || null;
-    document.body.classList.toggle("directory-authenticated", !!sessionUser && sessionUser.email === "andrebronca60@gmail.com");
-    $("directoryLogin").classList.toggle("hidden", !!sessionUser);
-    $("directoryContent").classList.toggle("hidden", !sessionUser);
-    if (sessionUser) {
+    const authorized = !!sessionUser && sessionUser.email === "andrebronca60@gmail.com";
+    document.body.classList.toggle("directory-authenticated", authorized);
+    $("directoryLogin").classList.toggle("hidden", authorized);
+    $("directoryContent").classList.toggle("hidden", !authorized);
+    if (authorized) {
       try { await loadOwners(); status("Conectado ao diretório compartilhado."); }
       catch (e) { status("Não foi possível carregar os proprietários: " + (e.message || "erro desconhecido"), true); }
     } else {
       ownerId = null; propertyId = null;
-      status("", false, "directoryStatus");
+      status(sessionUser ? "Esta conta não tem permissão para acessar o diretório." : "", !!sessionUser, "directoryStatus");
       $("savedOwnerSelect").innerHTML = '<option value="">Selecione um proprietário</option>';
       $("savedPropertySelect").innerHTML = '<option value="">Selecione um imóvel</option>';
     }
