@@ -41,7 +41,20 @@
     el.dispatchEvent(new Event("change", { bubbles: true }));
   }
   function clearFields(map) { Object.values(map).forEach(id => setValue(id, "")); }
-  function fillFields(map, row) { Object.entries(map).forEach(([column, id]) => setValue(id, row[column])); }
+  function fillFields(map, row) {
+    Object.entries(map).forEach(([column, id]) => {
+      let value = row[column];
+      if (column === "pf_civil_status" && value) {
+        const normalized = String(value).trim().toLocaleLowerCase("pt-BR");
+        const civil = { "solteiro": "solteiro(a)", "solteiro(a)": "solteiro(a)", "casado": "casado(a)", "casado(a)": "casado(a)", "divorciado": "divorciado(a)", "divorciado(a)": "divorciado(a)", "viúvo": "viúvo(a)", "viuvo": "viúvo(a)", "viúvo(a)": "viúvo(a)", "união estável": "união estável" };
+        value = civil[normalized] || value;
+      }
+      if (column === "bank_account_type" && value) {
+        value = /poupan/i.test(String(value)) ? "Poupança" : "CC (Corrente)";
+      }
+      setValue(id, value);
+    });
+  }
   function currentOwnerName(row) {
     return row.identifier || (row.owner_type === "pf" ? (row.pf_name || "Proprietário") : (row.owner_name || "Proprietário"));
   }
@@ -107,10 +120,17 @@
     (properties || []).forEach((row, index) => {
       const option = document.createElement("option");
       option.value = row.id;
-      option.textContent = row.condominium || row.street || row.cep || ("Imóvel " + (index + 1));
+      const address = [row.street, row.number, row.complement].filter(Boolean).join(", ");
+      option.textContent = [address || row.cep || ("Imóvel " + (index + 1)), row.condominium].filter(Boolean).join(" — ");
       $("savedPropertySelect").appendChild(option);
     });
-    status("Proprietário carregado. Selecione um imóvel ou adicione outro.");
+    // Ao escolher um locador, carregar automaticamente seu primeiro imóvel salvo.
+    if ((properties || []).length) {
+      $("savedPropertySelect").value = properties[0].id;
+      await loadProperty(properties[0].id);
+    } else {
+      status("Proprietário carregado. Ainda não há imóvel vinculado; adicione um imóvel.");
+    }
   }
   async function loadProperty(id) {
     propertyId = id || null;
@@ -118,10 +138,16 @@
     const { data, error } = await client.from("properties").select("*").eq("id", id).single();
     if (error) throw error;
     fillFields(propertyFields, data);
+    // Preenche todos os campos do imóvel usados no contrato, não só os do diretório.
     setValue("propertyCep", data.cep);
     setValue("propertyStreet", data.street);
+    setValue("propertyNumber", data.number);
+    setValue("propertyComp", data.complement);
     setValue("propertyCondo", data.condominium);
-    status("Imóvel carregado no formulário.");
+    setValue("propertyBairro", data.neighborhood);
+    setValue("propertyCity", data.city);
+    setValue("propertyUf", data.uf);
+    status("Imóvel carregado no formulário do contrato.");
   }
   function ownerPayload() {
     const row = { owner_type: document.querySelector("[data-owner-type].active")?.dataset.ownerType || "pj" };
@@ -156,9 +182,15 @@
     const row = {
       user_id: sessionUser.id,
       owner_id: ownerId,
-      cep: $("directoryPropertyCep").value.trim() || null,
-      street: $("directoryPropertyAddress").value.trim() || null,
-      condominium: $("directoryPropertyCondo").value.trim() || null
+      cep: $("directoryPropertyCep").value.trim() || $("propertyCep").value.trim() || null,
+      street: $("directoryPropertyAddress").value.trim() || $("propertyStreet").value.trim() || null,
+      number: $("propertyNumber").value.trim() || null,
+      complement: $("propertyComp").value.trim() || null,
+      condominium: $("directoryPropertyCondo").value.trim() || $("propertyCondo").value.trim() || null,
+      neighborhood: $("propertyBairro").value.trim() || null,
+      city: $("propertyCity").value.trim() || null,
+      uf: $("propertyUf").value.trim().toUpperCase() || null,
+      capacity: $("capacity").value === "" ? null : Number($("capacity").value)
     };
     if (!row.cep && !row.street && !row.condominium) throw new Error("Informe o CEP, o endereço ou o nome do condomínio.");
     let result;
@@ -168,7 +200,12 @@
     const savedPropertyId = result.data.id;
     setValue("propertyCep", row.cep);
     setValue("propertyStreet", row.street);
+    setValue("propertyNumber", row.number);
+    setValue("propertyComp", row.complement);
     setValue("propertyCondo", row.condominium);
+    setValue("propertyBairro", row.neighborhood);
+    setValue("propertyCity", row.city);
+    setValue("propertyUf", row.uf);
     await loadOwner(ownerId);
     propertyId = savedPropertyId;
     $("savedPropertySelect").value = savedPropertyId;
