@@ -71,7 +71,30 @@ html[data-theme="dark"] .auth-divider{background:#4b4c50}
 html[data-theme="dark"] .auth-form input{background:#25272a;color:#f4f1e8;border-color:#4b4c50}
 html[data-theme="dark"] .auth-forgot{color:#d2b46b}
 @media(max-width:420px){.auth-login-shell{padding:18px 12px}.auth-login-card{border-radius:17px;padding:24px 20px}}
+html:not(.app-auth-ready) body{visibility:hidden}
+html.app-auth-ready #directoryLogin{display:none!important}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async function(){
+  const client = window.supabase.createClient(
+    "https://vqenzubwfzwwndgjucim.supabase.co",
+    "sb_publishable_s4o-wW-rdUbEesSKe6NhNg_u7gzYeCf"
+  );
+  try {
+    const { data, error } = await client.auth.getSession();
+    const session = data && data.session;
+    if (error || !session || (session.user.email || "").toLowerCase() !== "andrebronca60@gmail.com") {
+      if (session) await client.auth.signOut();
+      location.replace("login.html");
+      return;
+    }
+    document.documentElement.classList.add("app-auth-ready");
+  } catch (_) {
+    location.replace("login.html");
+  }
+})();
+</script>
 </head>
 <body>
   <main class="app">
