@@ -44,9 +44,9 @@ html[data-theme="dark"] .pill.active{background:#41434a;border-color:var(--theme
 html[data-theme="dark"] .hint,html[data-theme="dark"] .topbar p,html[data-theme="dark"] .card-title span{color:var(--theme-muted)}
 
 /* Seletores da base com área de toque maior e texto dentro do controle */
-.directory-picker select{min-height:48px;padding:12px 14px;font-weight:750;font-size:15px;cursor:pointer;border-radius:10px;}
+.directory-picker{grid-column:span 8;min-width:0}.directory-picker select{display:block;width:100%;min-height:52px;padding:12px 42px 12px 16px;font-weight:750;font-size:16px;cursor:pointer;border-radius:10px;box-sizing:border-box}
 .directory-picker select:focus-visible{outline:3px solid var(--theme-gold,#b49350);outline-offset:2px;}
-@media(max-width:600px){.directory-picker select{min-height:52px;font-size:16px;}}
+@media(max-width:900px){.directory-picker{grid-column:span 12}.directory-picker select{min-height:54px;font-size:16px}}
 /* Padrão de autenticação EBIMOB */
 .auth-login-shell{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:28px 16px;background:radial-gradient(ellipse at 80% 0%,#e9e8e5,transparent 42%),#f6f5f1}
 .auth-login-card{width:min(100%,460px);padding:clamp(24px,5vw,38px);background:#fffefa;border:1px solid #d8d6d0;border-radius:22px;box-shadow:0 24px 70px #17324f12;color:#28292d}
@@ -135,8 +135,8 @@ html.app-auth-ready #directoryLogin{display:none!important}
         <div id="directoryContent" class="hidden">
           <div class="directory-section">
             <div class="grid">
-              <div class="field c7 directory-picker"><select id="savedOwnerSelect" aria-label="Selecionar proprietário"><option value="">Selecionar proprietário</option></select></div>
-              <div class="field c5"><label for="ownerIdentifier">Identificador</label><input id="ownerIdentifier" placeholder="Ex.: Casa da praia — Juquehy" autocomplete="off"></div>
+              <div class="field directory-picker"><select id="savedOwnerSelect" aria-label="Selecionar proprietário"><option value="">Selecionar proprietário</option></select></div>
+              <div class="field c4"><label for="ownerIdentifier">Identificador</label><input id="ownerIdentifier" placeholder="Ex.: Casa da praia — Juquehy" autocomplete="off"></div>
             </div>
             <div class="actions" style="margin-top:10px;flex-wrap:wrap">
               <button class="btn secondary" id="newOwnerBtn" type="button">Adicionar proprietário</button>
@@ -145,8 +145,8 @@ html.app-auth-ready #directoryLogin{display:none!important}
           </div>
           <div class="directory-section" style="margin-top:18px">
             <div class="grid">
-              <div class="field c7 directory-picker"><select id="savedPropertySelect" aria-label="Selecionar imóvel"><option value="">Selecionar imóvel</option></select></div>
-              <div class="field c5" style="display:flex;align-items:end"><button class="btn secondary" id="newPropertyBtn" type="button" style="width:100%">Adicionar imóvel</button></div>
+              <div class="field directory-picker"><select id="savedPropertySelect" aria-label="Selecionar imóvel"><option value="">Selecionar imóvel</option></select></div>
+              <div class="field c4" style="display:flex;align-items:end"><button class="btn secondary" id="newPropertyBtn" type="button" style="width:100%">Adicionar imóvel</button></div>
               <div class="field c4"><label for="directoryPropertyCep">CEP</label><input id="directoryPropertyCep" class="cep" maxlength="9" placeholder="00000-000"></div>
               <div class="field c4"><label for="directoryPropertyAddress">Endereço</label><input id="directoryPropertyAddress" placeholder="Rua, número e complemento"></div>
               <div class="field c4"><label for="directoryPropertyCondo">Nome do condomínio</label><input id="directoryPropertyCondo" placeholder="Condomínio (se houver)"></div>
