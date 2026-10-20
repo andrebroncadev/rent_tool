@@ -288,7 +288,6 @@ async function loadTemplate(){
   catch(err){setTemplateStatus('Não foi possível carregar automaticamente o DOCX. Selecione o modelo abaixo.','bad');addPicker()}
 }
 function clearForm(){ $('authForm').reset();$('data').value=localToday();$('praiaOutra').classList.add('hidden');$('corretorOutro').classList.add('hidden');setBrokerCreci();status('Formulário limpo.');}
-$('btnLimpar').addEventListener('click',clearForm);
 $('praia').addEventListener('change',()=>{const other=value('praia')==='OUTRA';$('praiaOutra').classList.toggle('hidden',!other);if(other)$('praiaOutra').focus()});
 $('corretor').addEventListener('change',()=>{const other=value('corretor')==='OUTRO';$('corretorOutro').classList.toggle('hidden',!other);setBrokerCreci();if(other)$('corretorOutro').focus()});
 $('corretorOutro').addEventListener('input',setBrokerCreci);
