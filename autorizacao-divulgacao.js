@@ -83,18 +83,54 @@ function markCheckboxBeforeWord(el,section,word,on){
   if(open>=start&&close>open)markGlobalChar(el,open+1,on?'X':' ');
 }
 function setCellLines(cell,text){
-  if(!text)return;
-  const lines=String(text).split(/\r?\n/);
-  let p=paragraphsOf(cell)[0];
+  const paragraphs=paragraphsOf(cell);
+  let p=paragraphs[0];
   if(!p){p=xmlDoc.createElementNS(W,'w:p');cell.appendChild(p)}
-  let run=p.getElementsByTagNameNS(W,'r')[0];
-  if(!run){run=xmlDoc.createElementNS(W,'w:r');p.appendChild(run)}
-  const rPr=run.getElementsByTagNameNS(W,'rPr')[0];
-  Array.from(run.childNodes).forEach(n=>{if(n!==rPr)run.removeChild(n)});
+  // Remove excess template blank lines so the description grows only with entered text.
+  paragraphs.slice(1).forEach(extra=>extra.parentNode?.removeChild(extra));
+  const row=cell.parentNode;
+  const trPr=direct(row,'trPr')[0];
+  if(trPr){
+    Array.from(trPr.getElementsByTagNameNS(W,'trHeight')).forEach(h=>h.parentNode?.removeChild(h));
+    if(!trPr.childNodes.length)trPr.parentNode?.removeChild(trPr);
+  }
+  const pPr=direct(p,'pPr')[0];
+  Array.from(p.childNodes).forEach(n=>{if(n!==pPr)p.removeChild(n)});
+  if(!String(text||'').trim())return;
+  const lines=String(text).split(/\r?\n/);
+  let run=xmlDoc.createElementNS(W,'w:r');
+  p.appendChild(run);
   lines.forEach((line,i)=>{
-    if(i){run.appendChild(xmlDoc.createElementNS(W,'w:br'))}
-    const t=xmlDoc.createElementNS(W,'w:t');t.setAttributeNS('http://www.w3.org/XML/1998/namespace','xml:space','preserve');t.textContent=line;run.appendChild(t);
+    if(i)run.appendChild(xmlDoc.createElementNS(W,'w:br'));
+    const t=xmlDoc.createElementNS(W,'w:t');
+    t.setAttributeNS('http://www.w3.org/XML/1998/namespace','xml:space','preserve');
+    t.textContent=line;run.appendChild(t);
   });
+}
+function normalizeDocxLayout(xml){
+  const paragraphs=paragraphsOf(xml);
+  for(const p of paragraphs){
+    const text=flatText(p).trim();
+    if(/AUTORIZA.{0,35}DIVULGA.{0,35}LOCAÇÃO/i.test(text) || /DE IMÓVEL SEM EXCLUSIVIDADE/i.test(text)){
+      let pPr=direct(p,'pPr')[0];
+      if(!pPr){pPr=xmlDoc.createElementNS(W,'w:pPr');p.insertBefore(pPr,p.firstChild)}
+      let jc=direct(pPr,'jc')[0];
+      if(!jc){jc=xmlDoc.createElementNS(W,'w:jc');pPr.appendChild(jc)}
+      jc.setAttributeNS(W,'w:val','center');
+    }
+    if(/DADOS DO IMÓVEL/i.test(text)){
+      replaceInContainer(p,'II. DADOS DO IMÓVEL','I. DADOS DO IMÓVEL');
+      replaceInContainer(p,'II DADOS DO IMÓVEL','I. DADOS DO IMÓVEL');
+    }
+  }
+  // Allow Word to paginate naturally instead of forcing a new page before a paragraph.
+  for(const p of paragraphsOf(xml)){
+    const pPr=direct(p,'pPr')[0];
+    if(pPr){
+      Array.from(pPr.getElementsByTagNameNS(W,'pageBreakBefore')).forEach(n=>n.parentNode?.removeChild(n));
+    }
+    Array.from(p.getElementsByTagNameNS(W,'br')).filter(n=>n.getAttributeNS(W,'type')==='page').forEach(n=>n.parentNode?.removeChild(n));
+  }
 }
 function setDate(xml){
   const p=paragraphsOf(xml).find(p=>flatText(p).includes('DATA:'));
@@ -223,7 +259,7 @@ async function makeDocx(){
   const file=zip.file('word/document.xml');if(!file)throw new Error('O modelo não contém word/document.xml.');
   const parser=new DOMParser();xmlDoc=parser.parseFromString(await file.async('string'),'application/xml');
   if(xmlDoc.getElementsByTagName('parsererror').length)throw new Error('Não foi possível ler o XML do modelo.');
-  fillDocx(xmlDoc);
+  normalizeDocxLayout(xmlDoc);\n  fillDocx(xmlDoc);
   const result=new XMLSerializer().serializeToString(xmlDoc.documentElement);
   zip.file('word/document.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+result);
   const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
