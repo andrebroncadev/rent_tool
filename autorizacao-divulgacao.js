@@ -7,6 +7,25 @@ let xmlDoc = null;
 let templateName = 'modelo-original.docx';
 
 function value(id){return ($(id)?.value || '').trim();}
+function beach(){return value('praia')==='OUTRA'?value('praiaOutra'):value('praia');}
+function broker(){return value('corretor')==='OUTRO'?value('corretorOutro'):value('corretor');}
+function propertyAddress(){return [value('endereco'),value('numeroImovel'),value('complementoImovel'),value('cepImovel')?'CEP '+value('cepImovel'):''].filter(Boolean).join(', ');}
+function ownerAddress(){return [value('endResidencial'),value('numeroResidencial')].filter(Boolean).join(', ');}
+function areaValue(id){const v=value(id);return v?v.replace(/\s*m²?$/i,'')+' m²':'';}
+function ageValue(){const v=value('idade');return v?v.replace(/\s*anos?$/i,'')+' anos':'';}
+function setBrokerCreci(){const n=broker();$('creci').value=n==='Érica Bronca'?'199167-F':n==='André Bronca'?'327982-F':'';}
+async function lookupCep(inputId,mode){
+ const cep=$(inputId).value.replace(/\D/g,'');const statusEl=$(mode==='property'?'cepImovelStatus':'cepStatus');
+ if(cep.length!==8){if(statusEl)statusEl.textContent='Informe um CEP válido com 8 dígitos.';return;}
+ if(statusEl)statusEl.textContent='Consultando CEP…';
+ try{
+  const res=await fetch('https://viacep.com.br/ws/'+cep+'/json/');if(!res.ok)throw new Error('Falha ao consultar o CEP.');
+  const d=await res.json();if(d.erro)throw new Error('CEP não encontrado.');
+  if(mode==='property'){$('endereco').value=d.logradouro||$('endereco').value;if(d.bairro&&!$('complementoImovel').value)$('complementoImovel').value=d.bairro;}
+  else{$('endResidencial').value=[d.logradouro,d.bairro].filter(Boolean).join(', ')||$('endResidencial').value;$('cidade').value=d.localidade||$('cidade').value;$('estado').value=d.uf||$('estado').value;}
+  if(statusEl)statusEl.textContent='CEP localizado. Confira o endereço e complete o número.';
+ }catch(err){if(statusEl)statusEl.textContent=err.message+' Preencha o endereço manualmente.';}
+}
 function localToday(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function checked(name){return document.querySelector('input[name="'+name+'"]:checked')?.value || '';}
 function allTextNodes(el){return Array.from(el.getElementsByTagNameNS(W,'t'));}
@@ -107,14 +126,14 @@ function fillDocx(xml){
   const tables=tablesOf(xml);if(tables.length<3)throw new Error('O DOCX selecionado não corresponde ao modelo da autorização.');
   const propertyRows=rowsOf(tables[0]),pc=propertyRows.map(r=>cellsOf(r)[0]);
   if(value('tipo')){markCheckboxAfter(pc[0],'SOBRADO',value('tipo')==='SOBRADO');markCheckboxAfter(pc[0],'TÉRREA',value('tipo')==='TÉRREA')}
-  putAfter(pc[0],'PRAIA:',value('praia'));
-  putAfter(pc[1],'DISTÂNCIA DA PRAIA:',value('distancia'));
-  putAfter(pc[2],'ENDEREÇO DO IMÓVEL:',value('endereco'));
+  putAfter(pc[0],'PRAIA:',beach());
+  putAfter(pc[1],'DISTÂNCIA DA PRAIA:',value('distancia')?value('distancia')+' metros':'');
+  putAfter(pc[2],'ENDEREÇO DO IMÓVEL:',propertyAddress());
   putAfter(pc[3],'CONDOMÍNIO:',value('condominio'));
   putAfter(pc[3],'Nº UNIDADE:',value('unidade'));
-  putAfter(pc[4],'ÁREA TOTAL:',value('areaTotal'));
-  putAfter(pc[4],'ÁREA CONSTRUÍDA:',value('areaConstruida'));
-  putAfter(pc[4],'IDADE DO IMÓVEL:',value('idade'));
+  putAfter(pc[4],'ÁREA TOTAL:',areaValue('areaTotal'));
+  putAfter(pc[4],'ÁREA CONSTRUÍDA:',areaValue('areaConstruida'));
+  putAfter(pc[4],'IDADE DO IMÓVEL:',ageValue());
   const rentP=paragraphsOf(pc[5]).find(p=>flatText(p).includes('VALOR DA LOCAÇÃO'));
   const iptuP=paragraphsOf(pc[5]).find(p=>flatText(p).includes('IPTU'));
   const condP=paragraphsOf(pc[5]).find(p=>flatText(p).includes('CONDOMÍNIO'));
@@ -139,12 +158,12 @@ function fillDocx(xml){
   if(noteLines.length>3&&obsRows[3])setCellLines(cellsOf(obsRows[3])[0],noteLines.slice(2).join('\n'));
   const ownerRows=rowsOf(tables[2]),oc=ownerRows.map(r=>cellsOf(r)[0]);
   putAfter(oc[0],'NOME:',value('nome'));
-  putAfter(oc[1],'ENDEREÇO RESIDENCIAL:',value('endResidencial'));
+  putAfter(oc[1],'ENDEREÇO RESIDENCIAL:',ownerAddress());
   putAfter(oc[2],'CIDADE:',value('cidade'));putAfter(oc[2],'ESTADO:',value('estado'));putAfter(oc[2],'CEP:',value('cep'));
   putAfter(oc[3],'CPF:',value('cpf'));putAfter(oc[4],'TELEFONE:',value('telefone'));putAfter(oc[5],'E-MAIL:',value('email'));
   setDate(xml);
   const auth=paragraphsOf(xml).find(p=>flatText(p).includes('AUTORIZO A RE/MAX SOUL'));
-  if(auth){fillUnderlinedTab(auth,'CORRETOR(A)',value('corretor'));fillUnderlinedTab(auth,'CRECI',value('creci'))}
+  if(auth){fillUnderlinedTab(auth,'CORRETOR(A)',broker());fillUnderlinedTab(auth,'CRECI',value('creci'))}
 }
 function getData(){
   const data={};document.querySelectorAll('#authForm input,#authForm select,#authForm textarea').forEach(el=>{
@@ -168,32 +187,32 @@ function printPageHtml(data,logo){
   const box=(x)=>'('+x+')';
   const field=(label,val)=>'<span>'+label+'</span> '+e(val||'');
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Autorização de divulgação de locação</title><style>
-@page{size:A4;margin:0}*{box-sizing:border-box}body{margin:0;font:10pt Arial,sans-serif;color:#000}.page{width:210mm;height:297mm;padding:13mm 13mm 10mm;position:relative;page-break-after:always;overflow:hidden}.page:last-child{page-break-after:auto}.logo{height:25mm;display:flex;align-items:center;justify-content:center;margin:0 0 2mm}.logo img{max-width:145mm;max-height:25mm;object-fit:contain}.title{text-align:center;text-decoration:underline;font-weight:bold;font-size:11pt;margin:1mm 0 8mm;line-height:1.5}.section{font-weight:bold;text-decoration:underline;margin:0 0 7mm;font-size:10pt}.tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8.2pt}.tbl td{border:1px solid #222;padding:1mm 1.5mm;vertical-align:top;overflow-wrap:anywhere}.r{height:5mm}.description{height:58mm}.description td{vertical-align:top}.options{height:5mm}.notes td{height:5mm}.owner td{height:5mm}.date{text-align:center;margin:6mm 0 7mm}.auth{font-size:9pt;line-height:2.05;text-align:justify;margin:0 3mm}.signature{margin:13mm auto 0;border-top:1px solid #000;width:62%;text-align:center;padding-top:1mm;font-size:8pt}.page2 .logo{margin-bottom:5mm}.page2 .section{margin-top:6mm;margin-bottom:7mm}
+@page{size:A4;margin:0}*{box-sizing:border-box}body{margin:0;font:10pt Arial,sans-serif;color:#000}.page{width:210mm;height:297mm;padding:13mm 13mm 10mm;position:relative;page-break-after:always;overflow:hidden}.page:last-child{page-break-after:auto}.logo{height:25mm;display:flex;align-items:center;justify-content:center;margin:0 0 2mm;overflow:visible}.logo img{display:block;width:auto;height:auto;max-width:145mm;max-height:25mm;object-fit:contain;object-position:center;margin:auto}.title{text-align:center;text-decoration:underline;font-weight:bold;font-size:11pt;margin:1mm 0 8mm;line-height:1.5}.section{font-weight:bold;text-decoration:underline;margin:0 0 7mm;font-size:10pt}.tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8.2pt}.tbl td{border:1px solid #222;padding:1mm 1.5mm;vertical-align:top;overflow-wrap:anywhere}.r{height:5mm}.description{height:58mm}.description td{vertical-align:top}.options{height:5mm}.notes td{height:5mm}.owner td{height:5mm}.date{text-align:center;margin:6mm 0 7mm}.auth{font-size:9pt;line-height:2.05;text-align:justify;margin:0 3mm}.signature{margin:13mm auto 0;border-top:1px solid #000;width:62%;text-align:center;padding-top:1mm;font-size:8pt}.page2 .logo{margin-bottom:5mm}.page2 .section{margin-top:6mm;margin-bottom:7mm}
 @media screen{body{background:#e5e7eb;padding:12px}.page{background:#fff;margin:0 auto 12px;box-shadow:0 2px 15px #0002}}@media print{body{background:white}.page{margin:0;box-shadow:none}}
 </style></head><body>
-<section class="page"><div class="logo">${logo?'<img src="'+logo+'" alt="RE/MAX SOUL">':''}</div><div class="title">AUTORIZAÇÃO PARA DIVULGAÇÃO DE ANÚNCIO DE LOCAÇÃO<br>DE IMÓVEL SEM EXCLUSIVIDADE</div><div class="section">II. DADOS DO IMÓVEL</div>
-<table class="tbl"><tr class="r"><td colspan="2">TIPO: SOBRADO ${box(value('tipo')==='SOBRADO'?'X':' ')} &nbsp; TÉRREA ${box(value('tipo')==='TÉRREA'?'X':' ')}<span style="float:right">PRAIA: ${e(value('praia'))}</span></td></tr>
-<tr class="r"><td colspan="2">DISTÂNCIA DA PRAIA: ${e(value('distancia'))} METROS</td></tr><tr class="r"><td colspan="2">ENDEREÇO DO IMÓVEL: ${e(value('endereco'))}</td></tr>
+<section class="page"><div class="logo">${logo?'<img src="'+logo+'" alt="RE/MAX SOUL">':''}</div><div class="title">AUTORIZAÇÃO PARA DIVULGAÇÃO DE ANÚNCIO DE LOCAÇÃO<br>DE IMÓVEL SEM EXCLUSIVIDADE</div><div class="section">I. DADOS DO IMÓVEL</div>
+<table class="tbl"><tr class="r"><td colspan="2">TIPO: SOBRADO ${box(value('tipo')==='SOBRADO'?'X':' ')} &nbsp; TÉRREA ${box(value('tipo')==='TÉRREA'?'X':' ')}<span style="float:right">PRAIA: ${e(beach())}</span></td></tr>
+<tr class="r"><td colspan="2">DISTÂNCIA DA PRAIA: ${e(value('distancia'))}${value('distancia')?' metros':''}</td></tr><tr class="r"><td colspan="2">ENDEREÇO DO IMÓVEL: ${e(propertyAddress())}</td></tr>
 <tr class="r"><td>CONDOMÍNIO: ${e(value('condominio'))}</td><td>Nº UNIDADE: ${e(value('unidade'))}</td></tr>
-<tr class="r"><td colspan="2">ÁREA TOTAL: ${e(value('areaTotal'))} &nbsp;&nbsp;&nbsp; ÁREA CONSTRUÍDA: ${e(value('areaConstruida'))}<span style="float:right">IDADE DO IMÓVEL: ${e(value('idade'))}</span></td></tr>
+<tr class="r"><td colspan="2">ÁREA TOTAL: ${e(areaValue('areaTotal'))} &nbsp;&nbsp;&nbsp; ÁREA CONSTRUÍDA: ${e(areaValue('areaConstruida'))}<span style="float:right">IDADE DO IMÓVEL: ${e(ageValue())}</span></td></tr>
 <tr><td colspan="2">VALOR DA LOCAÇÃO: R$ ${e(value('valorLocacao'))} /MÊS<br>INCLUSO no valor anunciado da locação:<br>IPTU ${box(markNo('iptuIncluso'))}não &nbsp; ${box(mark('iptuIncluso'))}sim &nbsp; R$ ${e(value('iptuValor'))} /MÊS<br>CONDOMÍNIO ${box(markNo('condIncluso'))}não &nbsp; ${box(mark('condIncluso'))}sim &nbsp; R$ ${e(value('condValor'))} /MÊS</td></tr>
 <tr><td colspan="2" style="height:7mm">DESCRIÇÃO DO IMÓVEL:</td></tr><tr class="description"><td colspan="2">${fmtText(value('descricao'))}</td></tr>
-<tr class="options"><td colspan="2">MOBILIADO: NÃO ${box(markNo('mobiliado'))} &nbsp; SIM ${box(mark('mobiliado'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
-<tr class="options"><td colspan="2">ELETRODOMÉSTICOS: NÃO ${box(markNo('eletro'))} &nbsp; SIM ${box(mark('eletro'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
-<tr class="options"><td colspan="2">POSSUI ÁREA DE LAZER: NÃO ${box(markNo('lazer'))} &nbsp; SIM ${box(mark('lazer'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
-<tr class="options"><td colspan="2">PISCINA PRIVATIVA: NÃO ${box(markNo('piscina'))} &nbsp; SIM ${box(mark('piscina'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
-<tr class="options"><td colspan="2">CHURRASQUEIRA PRIVATIVA: NÃO ${box(markNo('churrasqueira'))} &nbsp; SIM ${box(mark('churrasqueira'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
-<tr class="options"><td colspan="2">SERVIÇO DE PRAIA: NÃO ${box(markNo('servicoPraia'))} &nbsp; SIM ${box(mark('servicoPraia'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
-<tr class="options"><td colspan="2">CHAVES NO LOCAL NÃO ${box(markNo('chaves'))} SIM ${box(mark('chaves'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
+<tr class="options"><td colspan="2">MOBILIADO: SIM ${box(mark('mobiliado'))} &nbsp; NÃO ${box(markNo('mobiliado'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
+<tr class="options"><td colspan="2">ELETRODOMÉSTICOS: SIM ${box(mark('eletro'))} &nbsp; NÃO ${box(markNo('eletro'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
+<tr class="options"><td colspan="2">POSSUI ÁREA DE LAZER: SIM ${box(mark('lazer'))} &nbsp; NÃO ${box(markNo('lazer'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
+<tr class="options"><td colspan="2">PISCINA PRIVATIVA: SIM ${box(mark('piscina'))} &nbsp; NÃO ${box(markNo('piscina'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
+<tr class="options"><td colspan="2">CHURRASQUEIRA PRIVATIVA: SIM ${box(mark('churrasqueira'))} &nbsp; NÃO ${box(markNo('churrasqueira'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
+<tr class="options"><td colspan="2">SERVIÇO DE PRAIA: SIM ${box(mark('servicoPraia'))} &nbsp; NÃO ${box(markNo('servicoPraia'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
+<tr class="options"><td colspan="2">CHAVES NO LOCAL SIM ${box(mark('chaves'))} NÃO ${box(markNo('chaves'))}</td></tr><tr class="r"><td colspan="2"></td></tr>
 <tr class="r"><td colspan="2">SEMPRE AVISAR O(A) PROPRIETÁRIO(A) QUANDO FOR VISITAR ATRAVÉS DO TEL: (${e(value('telVisita'))})</td></tr></table></section>
 <section class="page page2"><div class="logo">${logo?'<img src="'+logo+'" alt="RE/MAX SOUL">':''}</div>
 <table class="tbl notes"><tr><td>OBSERVAÇÕES:</td></tr>${noteRows}</table>
 <div class="section">II. DADOS DO(A) PROPRIETÁRIO(A)/LOCADOR(A)</div>
-<table class="tbl owner"><tr><td>NOME: ${e(value('nome'))}</td></tr><tr><td>ENDEREÇO RESIDENCIAL: ${e(value('endResidencial'))}</td></tr>
+<table class="tbl owner"><tr><td>NOME: ${e(value('nome'))}</td></tr><tr><td>ENDEREÇO RESIDENCIAL: ${e(ownerAddress())}</td></tr>
 <tr><td>CIDADE: ${e(value('cidade'))}<span style="margin-left:26mm">ESTADO: ${e(value('estado'))}</span><span style="float:right">CEP: ${e(value('cep'))}</span></td></tr>
 <tr><td>CPF: ${e(value('cpf'))}</td></tr><tr><td>TELEFONE: ${e(value('telefone'))}</td></tr><tr><td>E-MAIL: ${e(value('email'))}</td></tr></table>
 <div class="date">DATA: ${e(datePt(value('data')))}</div>
-<p class="auth">AUTORIZO A <b>RE/MAX SOUL</b>, ATRAVÉS DO(A) CORRETOR(A) <u>${e(value('corretor'))}</u>, CRECI <u>${e(value('creci'))}</u> A DIVULGAR INCLUINDO ONLINE MEU IMÓVEL PARA LOCAÇÃO, <b><u>SEM EXCLUSIVIDADE</u></b>.</p>
+<p class="auth">AUTORIZO A <b>RE/MAX SOUL</b>, POR INTERMÉDIO DO(A) CORRETOR(A) <u>${e(broker())}</u>, CRECI <u>${e(value('creci'))}</u>, A DIVULGAR, INCLUSIVE EM MEIOS DIGITAIS, MEU IMÓVEL PARA LOCAÇÃO, <b><u>SEM EXCLUSIVIDADE</u></b>.</p>
 <div class="signature">PROPRIETÁRIO(A)</div></section>
 <script>window.addEventListener('load',()=>setTimeout(()=>window.print(),350));<\/script></body></html>`;
 }
@@ -231,12 +250,17 @@ async function loadTemplate(){
   try{const res=await fetch(TEMPLATE_URL,{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);templateBytes=await res.arrayBuffer();setTemplateStatus('Modelo original carregado automaticamente. Pronto para gerar.','ok')}
   catch(err){setTemplateStatus('Não foi possível carregar automaticamente o DOCX. Selecione o modelo abaixo.','bad');addPicker()}
 }
-function clearForm(){ $('authForm').reset();$('data').value=localToday();status('Formulário limpo.');}
+function clearForm(){ $('authForm').reset();$('data').value=localToday();$('praiaOutra').classList.add('hidden');$('corretorOutro').classList.add('hidden');setBrokerCreci();status('Formulário limpo.');}
 $('btnLimpar').addEventListener('click',clearForm);
+$('praia').addEventListener('change',()=>{const other=value('praia')==='OUTRA';$('praiaOutra').classList.toggle('hidden',!other);if(other)$('praiaOutra').focus()});
+$('corretor').addEventListener('change',()=>{const other=value('corretor')==='OUTRO';$('corretorOutro').classList.toggle('hidden',!other);setBrokerCreci();if(other)$('corretorOutro').focus()});
+$('corretorOutro').addEventListener('input',setBrokerCreci);
+$('cepImovel').addEventListener('blur',()=>lookupCep('cepImovel','property'));
+$('cep').addEventListener('blur',()=>lookupCep('cep','owner'));
 $('btnDocx').addEventListener('click',async()=>{try{status('Gerando DOCX…');await makeDocx();status('DOCX gerado. Abra e confira antes de utilizar.')}catch(err){status(err.message,'bad')}});
 $('btnDocxTop').addEventListener('click',()=>$('btnDocx').click());
 $('btnPdf').addEventListener('click',async()=>{try{status('Preparando visualização…');await makePdf();status('Visualização aberta. Use a opção de imprimir/salvar em PDF.')}catch(err){status(err.message,'bad')}});
 $('btnPdfTop').addEventListener('click',()=>$('btnPdf').click());
-$('data').value=localToday();
+$('data').value=localToday();setBrokerCreci();
 (function theme(){let t='light';try{t=localStorage.getItem('remax-unified-theme')||'light'}catch(_){}document.documentElement.dataset.theme=t;const b=document.createElement('button');b.className='theme-toggle no-print';b.type='button';function apply(){b.textContent=document.documentElement.dataset.theme==='dark'?'☀ Modo claro':'☾ Modo escuro';b.setAttribute('aria-pressed',String(document.documentElement.dataset.theme==='dark'))}b.onclick=()=>{const n=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('remax-unified-theme',n)}catch(_){}apply()};apply();document.body.appendChild(b)})();
 loadTemplate();
