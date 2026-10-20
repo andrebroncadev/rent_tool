@@ -259,7 +259,8 @@ async function makeDocx(){
   const file=zip.file('word/document.xml');if(!file)throw new Error('O modelo não contém word/document.xml.');
   const parser=new DOMParser();xmlDoc=parser.parseFromString(await file.async('string'),'application/xml');
   if(xmlDoc.getElementsByTagName('parsererror').length)throw new Error('Não foi possível ler o XML do modelo.');
-  normalizeDocxLayout(xmlDoc);\n  fillDocx(xmlDoc);
+  normalizeDocxLayout(xmlDoc);
+  fillDocx(xmlDoc);
   const result=new XMLSerializer().serializeToString(xmlDoc.documentElement);
   zip.file('word/document.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+result);
   const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
