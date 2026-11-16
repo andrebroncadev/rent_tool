@@ -263,17 +263,19 @@ async function pdf(previewOnly=false){
     {text:" pagos na data de assinatura deste contrato na conta da imobiliária, mediante depósito, transferência bancária ou PIX para a conta ",bold:false},
     ...bankRuns("broker"),{text:".",bold:false}
   ],s);
-  installments.forEach((x,i)=>{
-    const pv=+(x.querySelector(".pvalue").value)||0,pd=x.querySelector(".pdate").value,target=x.querySelector(".ptarget").value;
+installments.forEach((x,i)=>{
+    const pv=+(x.querySelector(".pvalue").value)||0;
+    const pd=x.querySelector(".pdate").value;
+    const target=x.querySelector(".ptarget").value;
     const who=target==="broker"?"conta do corretor":"conta do locador";
+
     richText(doc,"PARCELA "+(i+1)+": ",[
       {text:"R$ "+numText(pv)+" ("+moneyWords(pv)+")",bold:true},
-      {text:" pagos até data ",bold:false},{text:br(pd),bold:true},
-      {text:" na "+who+" ",bold:false},...bankRuns(target==="broker"?"broker":"owner"),{text:".",bold:false}
-    ],s);
-    richText(doc,"",[
-      {text:"A conta do locador: ",bold:false},...bankRuns("owner"),
-      {text:". A conta da imobiliária: ",bold:false},...bankRuns("broker"),{text:".",bold:false}
+      {text:" pagos até data ",bold:false},
+      {text:br(pd),bold:true},
+      {text:" na "+who+" ",bold:false},
+      ...bankRuns(target==="broker"?"broker":"owner"),
+      {text:".",bold:false}
     ],s);
   });
   paragraph(doc,"","Os comprovantes dos depósitos servirão como recibo do pagamento.",s);
@@ -341,7 +343,6 @@ async function saveDocx(){
     const pv=+(x.querySelector(".pvalue").value)||0,pd=x.querySelector(".pdate").value,target=x.querySelector(".ptarget").value;
     const who=target==="broker"?"conta do corretor":"conta do locador";
     children.push(docxParagraph(D,"PARCELA "+(i+1)+": ",[{text:"R$ "+numText(pv)+" ("+moneyWords(pv)+")",bold:true},{text:" pagos até data ",bold:false},{text:br(pd),bold:true},{text:" na "+who+" ",bold:false},...bankRuns(target==="broker"?"broker":"owner"),{text:".",bold:false}]));
-    children.push(docxParagraph(D,"",[{text:"A conta do locador: ",bold:false},...bankRuns("owner"),{text:". A conta da imobiliária: ",bold:false},...bankRuns("broker"),{text:".",bold:false}]));
   });
   children.push(docxParagraph(D,"",[{text:"Os comprovantes dos depósitos servirão como recibo do pagamento.",bold:false}]));
   children.push(docxParagraph(D,"Parágrafo 1: ",[{text:"Não cumprido pagamento nas datas estabelecidas acima ensejará uma multa de ",bold:false},{text:v("lateFinePct")+"%",bold:true},{text:" do valor da parcela inadimplida.",bold:false}]));
@@ -393,3 +394,4 @@ $("btnPreview").onclick=preview;
 $("btnGerarDocx").onclick=()=>saveDocx();
 $("btnGerarDocxTop").onclick=()=>saveDocx();
 $("btnLimpar").onclick=()=>{if(confirm("Limpar todos os campos?"))location.reload()};
+
